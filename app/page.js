@@ -89,24 +89,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="inventory" id="aanbod">
-        <div className="shell">
-          <div className="section-head" data-reveal>
-            <div><span className="eyebrow">Populaire bedrijfswagens</span><h2>Direct uit voorraad leverbaar.</h2></div>
-            <a href="#contact">Bekijk alle bedrijfswagens →</a>
-          </div>
-          <div className="cards">
-            {vans.map((v,i)=><article className="vehicle" key={v.name} data-reveal style={{transitionDelay:`${i*70}ms`}}>
-              <div className="vehicle-image">
-                <img src={v.image} alt={v.name} loading="lazy" />
-                <span className="badge">◉ Snel leverbaar</span>
-              </div>
-              <h3>{v.name}</h3><p className="muted">Diesel · Automaat</p><p className="muted">{v.note}</p><small>vanaf</small><div className="price">{v.price}<span>/mnd</span></div><a className="btn primary wide" href="#contact">Stel samen →</a>
-            </article>)}
-          </div>
-        </div>
-      </section>
-
       <section className="wrap-section" id="bestickering">
         <div className="shell wrap-grid">
           <div className="wrap-visual before-after-card" data-reveal>
@@ -123,6 +105,24 @@ export default function Home() {
               <div><b>03</b><span><strong>Vrijblijvend voorstel</strong><small>Eerst zien hoe jouw bus eruit kan komen te zien.</small></span></div>
             </div>
             <a className="btn primary" href="#contact">Vraag design + leasevoorstel aan →</a>
+          </div>
+        </div>
+      </section>
+
+      <section className="inventory" id="aanbod">
+        <div className="shell">
+          <div className="section-head" data-reveal>
+            <div><span className="eyebrow">Populaire bedrijfswagens</span><h2>Direct uit voorraad leverbaar.</h2></div>
+            <a href="#contact">Bekijk alle bedrijfswagens →</a>
+          </div>
+          <div className="cards">
+            {vans.map((v,i)=><article className="vehicle" key={v.name} data-reveal style={{transitionDelay:`${i*70}ms`}}>
+              <div className="vehicle-image">
+                <img src={v.image} alt={v.name} loading="lazy" />
+                <span className="badge">◉ Snel leverbaar</span>
+              </div>
+              <h3>{v.name}</h3><p className="muted">Diesel · Automaat</p><p className="muted">{v.note}</p><small>vanaf</small><div className="price">{v.price}<span>/mnd</span></div><a className="btn primary wide" href="#contact">Stel samen →</a>
+            </article>)}
           </div>
         </div>
       </section>
