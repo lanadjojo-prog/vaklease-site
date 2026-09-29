@@ -1,6 +1,10 @@
 'use client';
 import { useEffect } from 'react';
-import { logoData, heroData } from './assets';
+
+const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-logo.png?v=1790680810';
+const VAN = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-professionele-bestelwagen.png?v=1790680774';
+const WORKER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-vakman.png?v=1790680782';
+const BEFORE_AFTER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-before-after-bestickering.png?v=1790680791';
 
 const vans = [
   ['Volkswagen Caddy', '€ 389', 'Compact & praktisch'],
@@ -22,7 +26,7 @@ export default function Home() {
   return (
     <main>
       <header className="nav shell">
-        <a className="brand image-brand" href="#"><img src={logoData} alt="VakLease" /></a>
+        <a className="brand image-brand" href="#"><img src={LOGO} alt="VakLease" /></a>
         <nav>
           <a href="#aanbod">Bedrijfswagens</a>
           <a href="#werkwijze">Financial lease</a>
@@ -49,9 +53,14 @@ export default function Home() {
               <div><b>✓ Persoonlijk advies</b><small>Van vakmensen, voor vakmensen</small></div>
             </div>
           </div>
-          <div className="visual hero-photo-wrap" data-reveal>
-            <div className="hero-glow"></div>
-            <img className="hero-photo" src={heroData} alt="Vakman met witte bedrijfswagen" />
+
+          <div className="visual hero-scene" data-reveal>
+            <div className="hero-panel"></div>
+            <div className="hero-speed s1"></div>
+            <div className="hero-speed s2"></div>
+            <div className="hero-speed s3"></div>
+            <img className="hero-van" src={VAN} alt="Professionele witte bedrijfswagen" />
+            <img className="hero-worker" src={WORKER} alt="Vakman in werkkleding" />
             <div className="mini-card m1"><strong>24u</strong><span>vaak duidelijkheid</span></div>
             <div className="mini-card m2"><strong>0%</strong><span>grote investering vooraf</span></div>
           </div>
@@ -75,7 +84,12 @@ export default function Home() {
 
       <section className="why" id="werkwijze">
         <div className="shell why-grid">
-          <div data-reveal><span className="eyebrow">Waarom VakLease</span><h2>Leasen zoals het hoort. <span>Simpel en persoonlijk.</span></h2><p>Wij helpen vakmensen en ondernemers aan de juiste bedrijfswagen. Zonder gedoe, met heldere voorwaarden en persoonlijk advies.</p><a className="btn primary" href="#contact">Meer over ons →</a></div>
+          <div data-reveal>
+            <span className="eyebrow">Waarom VakLease</span>
+            <h2>Leasen zoals het hoort. <span>Simpel en persoonlijk.</span></h2>
+            <p>Wij helpen vakmensen en ondernemers aan de juiste bedrijfswagen. Zonder gedoe, met heldere voorwaarden en persoonlijk advies.</p>
+            <a className="btn primary" href="#contact">Meer over ons →</a>
+          </div>
           <div className="benefits">
             {[
               ['€','Geen grote investering','Rijd direct in een nieuwe bedrijfswagen.'],
@@ -89,11 +103,8 @@ export default function Home() {
 
       <section className="wrap-section" id="bestickering">
         <div className="shell wrap-grid">
-          <div className="wrap-visual" data-reveal>
-            <div className="wrap-card">
-              <img src={heroData} alt="Voorbeeld bedrijfswagen voor busbestickering" />
-              <div className="wrap-overlay"><img src={logoData} alt="" /><span>Jouw bus. Jouw merk.</span></div>
-            </div>
+          <div className="wrap-visual before-after-card" data-reveal>
+            <img src={BEFORE_AFTER} alt="Voor en na busbestickering" />
             <div className="design-pill">✓ Gratis ontwerpvoorstel</div>
           </div>
           <div className="wrap-copy" data-reveal>
@@ -110,8 +121,22 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="cta" id="contact"><div className="shell cta-inner" data-reveal><div><span className="eyebrow orange">Klaar voor de volgende klus?</span><h2>Vertel ons wat je zoekt.</h2><p>We denken mee over wagen, looptijd, financiering én bestickering. Vrijblijvend.</p></div><a className="btn orange-btn" href="mailto:info@example.nl">Vraag een voorstel aan →</a></div></section>
-      <footer className="shell footer"><img className="footer-logo" src={logoData} alt="VakLease" /><span>Financial lease voor zzp’ers en vakmensen.</span><span>© 2026</span></footer>
+      <section className="cta" id="contact">
+        <div className="shell cta-inner" data-reveal>
+          <div>
+            <span className="eyebrow orange">Klaar voor de volgende klus?</span>
+            <h2>Vertel ons wat je zoekt.</h2>
+            <p>We denken mee over wagen, looptijd, financiering én bestickering. Vrijblijvend.</p>
+          </div>
+          <a className="btn orange-btn" href="mailto:info@example.nl">Vraag een voorstel aan →</a>
+        </div>
+      </section>
+
+      <footer className="shell footer">
+        <img className="footer-logo" src={LOGO} alt="VakLease" />
+        <span>Financial lease voor zzp’ers en vakmensen.</span>
+        <span>© 2026</span>
+      </footer>
     </main>
   );
 }
