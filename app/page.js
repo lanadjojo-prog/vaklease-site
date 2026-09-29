@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-logo.png?v=1790680810';
 const VAN = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-professionele-bestelwagen.png?v=1790680774';
 const WORKER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-vakman.png?v=1790680782';
-const BEFORE_AFTER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-before-after-modern.png?v=1790681880';
+const BEFORE_AFTER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-before-after-bestickering.png?v=1790680791';
 
 const vans = [
   ['Volkswagen Caddy', '€ 389', 'Compact & praktisch'],
@@ -109,8 +109,8 @@ export default function Home() {
           </div>
           <div className="wrap-copy" data-reveal>
             <span className="eyebrow orange">Busbestickering & design</span>
-            <h2>Van blanco bus naar <span>een sterke uitstraling.</span></h2>
-            <p>Maak van je bedrijfswagen een professioneel visitekaartje. Wij verzorgen het ontwerp van subtiele branding tot een volledige voertuigwrap, passend bij jouw huisstijl.</p>
+            <h2>Van leasebus naar <span>rijdend visitekaartje.</span></h2>
+            <p>Wil je de bus meteen professioneel laten bestickeren? Wij helpen ook met het ontwerp. Van subtiel logo en contactgegevens tot een volledige voertuigwrap.</p>
             <div className="wrap-points">
               <div><b>01</b><span><strong>Ontwerp op maat</strong><small>Passend bij jouw huisstijl en type bus.</small></span></div>
               <div><b>02</b><span><strong>Alles in één traject</strong><small>Lease én uitstraling zonder losse partijen.</small></span></div>
