@@ -114,8 +114,11 @@ async function initDatabase() {
       to_email TEXT,
       subject TEXT,
       body_preview TEXT,
+      body TEXT,
       occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+
+    ALTER TABLE email_log ADD COLUMN IF NOT EXISTS body TEXT;
 
     CREATE TABLE IF NOT EXISTS lease_applications (
       id BIGSERIAL PRIMARY KEY,
@@ -346,6 +349,35 @@ app.get('/api/inbox/:uid', async (req, res, next) => {
   }
 });
 
+app.get('/api/sent', async (req, res, next) => {
+  try {
+    const result = await dbQuery(
+      `SELECT id, message_id, from_email, to_email, subject, body_preview, occurred_at
+       FROM email_log
+       WHERE direction = 'outbound'
+       ORDER BY occurred_at DESC
+       LIMIT 100`
+    );
+    res.json({ messages: result.rows });
+  } catch (err) { next(err); }
+});
+
+app.get('/api/sent/:id', async (req, res, next) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'Ongeldig bericht.' });
+  try {
+    const result = await dbQuery(
+      `SELECT id, message_id, from_email, to_email, subject, body_preview, body, occurred_at
+       FROM email_log
+       WHERE id = $1 AND direction = 'outbound'`,
+      [id]
+    );
+    const message = result.rows[0];
+    if (!message) return res.status(404).json({ error: 'Verzonden bericht niet gevonden.' });
+    res.json({ message });
+  } catch (err) { next(err); }
+});
+
 app.post('/api/send', async (req, res, next) => {
   if (!sendReady()) return res.status(503).json({ error: 'Uitgaande mail is nog niet ingesteld.' });
   const { to, subject, body, partnerId } = req.body || {};
@@ -356,9 +388,9 @@ app.post('/api/send', async (req, res, next) => {
 
     if (pool) {
       await pool.query(
-        `INSERT INTO email_log (direction, partner_id, message_id, from_email, to_email, subject, body_preview)
-         VALUES ('outbound', $1, $2, $3, $4, $5, $6)`,
-        [partnerId || null, info.messageId || null, mailConfig.user, String(to).trim(), String(subject).trim(), String(body).slice(0, 500)]
+        `INSERT INTO email_log (direction, partner_id, message_id, from_email, to_email, subject, body_preview, body)
+         VALUES ('outbound', $1, $2, $3, $4, $5, $6, $7)`,
+        [partnerId || null, info.messageId || null, mailConfig.user, String(to).trim(), String(subject).trim(), String(body).slice(0, 500), String(body)]
       );
       if (partnerId) {
         await pool.query('UPDATE partners SET last_contacted_at = NOW(), updated_at = NOW() WHERE id = $1', [partnerId]);
