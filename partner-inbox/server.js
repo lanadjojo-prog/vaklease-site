@@ -171,11 +171,16 @@ const mailConfig = {
   smtpPort: Number(process.env.MAIL_SMTP_PORT || 465),
   user: process.env.MAIL_USER || '',
   password: process.env.MAIL_PASSWORD || '',
-  fromName: process.env.MAIL_FROM_NAME || 'VakLease'
+  fromName: process.env.MAIL_FROM_NAME || 'VakLease',
+  resendApiKey: process.env.RESEND_API_KEY || ''
 };
 
 function mailReady() {
   return Boolean(mailConfig.user && mailConfig.password);
+}
+
+function sendReady() {
+  return Boolean(mailConfig.resendApiKey || (mailConfig.user && mailConfig.password));
 }
 
 function imapClient() {
@@ -197,6 +202,43 @@ function smtpTransport() {
   });
 }
 
+async function sendOutboundMail({ to, subject, body }) {
+  if (mailConfig.resendApiKey) {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${mailConfig.resendApiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: `${mailConfig.fromName} <${mailConfig.user}>`,
+        to: [String(to).trim()],
+        subject: String(subject).trim(),
+        text: String(body)
+      })
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const err = new Error(data.message || `Resend API error (${response.status})`);
+      err.status = 502;
+      throw err;
+    }
+
+    return { messageId: data.id || null, provider: 'resend' };
+  }
+
+  const transporter = smtpTransport();
+  const info = await transporter.sendMail({
+    from: `"${mailConfig.fromName}" <${mailConfig.user}>`,
+    to: String(to).trim(),
+    subject: String(subject).trim(),
+    text: String(body)
+  });
+
+  return { messageId: info.messageId || null, provider: 'smtp' };
+}
+
 function addressText(list) {
   if (!Array.isArray(list)) return '';
   return list.map(x => x.name ? `${x.name} <${x.address}>` : x.address).filter(Boolean).join(', ');
@@ -216,6 +258,8 @@ app.get('/api/health', async (req, res) => {
     databaseConfigured: hasDatabase,
     databaseConnected: db,
     mailConfigured: mailReady(),
+    sendConfigured: sendReady(),
+    sendProvider: mailConfig.resendApiKey ? 'resend' : 'smtp',
     mailUser: mailConfig.user || null
   });
 });
@@ -224,6 +268,8 @@ app.get('/api/config', async (req, res) => {
   res.json({
     databaseConfigured: hasDatabase,
     mailConfigured: mailReady(),
+    sendConfigured: sendReady(),
+    sendProvider: mailConfig.resendApiKey ? 'resend' : 'smtp',
     mailbox: mailConfig.user || null,
     imapHost: mailConfig.imapHost,
     smtpHost: mailConfig.smtpHost
@@ -301,18 +347,12 @@ app.get('/api/inbox/:uid', async (req, res, next) => {
 });
 
 app.post('/api/send', async (req, res, next) => {
-  if (!mailReady()) return res.status(503).json({ error: 'VakLease-mailbox is nog niet ingesteld.' });
+  if (!sendReady()) return res.status(503).json({ error: 'Uitgaande mail is nog niet ingesteld.' });
   const { to, subject, body, partnerId } = req.body || {};
   if (!to || !subject || !body) return res.status(400).json({ error: 'Aan, onderwerp en bericht zijn verplicht.' });
 
   try {
-    const transporter = smtpTransport();
-    const info = await transporter.sendMail({
-      from: `"${mailConfig.fromName}" <${mailConfig.user}>`,
-      to: String(to).trim(),
-      subject: String(subject).trim(),
-      text: String(body)
-    });
+    const info = await sendOutboundMail({ to, subject, body });
 
     if (pool) {
       await pool.query(
@@ -325,7 +365,7 @@ app.post('/api/send', async (req, res, next) => {
       }
     }
 
-    res.json({ ok: true, messageId: info.messageId || null });
+    res.json({ ok: true, messageId: info.messageId || null, provider: info.provider || null });
   } catch (err) {
     next(err);
   }
