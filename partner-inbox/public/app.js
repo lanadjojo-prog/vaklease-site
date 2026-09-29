@@ -20,14 +20,16 @@ function go(view) {
   $$('.view').forEach(v => v.classList.remove('active'));
   $('#view-' + view).classList.add('active');
   $('#pageTitle').textContent = {
-    inbox:'Inbox', compose:'Nieuwe mail', partners:'Partners',
+    inbox:'Inbox', sent:'Verzonden', compose:'Nieuwe mail', partners:'Partners',
     templates:'Templates', applications:'Aanvragen'
   }[view] || 'VakLease';
   if (view === 'inbox') loadInbox();
+  if (view === 'sent') loadSent();
 }
 
 $$('.nav').forEach(b => b.addEventListener('click', () => go(b.dataset.view)));
 $('#quickCompose').addEventListener('click', () => go('compose'));
+$('#refreshSent')?.addEventListener('click', loadSent);
 
 async function loadConfig() {
   try {
@@ -69,6 +71,53 @@ async function loadInbox() {
     $$('.message-row').forEach(row => row.addEventListener('click', () => openMessage(row.dataset.uid)));
   } catch (err) {
     info.textContent = err.message;
+  }
+}
+
+async function loadSent() {
+  const list = $('#sentList');
+  const info = $('#sentState');
+  list.innerHTML = '';
+  info.style.display = 'block';
+  info.textContent = 'Verzonden berichten laden…';
+  try {
+    const data = await api('/api/sent');
+    const messages = data.messages || [];
+    if (!messages.length) {
+      info.textContent = 'Nog geen verzonden berichten.';
+      $('#sentPreview').innerHTML = '<div class="empty">Nog geen verzonden berichten.</div>';
+      return;
+    }
+    info.style.display = 'none';
+    list.innerHTML = messages.map(m => `
+      <button class="message-row" data-sent-id="${m.id}">
+        <div class="msg-top"><span class="msg-from">Aan: ${escapeHtml(m.to_email || '')}</span><span class="msg-date">${m.occurred_at ? new Date(m.occurred_at).toLocaleDateString('nl-NL') : ''}</span></div>
+        <div class="msg-subject">${escapeHtml(m.subject || '(geen onderwerp)')}</div>
+        <div class="msg-preview">${escapeHtml(m.body_preview || '')}</div>
+      </button>
+    `).join('');
+    $('[data-sent-id]').forEach(row => row.addEventListener('click', () => openSent(row.dataset.sentId)));
+  } catch (err) {
+    info.textContent = err.message;
+  }
+}
+
+async function openSent(id) {
+  const pane = $('#sentPreview');
+  pane.innerHTML = '<div class="empty">Bericht laden…</div>';
+  try {
+    const data = await api('/api/sent/' + id);
+    const m = data.message;
+    pane.innerHTML = `
+      <div class="mail-head">
+        <h2>${escapeHtml(m.subject || '(geen onderwerp)')}</h2>
+        <div class="mail-meta">Van: ${escapeHtml(m.from_email || '')}<br>Aan: ${escapeHtml(m.to_email || '')}<br>${m.occurred_at ? escapeHtml(new Date(m.occurred_at).toLocaleString('nl-NL')) : ''}</div>
+      </div>
+      <div class="mail-body"></div>
+    `;
+    pane.querySelector('.mail-body').textContent = m.body || m.body_preview || '(geen inhoud beschikbaar)';
+  } catch (err) {
+    pane.innerHTML = '<div class="empty">' + escapeHtml(err.message) + '</div>';
   }
 }
 
@@ -212,7 +261,7 @@ $('#composeForm').addEventListener('submit', async e => {
     status.textContent = 'Verzonden';
     e.currentTarget.reset();
     $('#composePartnerId').value = '';
-    setTimeout(() => { status.textContent = ''; go('inbox'); }, 700);
+    setTimeout(() => { status.textContent = ''; go('sent'); }, 700);
     loadPartners();
   } catch (err) {
     status.textContent = err.message;
