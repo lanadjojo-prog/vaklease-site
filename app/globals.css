@@ -867,3 +867,46 @@ main{
     padding-top:78px;
   }
 }
+
+
+/* Vehicle photography — visual placeholders for the current offer */
+.vehicle-image{
+  overflow:hidden;
+}
+.vehicle-image>img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+  border-radius:inherit;
+}
+.vehicle-image:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,transparent 58%,rgba(7,26,66,.035));
+}
+.vehicle-image .badge{
+  z-index:2;
+}
+
+/* Make the VakLease mark read as actual van lettering rather than a floating label */
+.hero-van-brand{
+  left:25%;
+  top:55%;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  transform:rotate(-4deg) skewX(-5deg);
+  font-size:20px;
+  text-shadow:0 1px 0 rgba(255,255,255,.75);
+}
+@media(max-width:900px){
+  .hero-van-brand{left:24%;top:56%;font-size:16px}
+}
+@media(max-width:700px){
+  .hero-van-brand{left:18%;top:58%;font-size:12px;padding:0}
+}
