@@ -1,6 +1,6 @@
 {
   "name": "vaklease-partner-inbox",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "VakLease partner inbox and CRM",
   "main": "server.js",
@@ -15,8 +15,8 @@
     "express-rate-limit": "^7.5.1",
     "helmet": "^8.1.0",
     "imapflow": "^1.0.195",
-    "mailparser": "^3.7.4",
-    "nodemailer": "^7.0.6",
+    "mailparser": "^3.9.31",
+    "nodemailer": "^10.0.11",
     "pg": "^8.16.3"
   }
 }
