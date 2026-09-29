@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-logo.png?v=1790680810';
 const VAN = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-bus.png?v=1790686665';
@@ -35,6 +35,8 @@ const vans = [
 ];
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   useEffect(() => {
     const els = document.querySelectorAll('[data-reveal]');
     const io = new IntersectionObserver(entries => entries.forEach(e => {
@@ -48,15 +50,40 @@ export default function Home() {
     <main>
       <header className="nav shell">
         <a className="brand image-brand" href="#"><img src={LOGO} alt="VakLease" /></a>
-        <nav>
+
+        <nav className="desktop-nav">
           <a href="#werkwijze">Zo werkt het</a>
           <a href="#bestickering">Busbestickering</a>
           <a href="#aanbod">Bedrijfswagens</a>
           <a href="#waarom">Waarom VakLease</a>
           <a href="#contact">Klantenservice</a>
         </nav>
-        <a className="btn primary small" href="#contact">Offerte aanvragen <span>→</span></a>
+
+        <a className="btn primary small nav-cta" href="#contact">Offerte aanvragen <span>→</span></a>
+
+        <button
+          className={`menu-toggle ${mobileMenuOpen ? 'open' : ''}`}
+          type="button"
+          aria-label={mobileMenuOpen ? 'Menu sluiten' : 'Menu openen'}
+          aria-expanded={mobileMenuOpen}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </header>
+
+      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-menu-inner shell">
+          <a href="#werkwijze" onClick={() => setMobileMenuOpen(false)}>Zo werkt het</a>
+          <a href="#bestickering" onClick={() => setMobileMenuOpen(false)}>Busbestickering</a>
+          <a href="#aanbod" onClick={() => setMobileMenuOpen(false)}>Bedrijfswagens</a>
+          <a href="#waarom" onClick={() => setMobileMenuOpen(false)}>Waarom VakLease</a>
+          <a href="#contact" onClick={() => setMobileMenuOpen(false)}>Klantenservice</a>
+          <a className="btn primary wide" href="#contact" onClick={() => setMobileMenuOpen(false)}>Offerte aanvragen →</a>
+        </div>
+      </div>
 
       <section className="hero hero-photo-layout">
         <div className="hero-bg-photo" aria-hidden="true">
