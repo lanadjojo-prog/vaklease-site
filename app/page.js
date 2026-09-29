@@ -60,7 +60,9 @@ export default function Home() {
             <div className="hero-speed s2"></div>
             <div className="hero-speed s3"></div>
             <img className="hero-van" src={VAN} alt="Professionele witte bedrijfswagen" />
+            <div className="hero-van-brand" aria-hidden="true"><i></i><strong>Vak</strong><span>Lease</span></div>
             <img className="hero-worker" src={WORKER} alt="Vakman in werkkleding" />
+            <div className="hero-worker-brand" aria-hidden="true"><i></i><strong>Vak</strong><span>Lease</span></div>
             <div className="mini-card m1"><strong>24u</strong><span>vaak duidelijkheid</span></div>
             <div className="mini-card m2"><strong>0%</strong><span>grote investering vooraf</span></div>
           </div>
@@ -82,25 +84,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="why" id="werkwijze">
-        <div className="shell why-grid">
-          <div data-reveal>
-            <span className="eyebrow">Waarom VakLease</span>
-            <h2>Leasen zoals het hoort. <span>Simpel en persoonlijk.</span></h2>
-            <p>Wij helpen vakmensen en ondernemers aan de juiste bedrijfswagen. Zonder gedoe, met heldere voorwaarden en persoonlijk advies.</p>
-            <a className="btn primary" href="#contact">Meer over ons →</a>
-          </div>
-          <div className="benefits">
-            {[
-              ['€','Geen grote investering','Rijd direct in een nieuwe bedrijfswagen.'],
-              ['▤','Ook zonder jaarcijfers','Vaak mogelijk, ook voor starters en zzp’ers.'],
-              ['◷','Snel duidelijkheid','Meestal binnen 24 uur een voorstel.'],
-              ['◎','Persoonlijk advies','Van vakmensen, voor vakmensen.']
-            ].map((b,i)=><div className="benefit" key={b[1]} data-reveal style={{transitionDelay:`${i*70}ms`}}><span className="icon">{b[0]}</span><div><h3>{b[1]}</h3><p>{b[2]}</p></div></div>)}
-          </div>
-        </div>
-      </section>
-
       <section className="wrap-section" id="bestickering">
         <div className="shell wrap-grid">
           <div className="wrap-visual before-after-card" data-reveal>
@@ -117,6 +100,25 @@ export default function Home() {
               <div><b>03</b><span><strong>Vrijblijvend voorstel</strong><small>Eerst zien hoe jouw bus eruit kan komen te zien.</small></span></div>
             </div>
             <a className="btn primary" href="#contact">Vraag design + leasevoorstel aan →</a>
+          </div>
+        </div>
+      </section>
+
+      <section className="why" id="werkwijze">
+        <div className="shell why-grid">
+          <div data-reveal>
+            <span className="eyebrow">Waarom VakLease</span>
+            <h2>Leasen zoals het hoort. <span>Simpel en persoonlijk.</span></h2>
+            <p>Wij helpen vakmensen en ondernemers aan de juiste bedrijfswagen. Zonder gedoe, met heldere voorwaarden en persoonlijk advies.</p>
+            <a className="btn primary" href="#contact">Meer over ons →</a>
+          </div>
+          <div className="benefits">
+            {[
+              ['€','Geen grote investering','Rijd direct in een nieuwe bedrijfswagen.'],
+              ['▤','Ook zonder jaarcijfers','Vaak mogelijk, ook voor starters en zzp’ers.'],
+              ['◷','Snel duidelijkheid','Meestal binnen 24 uur een voorstel.'],
+              ['◎','Persoonlijk advies','Van vakmensen, voor vakmensen.']
+            ].map((b,i)=><div className="benefit" key={b[1]} data-reveal style={{transitionDelay:`${i*70}ms`}}><span className="icon">{b[0]}</span><div><h3>{b[1]}</h3><p>{b[2]}</p></div></div>)}
           </div>
         </div>
       </section>
