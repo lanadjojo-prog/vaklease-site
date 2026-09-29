@@ -5,6 +5,7 @@ const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-lo
 const VAN = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-bus.png?v=1790686665';
 const WORKER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-vakman.png?v=1790680782';
 const BEFORE_AFTER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-before-after-bestickering.png?v=1790680791';
+const HERO_SCENE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-scene.jpg?v=1790690565';
 
 const vans = [
   {
@@ -57,37 +58,32 @@ export default function Home() {
         <a className="btn primary small" href="#contact">Offerte aanvragen <span>→</span></a>
       </header>
 
-      <section className="hero">
-        <div className="shell hero-grid">
+      <section className="hero hero-photo-layout">
+        <div className="shell hero-grid hero-grid-photo">
           <div className="hero-copy" data-reveal>
             <span className="eyebrow orange">Voor zzp’ers & vakmensen</span>
             <h1>De bedrijfswagen voor jouw <span>volgende klus.</span></h1>
             <p>Financial lease, ook voor starters. Snel geregeld, zonder gedoe.</p>
+
             <div className="actions">
               <a className="btn primary" href="#aanbod">Bekijk aanbod <span>→</span></a>
               <a className="btn ghost" href="#werkwijze">Hoe werkt het?</a>
             </div>
-            <div className="trust-row">
+
+            <div className="trust-row hero-trust">
               <div><b>✓ Zonder jaarcijfers</b><small>Ook voor starters</small></div>
               <div><b>✓ Snel duidelijkheid</b><small>Vaak binnen 24 uur</small></div>
               <div><b>✓ Persoonlijk advies</b><small>Van vakmensen, voor vakmensen</small></div>
             </div>
           </div>
 
-          <div className="visual hero-scene" data-reveal>
-            <div className="hero-panel"></div>
-            <div className="hero-speed s1"></div>
-            <div className="hero-speed s2"></div>
-            <div className="hero-speed s3"></div>
-            <img className="hero-van" src={VAN} alt="VakLease bedrijfswagen" />
-            <img className="hero-worker" src={WORKER} alt="Vakman in werkkleding" />
-            <div className="hero-worker-brand" aria-hidden="true"><i></i><strong>Vak</strong><span>Lease</span></div>
-            <div className="mini-card m1"><strong>24u</strong><span>vaak duidelijkheid</span></div>
-            <div className="mini-card m2"><strong>0%</strong><span>grote investering vooraf</span></div>
+          <div className="hero-photo-scene" data-reveal>
+            <div className="hero-photo-wrap">
+              <img src={HERO_SCENE} alt="VakLease bedrijfswagen met vakman" />
+            </div>
           </div>
         </div>
       </section>
-
 
       <section className="process-section" id="werkwijze">
         <div className="shell">
