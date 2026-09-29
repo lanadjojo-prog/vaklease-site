@@ -175,7 +175,8 @@ const mailConfig = {
   user: process.env.MAIL_USER || '',
   password: process.env.MAIL_PASSWORD || '',
   fromName: process.env.MAIL_FROM_NAME || 'VakLease',
-  resendApiKey: process.env.RESEND_API_KEY || ''
+  resendApiKey: process.env.RESEND_API_KEY || '',
+  resendReadApiKey: process.env.RESEND_READ_API_KEY || ''
 };
 
 function mailReady() {
@@ -242,6 +243,42 @@ async function sendOutboundMail({ to, subject, body }) {
   return { messageId: info.messageId || null, provider: 'smtp' };
 }
 
+async function resendRead(pathname) {
+  const key = mailConfig.resendReadApiKey;
+  if (!key) {
+    const err = new Error('Verzonden mail kan nog niet worden gelezen. Resend-leestoegang ontbreekt.');
+    err.status = 503;
+    throw err;
+  }
+
+  const response = await fetch(`https://api.resend.com${pathname}`, {
+    headers: { Authorization: `Bearer ${key}` }
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const err = new Error(data.message || `Resend API error (${response.status})`);
+    err.status = response.status === 401 || response.status === 403 ? 503 : 502;
+    throw err;
+  }
+  return data;
+}
+
+function stripHtml(html) {
+  return String(html || '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .trim();
+}
+
 function addressText(list) {
   if (!Array.isArray(list)) return '';
   return list.map(x => x.name ? `${x.name} <${x.address}>` : x.address).filter(Boolean).join(', ');
@@ -263,6 +300,7 @@ app.get('/api/health', async (req, res) => {
     mailConfigured: mailReady(),
     sendConfigured: sendReady(),
     sendProvider: mailConfig.resendApiKey ? 'resend' : 'smtp',
+    sentHistoryConfigured: Boolean(mailConfig.resendReadApiKey || pool),
     mailUser: mailConfig.user || null
   });
 });
@@ -273,6 +311,7 @@ app.get('/api/config', async (req, res) => {
     mailConfigured: mailReady(),
     sendConfigured: sendReady(),
     sendProvider: mailConfig.resendApiKey ? 'resend' : 'smtp',
+    sentHistoryConfigured: Boolean(mailConfig.resendReadApiKey || pool),
     mailbox: mailConfig.user || null,
     imapHost: mailConfig.imapHost,
     smtpHost: mailConfig.smtpHost
@@ -351,6 +390,26 @@ app.get('/api/inbox/:uid', async (req, res, next) => {
 
 app.get('/api/sent', async (req, res, next) => {
   try {
+    if (mailConfig.resendReadApiKey) {
+      const data = await resendRead('/emails?limit=100');
+      const accountEmails = Array.isArray(data.data) ? data.data : [];
+      const mailbox = String(mailConfig.user || '').toLowerCase();
+      const messages = accountEmails
+        .filter(m => !mailbox || String(m.from || '').toLowerCase().includes(mailbox))
+        .map(m => ({
+          id: m.id,
+          message_id: m.message_id || null,
+          from_email: m.from || '',
+          to_email: Array.isArray(m.to) ? m.to.join(', ') : (m.to || ''),
+          subject: m.subject || '(geen onderwerp)',
+          body_preview: m.last_event ? `Status: ${m.last_event}` : '',
+          occurred_at: m.created_at || null,
+          status: m.last_event || null,
+          source: 'resend'
+        }));
+      return res.json({ messages, source: 'resend' });
+    }
+
     const result = await dbQuery(
       `SELECT id, message_id, from_email, to_email, subject, body_preview, occurred_at
        FROM email_log
@@ -358,14 +417,36 @@ app.get('/api/sent', async (req, res, next) => {
        ORDER BY occurred_at DESC
        LIMIT 100`
     );
-    res.json({ messages: result.rows });
+    res.json({ messages: result.rows, source: 'database' });
   } catch (err) { next(err); }
 });
 
 app.get('/api/sent/:id', async (req, res, next) => {
-  const id = Number(req.params.id);
-  if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'Ongeldig bericht.' });
   try {
+    if (mailConfig.resendReadApiKey) {
+      const m = await resendRead('/emails/' + encodeURIComponent(req.params.id));
+      const mailbox = String(mailConfig.user || '').toLowerCase();
+      if (mailbox && !String(m.from || '').toLowerCase().includes(mailbox)) {
+        return res.status(404).json({ error: 'Verzonden bericht niet gevonden.' });
+      }
+      return res.json({
+        message: {
+          id: m.id,
+          message_id: m.message_id || null,
+          from_email: m.from || '',
+          to_email: Array.isArray(m.to) ? m.to.join(', ') : (m.to || ''),
+          subject: m.subject || '(geen onderwerp)',
+          body_preview: '',
+          body: m.text || stripHtml(m.html || ''),
+          occurred_at: m.created_at || null,
+          status: m.last_event || null,
+          source: 'resend'
+        }
+      });
+    }
+
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'Ongeldig bericht.' });
     const result = await dbQuery(
       `SELECT id, message_id, from_email, to_email, subject, body_preview, body, occurred_at
        FROM email_log
