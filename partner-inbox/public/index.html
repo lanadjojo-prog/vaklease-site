@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VakLease Partner Inbox</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brandmark">VL</div>
+        <div><strong>VakLease</strong><span>Partner Desk</span></div>
+      </div>
+      <nav>
+        <button class="nav active" data-view="inbox">Inbox <span id="mailBadge"></span></button>
+        <button class="nav" data-view="compose">Nieuwe mail</button>
+        <button class="nav" data-view="partners">Partners</button>
+        <button class="nav" data-view="templates">Templates</button>
+        <button class="nav" data-view="applications">Aanvragen</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="status-line"><i id="dbDot"></i><span id="dbStatus">Database controleren…</span></div>
+        <div class="status-line"><i id="mailDot"></i><span id="mailStatus">Mailbox controleren…</span></div>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow">VakLease workspace</p>
+          <h1 id="pageTitle">Inbox</h1>
+        </div>
+        <button class="primary" id="quickCompose">+ Nieuwe mail</button>
+      </header>
+
+      <section class="view active" id="view-inbox">
+        <div class="panel">
+          <div class="panel-head">
+            <div><h2>Inbox</h2><p>Recente berichten van je VakLease-mailbox.</p></div>
+            <button class="ghost" id="refreshInbox">Vernieuwen</button>
+          </div>
+          <div id="inboxState" class="empty">Inbox laden…</div>
+          <div id="messageList" class="message-list"></div>
+        </div>
+        <div class="panel message-preview" id="messagePreview">
+          <div class="empty">Selecteer een bericht om het hier te lezen.</div>
+        </div>
+      </section>
+
+      <section class="view" id="view-compose">
+        <div class="panel narrow">
+          <div class="panel-head">
+            <div><h2>Nieuwe mail</h2><p>Verstuur vanuit je VakLease-adres zodra de mailbox is gekoppeld.</p></div>
+          </div>
+          <form id="composeForm" class="form">
+            <label>Aan<input id="composeTo" name="to" type="email" placeholder="partner@leasemaatschappij.nl" required></label>
+            <label>Template<select id="composeTemplate"><option value="">Geen template</option></select></label>
+            <label>Onderwerp<input id="composeSubject" name="subject" type="text" required></label>
+            <label>Bericht<textarea id="composeBody" name="body" rows="14" required></textarea></label>
+            <input id="composePartnerId" type="hidden">
+            <div class="form-actions"><span id="sendStatus"></span><button class="primary" type="submit">Versturen</button></div>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" id="view-partners">
+        <div class="stats">
+          <div class="stat"><span>Prospects</span><strong id="statProspects">0</strong></div>
+          <div class="stat"><span>Benaderd</span><strong id="statContacted">0</strong></div>
+          <div class="stat"><span>Interesse</span><strong id="statInterested">0</strong></div>
+          <div class="stat"><span>Partner</span><strong id="statPartners">0</strong></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div><h2>Leasepartners</h2><p>Houd bij welke partijen je wilt benaderen en wat de status is.</p></div>
+            <button class="primary" id="addPartner">+ Partner toevoegen</button>
+          </div>
+          <div id="partnersState" class="empty">Partners laden…</div>
+          <div class="table-wrap">
+            <table id="partnersTable">
+              <thead><tr><th>Bedrijf</th><th>Contact</th><th>Status</th><th>Laatste contact</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-templates">
+        <div class="panel">
+          <div class="panel-head">
+            <div><h2>Mailtemplates</h2><p>Maak varianten voor partner-outreach en follow-ups.</p></div>
+            <button class="primary" id="addTemplate">+ Template</button>
+          </div>
+          <div id="templateList" class="cards"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-applications">
+        <div class="panel future">
+          <span class="pill">Fase 2 voorbereid</span>
+          <h2>Leaseaanvragen</h2>
+          <p>De database ondersteunt aanvragen en overdracht naar een specifieke leasepartner al. We zetten de workflow pas aan nadat bekend is welke gegevens, documenten en aflevermethode elke leverancier vereist.</p>
+          <div class="future-grid">
+            <div><strong>1</strong><span>Aanvraag ontvangen</span></div>
+            <div><strong>2</strong><span>Controleren & aanvullen</span></div>
+            <div><strong>3</strong><span>Matchen met partner</span></div>
+            <div><strong>4</strong><span>Doorzetten & volgen</span></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="partnerDialog">
+    <form method="dialog" id="partnerForm" class="modal-form">
+      <div class="dialog-head"><div><p class="eyebrow">CRM</p><h2>Partner toevoegen</h2></div><button class="icon" value="cancel">×</button></div>
+      <div class="two-col">
+        <label>Bedrijfsnaam<input name="company_name" required></label>
+        <label>Contactpersoon<input name="contact_name"></label>
+        <label>E-mail<input name="email" type="email"></label>
+        <label>Telefoon<input name="phone"></label>
+        <label>Website<input name="website"></label>
+        <label>Partnerprogramma URL<input name="partner_url"></label>
+      </div>
+      <label>Status<select name="status"><option value="prospect">Prospect</option><option value="contacted">Benaderd</option><option value="interested">Interesse</option><option value="partner">Partner</option><option value="rejected">Geen match</option></select></label>
+      <label>Notities<textarea name="notes" rows="4"></textarea></label>
+      <div class="form-actions"><button class="ghost" value="cancel">Annuleren</button><button class="primary" id="savePartner" value="default">Opslaan</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="templateDialog">
+    <form method="dialog" id="templateForm" class="modal-form">
+      <div class="dialog-head"><div><p class="eyebrow">Outreach</p><h2>Template opslaan</h2></div><button class="icon" value="cancel">×</button></div>
+      <label>Naam<input name="name" required></label>
+      <label>Onderwerp<input name="subject" required></label>
+      <label>Bericht<textarea name="body" rows="12" required></textarea></label>
+      <div class="form-actions"><button class="ghost" value="cancel">Annuleren</button><button class="primary" value="default">Opslaan</button></div>
+    </form>
+  </dialog>
+
+  <script src="/app.js"></script>
+</body>
+</html>
