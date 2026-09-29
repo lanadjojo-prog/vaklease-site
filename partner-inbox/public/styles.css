@@ -19,3 +19,23 @@ main{padding:34px 42px 60px;min-width:0}header{display:flex;align-items:center;j
 dialog{border:0;border-radius:18px;padding:0;width:min(680px,calc(100vw - 30px));box-shadow:0 30px 80px rgba(0,0,0,.25)}dialog::backdrop{background:rgba(7,18,14,.5)}.dialog-head{display:flex;justify-content:space-between;align-items:flex-start;padding:22px 24px 0}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:980px){.shell{grid-template-columns:1fr}.sidebar{position:relative;height:auto;padding:18px}.brand{padding-bottom:12px}.sidebar nav{display:flex;overflow:auto}.nav{white-space:nowrap}.sidebar-bottom{display:none}main{padding:24px 18px}.stats{grid-template-columns:repeat(2,1fr)}#view-inbox.active{grid-template-columns:1fr}.message-preview{min-height:380px}.future-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){header{align-items:flex-start;gap:14px}header .primary{display:none}h1{font-size:28px}.stats,.cards,.two-col,.future-grid{grid-template-columns:1fr}.panel-head{align-items:flex-start}.table-wrap{font-size:12px}}
+
+
+/* Sent mailbox */
+#view-sent.active{
+  display:grid;
+  grid-template-columns:minmax(420px,.9fr) minmax(380px,1.1fr);
+  gap:18px;
+}
+.msg-preview{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.45;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+@media(max-width:980px){
+  #view-sent.active{grid-template-columns:1fr}
+}
