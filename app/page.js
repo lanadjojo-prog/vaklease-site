@@ -7,10 +7,30 @@ const WORKER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-
 const BEFORE_AFTER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-before-after-bestickering.png?v=1790680791';
 
 const vans = [
-  ['Volkswagen Caddy', '€ 389', 'Compact & praktisch'],
-  ['Ford Transit Custom', '€ 459', 'Populair bij vakmensen'],
-  ['Mercedes-Benz Vito', '€ 529', 'Comfort & ruimte'],
-  ['Volkswagen Crafter', '€ 599', 'Voor het grotere werk']
+  {
+    name: 'Volkswagen Caddy',
+    price: '€ 389',
+    note: 'Compact & praktisch',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Volkswagen_Caddy_V_IMG_4850.jpg'
+  },
+  {
+    name: 'Ford Transit Custom',
+    price: '€ 459',
+    note: 'Populair bij vakmensen',
+    image: 'https://www.ford.co.uk/content/dam/guxeu/rhd/central/cvs/2023-transit-custom/dse-my2650/models/nameplate/ford-eu-transit_custom-Van-1000x667.jpg'
+  },
+  {
+    name: 'Mercedes-Benz Vito',
+    price: '€ 529',
+    note: 'Comfort & ruimte',
+    image: 'https://edge.dealerstudio.com.au/photo/40823979/photo/medium-e983d048084829c845359ead184940ff.jpg'
+  },
+  {
+    name: 'Volkswagen Crafter',
+    price: '€ 599',
+    note: 'Voor het grotere werk',
+    image: 'https://assets.nexuspointapex.co.uk/resize/2048/tenant_d9013b5a-4990-4f3e-beec-4e1fc85990eb/media/8253099/DE74CFZ_1.jpg'
+  }
 ];
 
 export default function Home() {
@@ -76,9 +96,12 @@ export default function Home() {
             <a href="#contact">Bekijk alle bedrijfswagens →</a>
           </div>
           <div className="cards">
-            {vans.map((v,i)=><article className="vehicle" key={v[0]} data-reveal style={{transitionDelay:`${i*70}ms`}}>
-              <div className="vehicle-image"><span className="badge">◉ Snel leverbaar</span><div className="mini-van"><span className="wheel w1"></span><span className="wheel w2"></span></div></div>
-              <h3>{v[0]}</h3><p className="muted">Diesel · Automaat</p><p className="muted">{v[2]}</p><small>vanaf</small><div className="price">{v[1]}<span>/mnd</span></div><a className="btn primary wide" href="#contact">Stel samen →</a>
+            {vans.map((v,i)=><article className="vehicle" key={v.name} data-reveal style={{transitionDelay:`${i*70}ms`}}>
+              <div className="vehicle-image">
+                <img src={v.image} alt={v.name} loading="lazy" />
+                <span className="badge">◉ Snel leverbaar</span>
+              </div>
+              <h3>{v.name}</h3><p className="muted">Diesel · Automaat</p><p className="muted">{v.note}</p><small>vanaf</small><div className="price">{v.price}<span>/mnd</span></div><a className="btn primary wide" href="#contact">Stel samen →</a>
             </article>)}
           </div>
         </div>
