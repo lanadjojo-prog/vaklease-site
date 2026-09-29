@@ -5,7 +5,7 @@ const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-lo
 const VAN = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-bus.png?v=1790686665';
 const WORKER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-vakman.png?v=1790680782';
 const BEFORE_AFTER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-before-after-bestickering.png?v=1790680791';
-const HERO_SCENE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-scene.jpg?v=1790690565';
+const HERO_SCENE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-netherlands-realistic.png?v=1790691711';
 
 const vans = [
   {
@@ -59,6 +59,11 @@ export default function Home() {
       </header>
 
       <section className="hero hero-photo-layout">
+        <div className="hero-bg-photo" aria-hidden="true">
+          <img src={HERO_SCENE} alt="" />
+        </div>
+        <div className="hero-bg-fade" aria-hidden="true"></div>
+
         <div className="shell hero-grid hero-grid-photo">
           <div className="hero-copy" data-reveal>
             <span className="eyebrow orange">Voor zzp’ers & vakmensen</span>
@@ -74,12 +79,6 @@ export default function Home() {
               <div><b>✓ Zonder jaarcijfers</b><small>Ook voor starters</small></div>
               <div><b>✓ Snel duidelijkheid</b><small>Vaak binnen 24 uur</small></div>
               <div><b>✓ Persoonlijk advies</b><small>Van vakmensen, voor vakmensen</small></div>
-            </div>
-          </div>
-
-          <div className="hero-photo-scene" data-reveal>
-            <div className="hero-photo-wrap">
-              <img src={HERO_SCENE} alt="VakLease bedrijfswagen met vakman" />
             </div>
           </div>
         </div>
