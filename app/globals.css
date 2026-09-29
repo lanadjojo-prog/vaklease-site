@@ -685,3 +685,94 @@ main{
     padding:42px 28px;
   }
 }
+
+/* Restore and upgrade the stronger original bus-branding section */
+.wrap-section{
+  padding:150px 0 158px;
+  background:
+    radial-gradient(circle at 12% 16%,rgba(255,122,26,.045),transparent 22%),
+    linear-gradient(180deg,#ffffff 0%,#f7f9fc 100%);
+}
+.wrap-grid{
+  grid-template-columns:1.06fr .94fr;
+  gap:94px;
+  align-items:center;
+}
+.wrap-visual.before-after-card{
+  min-height:0;
+}
+.before-after-card{
+  overflow:hidden;
+  border-radius:32px;
+  border:1px solid rgba(13,43,89,.07);
+  background:#fff;
+  box-shadow:0 26px 68px rgba(13,43,89,.085);
+}
+.before-after-card img{
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  object-position:center;
+  transform:scale(1);
+  transition:transform .65s cubic-bezier(.22,1,.36,1);
+}
+.before-after-card:hover img{
+  transform:scale(1.018);
+}
+.before-after-card .design-pill{
+  top:22px;
+  right:22px;
+  padding:11px 16px;
+  font-size:12px;
+  box-shadow:0 10px 26px rgba(255,122,26,.20);
+}
+.wrap-copy{
+  max-width:520px;
+}
+.wrap-copy h2{
+  max-width:520px;
+  margin-bottom:26px;
+}
+.wrap-copy>p{
+  max-width:500px;
+  line-height:1.75;
+  margin-bottom:4px;
+}
+.wrap-points{
+  margin:34px 0 38px;
+}
+.wrap-points>div{
+  padding:19px 0;
+}
+.wrap-points>div:last-child{
+  border-bottom:0;
+}
+.wrap-copy .btn{
+  margin-top:2px;
+}
+@media(max-width:900px){
+  .wrap-section{
+    padding:108px 0;
+  }
+  .wrap-grid{
+    grid-template-columns:1fr;
+    gap:52px;
+  }
+  .wrap-copy{
+    max-width:660px;
+  }
+}
+@media(max-width:700px){
+  .wrap-section{
+    padding:82px 0;
+  }
+  .before-after-card{
+    border-radius:24px;
+  }
+  .before-after-card .design-pill{
+    top:12px;
+    right:12px;
+  }
+}
