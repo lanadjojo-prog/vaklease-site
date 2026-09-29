@@ -48,10 +48,9 @@ export default function Home() {
       <header className="nav shell">
         <a className="brand image-brand" href="#"><img src={LOGO} alt="VakLease" /></a>
         <nav>
+          <a href="#bestickering">Busbestickering</a>
           <a href="#aanbod">Bedrijfswagens</a>
           <a href="#werkwijze">Financial lease</a>
-          <a href="#werkwijze">Hoe werkt het?</a>
-          <a href="#bestickering">Busbestickering</a>
           <a href="#contact">Klantenservice</a>
         </nav>
         <a className="btn primary small" href="#contact">Offerte aanvragen <span>→</span></a>
@@ -157,10 +156,36 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="shell footer">
-        <img className="footer-logo" src={LOGO} alt="VakLease" />
-        <span>Financial lease voor zzp’ers en vakmensen.</span>
-        <span>© 2026</span>
+      <footer className="footer">
+        <div className="footer-accent" aria-hidden="true"></div>
+        <div className="shell footer-grid">
+          <div className="footer-brand">
+            <img className="footer-logo" src={LOGO} alt="VakLease" />
+            <p>Financial lease voor zzp’ers en vakmensen. Snel geregeld, zonder gedoe.</p>
+            <a className="footer-cta" href="#contact">Vraag een voorstel aan →</a>
+          </div>
+
+          <div className="footer-col">
+            <h4>VakLease</h4>
+            <a href="#bestickering">Busbestickering</a>
+            <a href="#aanbod">Bedrijfswagens</a>
+            <a href="#werkwijze">Financial lease</a>
+            <a href="#contact">Contact</a>
+          </div>
+
+          <div className="footer-col">
+            <h4>Voor vakmensen</h4>
+            <span>Ook voor starters</span>
+            <span>Zonder grote investering vooraf</span>
+            <span>Vaak binnen 24 uur duidelijkheid</span>
+            <span>Persoonlijk advies</span>
+          </div>
+        </div>
+
+        <div className="shell footer-bottom">
+          <span>© 2026 VakLease</span>
+          <span>Financial lease voor zzp’ers & vakmensen</span>
+        </div>
       </footer>
     </main>
   );
