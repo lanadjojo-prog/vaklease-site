@@ -1445,3 +1445,141 @@ main{
     margin-top:14px;
   }
 }
+
+
+/* Full-width hero background: image runs behind nav, text fades into photo */
+.hero-photo-layout{
+  position:relative;
+  min-height:690px;
+  margin-top:-90px;
+  padding-top:90px;
+  overflow:hidden;
+  background:#fff;
+}
+.hero-bg-photo{
+  position:absolute;
+  inset:0;
+  z-index:0;
+}
+.hero-bg-photo img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center right;
+}
+.hero-bg-fade{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,
+      rgba(255,255,255,1) 0%,
+      rgba(255,255,255,.98) 24%,
+      rgba(255,255,255,.93) 34%,
+      rgba(255,255,255,.70) 46%,
+      rgba(255,255,255,.28) 58%,
+      rgba(255,255,255,0) 72%
+    ),
+    linear-gradient(180deg,
+      rgba(255,255,255,.04) 0%,
+      rgba(255,255,255,0) 70%
+    );
+}
+.hero-grid-photo{
+  position:relative;
+  z-index:2;
+  min-height:600px;
+  display:grid;
+  grid-template-columns:minmax(0,620px) 1fr;
+  align-items:center;
+  padding-top:54px;
+  padding-bottom:46px;
+}
+.hero-grid-photo .hero-copy{
+  max-width:610px;
+}
+.hero-grid-photo .hero-copy h1{
+  max-width:610px;
+}
+.hero-grid-photo .hero-copy p{
+  max-width:500px;
+}
+.hero-trust{
+  margin-top:18px;
+  padding:18px 0 0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+}
+.hero-trust div{
+  padding-left:0;
+}
+.hero-trust b{
+  display:block;
+  font-size:13px;
+  line-height:1.3;
+}
+.hero-trust small{
+  font-size:12px;
+  line-height:1.4;
+}
+
+/* Keep the existing nav floating above the hero image */
+.nav{
+  position:relative;
+  z-index:10;
+}
+
+@media(max-width:1100px){
+  .hero-photo-layout{
+    min-height:auto;
+  }
+  .hero-grid-photo{
+    min-height:560px;
+    grid-template-columns:minmax(0,560px) 1fr;
+  }
+  .hero-bg-fade{
+    background:
+      linear-gradient(90deg,
+        rgba(255,255,255,1) 0%,
+        rgba(255,255,255,.98) 30%,
+        rgba(255,255,255,.88) 43%,
+        rgba(255,255,255,.45) 58%,
+        rgba(255,255,255,0) 75%
+      );
+  }
+}
+@media(max-width:800px){
+  .hero-photo-layout{
+    margin-top:-76px;
+    padding-top:76px;
+  }
+  .hero-grid-photo{
+    min-height:620px;
+    display:block;
+    padding-top:52px;
+    padding-bottom:36px;
+  }
+  .hero-grid-photo .hero-copy{
+    max-width:100%;
+  }
+  .hero-bg-photo img{
+    object-position:66% center;
+  }
+  .hero-bg-fade{
+    background:
+      linear-gradient(180deg,
+        rgba(255,255,255,.98) 0%,
+        rgba(255,255,255,.96) 42%,
+        rgba(255,255,255,.72) 62%,
+        rgba(255,255,255,.18) 78%,
+        rgba(255,255,255,0) 100%
+      );
+  }
+  .hero-trust{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+}
