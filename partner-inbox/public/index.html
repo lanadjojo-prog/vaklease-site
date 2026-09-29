@@ -15,6 +15,7 @@
       </div>
       <nav>
         <button class="nav active" data-view="inbox">Inbox <span id="mailBadge"></span></button>
+        <button class="nav" data-view="sent">Verzonden</button>
         <button class="nav" data-view="compose">Nieuwe mail</button>
         <button class="nav" data-view="partners">Partners</button>
         <button class="nav" data-view="templates">Templates</button>
@@ -46,6 +47,20 @@
         </div>
         <div class="panel message-preview" id="messagePreview">
           <div class="empty">Selecteer een bericht om het hier te lezen.</div>
+        </div>
+      </section>
+
+      <section class="view" id="view-sent">
+        <div class="panel">
+          <div class="panel-head">
+            <div><h2>Verzonden</h2><p>Berichten die vanuit VakLease zijn verstuurd.</p></div>
+            <button class="ghost" id="refreshSent">Vernieuwen</button>
+          </div>
+          <div id="sentState" class="empty">Verzonden berichten laden…</div>
+          <div id="sentList" class="message-list"></div>
+        </div>
+        <div class="panel message-preview" id="sentPreview">
+          <div class="empty">Selecteer een verzonden bericht om het hier te lezen.</div>
         </div>
       </section>
 
