@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 
 const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-logo.png?v=1790680810';
-const VAN = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-professionele-bestelwagen.png?v=1790680774';
+const VAN = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-bus.png?v=1790686665';
 const WORKER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-vakman.png?v=1790680782';
 const BEFORE_AFTER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-before-after-bestickering.png?v=1790680791';
 
@@ -48,9 +48,10 @@ export default function Home() {
       <header className="nav shell">
         <a className="brand image-brand" href="#"><img src={LOGO} alt="VakLease" /></a>
         <nav>
+          <a href="#werkwijze">Zo werkt het</a>
           <a href="#bestickering">Busbestickering</a>
           <a href="#aanbod">Bedrijfswagens</a>
-          <a href="#werkwijze">Financial lease</a>
+          <a href="#waarom">Waarom VakLease</a>
           <a href="#contact">Klantenservice</a>
         </nav>
         <a className="btn primary small" href="#contact">Offerte aanvragen <span>→</span></a>
@@ -78,12 +79,41 @@ export default function Home() {
             <div className="hero-speed s1"></div>
             <div className="hero-speed s2"></div>
             <div className="hero-speed s3"></div>
-            <img className="hero-van" src={VAN} alt="Professionele witte bedrijfswagen" />
-            <div className="hero-van-brand" aria-hidden="true"><i></i><strong>Vak</strong><span>Lease</span></div>
+            <img className="hero-van" src={VAN} alt="VakLease bedrijfswagen" />
             <img className="hero-worker" src={WORKER} alt="Vakman in werkkleding" />
             <div className="hero-worker-brand" aria-hidden="true"><i></i><strong>Vak</strong><span>Lease</span></div>
             <div className="mini-card m1"><strong>24u</strong><span>vaak duidelijkheid</span></div>
             <div className="mini-card m2"><strong>0%</strong><span>grote investering vooraf</span></div>
+          </div>
+        </div>
+      </section>
+
+
+      <section className="process-section" id="werkwijze">
+        <div className="shell">
+          <div className="process-head" data-reveal>
+            <div>
+              <span className="eyebrow orange">Zo werkt het</span>
+              <h2>In 3 simpele stappen <span>rijd jij jouw bedrijfswagen.</span></h2>
+            </div>
+            <a href="#contact">Vraag direct een voorstel aan →</a>
+          </div>
+
+          <div className="process-steps">
+            {[
+              ['01','Aanvraag indienen','Vertel ons welke bedrijfswagen je zoekt en wat bij jouw onderneming past.','→'],
+              ['02','Snelle beoordeling','Wij bekijken de mogelijkheden en geven vaak binnen 24 uur duidelijkheid.','→'],
+              ['03','Rijden maar','Na akkoord regelen we de lease en kun jij snel de weg op.','✓']
+            ].map((step,i)=>
+              <article className="process-step" key={step[0]} data-reveal style={{transitionDelay:`${i*70}ms`}}>
+                <span className="process-number">{step[0]}</span>
+                <div>
+                  <h3>{step[1]}</h3>
+                  <p>{step[2]}</p>
+                </div>
+                <span className="process-arrow">{step[3]}</span>
+              </article>
+            )}
           </div>
         </div>
       </section>
@@ -126,7 +156,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="why" id="werkwijze">
+      <section className="why" id="waarom">
         <div className="shell why-grid">
           <div data-reveal>
             <span className="eyebrow">Waarom VakLease</span>
@@ -158,33 +188,56 @@ export default function Home() {
 
       <footer className="footer">
         <div className="footer-accent" aria-hidden="true"></div>
-        <div className="shell footer-grid">
-          <div className="footer-brand">
-            <img className="footer-logo" src={LOGO} alt="VakLease" />
-            <p>Financial lease voor zzp’ers en vakmensen. Snel geregeld, zonder gedoe.</p>
-            <a className="footer-cta" href="#contact">Vraag een voorstel aan →</a>
+        <div className="footer-shape footer-shape-one" aria-hidden="true"></div>
+        <div className="footer-shape footer-shape-two" aria-hidden="true"></div>
+
+        <div className="shell footer-main">
+          <div className="footer-lead">
+            <div className="footer-logo-card">
+              <img className="footer-logo" src={LOGO} alt="VakLease" />
+            </div>
+            <div>
+              <span className="footer-kicker">Voor zzp’ers & vakmensen</span>
+              <h3>Klaar voor jouw volgende bedrijfswagen?</h3>
+              <p>Financial lease, persoonlijk advies en desgewenst direct professioneel bestickerd.</p>
+            </div>
+            <a className="footer-cta" href="#contact">Vraag een voorstel aan <span>→</span></a>
           </div>
 
-          <div className="footer-col">
-            <h4>VakLease</h4>
-            <a href="#bestickering">Busbestickering</a>
-            <a href="#aanbod">Bedrijfswagens</a>
-            <a href="#werkwijze">Financial lease</a>
-            <a href="#contact">Contact</a>
+          <div className="footer-grid">
+            <div className="footer-brand-copy">
+              <strong>VakLease</strong>
+              <p>Een duidelijke route naar de juiste bedrijfswagen. Zonder onnodig gedoe.</p>
+            </div>
+
+            <div className="footer-col">
+              <h4>Direct naar</h4>
+              <a href="#werkwijze">Zo werkt het</a>
+              <a href="#bestickering">Busbestickering</a>
+              <a href="#aanbod">Bedrijfswagens</a>
+              <a href="#waarom">Waarom VakLease</a>
+            </div>
+
+            <div className="footer-col">
+              <h4>VakLease voordelen</h4>
+              <span>Ook voor starters</span>
+              <span>Vaak binnen 24 uur duidelijkheid</span>
+              <span>Persoonlijk advies</span>
+              <span>Lease + uitstraling in één traject</span>
+            </div>
+
+            <div className="footer-col">
+              <h4>Contact</h4>
+              <a href="#contact">Offerte aanvragen</a>
+              <span>Voor zzp’ers & vakmensen</span>
+              <span>Vrijblijvend advies</span>
+            </div>
           </div>
 
-          <div className="footer-col">
-            <h4>Voor vakmensen</h4>
-            <span>Ook voor starters</span>
-            <span>Zonder grote investering vooraf</span>
-            <span>Vaak binnen 24 uur duidelijkheid</span>
-            <span>Persoonlijk advies</span>
+          <div className="footer-bottom">
+            <span>© 2026 VakLease</span>
+            <span>Financial lease voor zzp’ers & vakmensen</span>
           </div>
-        </div>
-
-        <div className="shell footer-bottom">
-          <span>© 2026 VakLease</span>
-          <span>Financial lease voor zzp’ers & vakmensen</span>
         </div>
       </footer>
     </main>
