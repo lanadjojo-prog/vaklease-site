@@ -68,7 +68,7 @@ async function loadInbox() {
         <div class="msg-subject">${escapeHtml(m.subject)}</div>
       </button>
     `).join('');
-    $$('.message-row').forEach(row => row.addEventListener('click', () => openMessage(row.dataset.uid)));
+    $('#messageList [data-uid]').forEach(row => row.addEventListener('click', () => openMessage(row.dataset.uid)));
   } catch (err) {
     info.textContent = err.message;
   }
@@ -96,7 +96,10 @@ async function loadSent() {
         <div class="msg-preview">${escapeHtml(m.body_preview || '')}</div>
       </button>
     `).join('');
-    $('[data-sent-id]').forEach(row => row.addEventListener('click', () => openSent(row.dataset.sentId)));
+    $('#sentList [data-sent-id]').forEach(row => row.addEventListener('click', () => {
+      $('#sentList [data-sent-id]').forEach(item => item.classList.toggle('selected', item === row));
+      openSent(row.dataset.sentId);
+    }));
   } catch (err) {
     info.textContent = err.message;
   }
@@ -116,6 +119,9 @@ async function openSent(id) {
       <div class="mail-body"></div>
     `;
     pane.querySelector('.mail-body').textContent = m.body || m.body_preview || '(geen inhoud beschikbaar)';
+    if (window.matchMedia('(max-width: 980px)').matches) {
+      setTimeout(() => pane.scrollIntoView({ behavior: 'smooth', block: 'start' }), 40);
+    }
   } catch (err) {
     pane.innerHTML = '<div class="empty">' + escapeHtml(err.message) + '</div>';
   }
