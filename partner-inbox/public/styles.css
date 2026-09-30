@@ -356,3 +356,13 @@ dialog{border:0;border-radius:18px;padding:0;width:min(680px,calc(100vw - 30px))
 }
 
 #mailBadge:empty{display:none}
+
+.message-row.selected{
+  background:#eef6f2;
+  box-shadow:inset 3px 0 0 var(--brand);
+}
+@media(max-width:980px){
+  #sentPreview{
+    scroll-margin-top:125px;
+  }
+}
