@@ -68,7 +68,11 @@ async function loadInbox() {
         <div class="msg-subject">${escapeHtml(m.subject)}</div>
       </button>
     `).join('');
-    $('#messageList [data-uid]').forEach(row => row.addEventListener('click', () => openMessage(row.dataset.uid)));
+    list.onclick = event => {
+      const row = event.target.closest('[data-uid]');
+      if (!row || !list.contains(row)) return;
+      openMessage(row.dataset.uid);
+    };
   } catch (err) {
     info.textContent = err.message;
   }
@@ -96,10 +100,12 @@ async function loadSent() {
         <div class="msg-preview">${escapeHtml(m.body_preview || '')}</div>
       </button>
     `).join('');
-    $('#sentList [data-sent-id]').forEach(row => row.addEventListener('click', () => {
-      $('#sentList [data-sent-id]').forEach(item => item.classList.toggle('selected', item === row));
+    list.onclick = event => {
+      const row = event.target.closest('[data-sent-id]');
+      if (!row || !list.contains(row)) return;
+      list.querySelectorAll('[data-sent-id]').forEach(item => item.classList.toggle('selected', item === row));
       openSent(row.dataset.sentId);
-    }));
+    };
   } catch (err) {
     info.textContent = err.message;
   }
