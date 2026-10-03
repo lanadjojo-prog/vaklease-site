@@ -19,7 +19,9 @@
         <button class="nav" data-view="compose">Nieuwe mail</button>
         <button class="nav" data-view="partners">Partners</button>
         <button class="nav" data-view="templates">Templates</button>
-        <button class="nav" data-view="applications">Aanvragen</button>
+        <button class="nav" data-view="outreach">Lead Outreach</button>
+        <button class="nav" data-view="applications">Leads</button>
+        <button class="nav" data-view="quotes">Offertes</button>
       </nav>
       <div class="sidebar-bottom">
         <div class="status-line"><i id="dbDot"></i><span id="dbStatus">Database controleren…</span></div>
@@ -75,6 +77,7 @@
             <label>Onderwerp<input id="composeSubject" name="subject" type="text" required></label>
             <label>Bericht<textarea id="composeBody" name="body" rows="14" required></textarea></label>
             <input id="composePartnerId" type="hidden">
+            <input id="composeProspectId" type="hidden">
             <div class="form-actions"><span id="sendStatus"></span><button class="primary" type="submit">Versturen</button></div>
           </form>
         </div>
@@ -112,16 +115,89 @@
         </div>
       </section>
 
+      <section class="view" id="view-outreach">
+        <div class="stats">
+          <div class="stat"><span>Nieuw</span><strong id="outreachStatNew">0</strong></div>
+          <div class="stat"><span>Benaderd</span><strong id="outreachStatContacted">0</strong></div>
+          <div class="stat"><span>Reactie</span><strong id="outreachStatReplied">0</strong></div>
+          <div class="stat"><span>Geconverteerd</span><strong id="outreachStatConverted">0</strong></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div><h2>Lead Outreach</h2><p>Potentiële klanten verzamelen, benaderen, opvolgen en omzetten naar echte leads.</p></div>
+            <button class="primary" id="addProspect">+ Prospect</button>
+          </div>
+          <div class="lead-toolbar">
+            <input id="prospectSearch" type="search" placeholder="Zoek bedrijf, plaats, categorie…">
+            <select id="prospectFilter">
+              <option value="">Alle statussen</option>
+              <option value="new">Nieuw</option>
+              <option value="ready">Klaar voor outreach</option>
+              <option value="contacted">Benaderd</option>
+              <option value="follow_up">Opvolgen</option>
+              <option value="replied">Reactie</option>
+              <option value="qualified">Gekwalificeerd</option>
+              <option value="converted">Geconverteerd</option>
+              <option value="no_match">Geen match</option>
+            </select>
+          </div>
+          <div id="prospectsState" class="empty">Prospects laden…</div>
+          <div class="table-wrap">
+            <table id="prospectsTable">
+              <thead><tr><th>Bedrijf</th><th>Categorie / plaats</th><th>Status</th><th>Opvolging</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <section class="view" id="view-applications">
+        <div class="stats lead-stats">
+          <div class="stat"><span>Totaal leads</span><strong id="leadStatTotal">0</strong></div>
+          <div class="stat"><span>Actief</span><strong id="leadStatActive">0</strong></div>
+          <div class="stat"><span>Afgesloten</span><strong id="leadStatWon">0</strong></div>
+          <div class="stat money"><span>Verwacht</span><strong id="leadStatExpected">€ 0</strong></div>
+          <div class="stat money"><span>Verdiend</span><strong id="leadStatEarned">€ 0</strong></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div><h2>Leads</h2><p>Volg iedere aanvraag van eerste contact tot uitbetaling van je commissie.</p></div>
+            <button class="primary" id="addLead">+ Lead toevoegen</button>
+          </div>
+          <div class="lead-toolbar">
+            <input id="leadSearch" type="search" placeholder="Zoek naam, bedrijf, object…">
+            <select id="leadFilter">
+              <option value="">Alle statussen</option>
+              <option value="new">Nieuw</option>
+              <option value="contacted">Contact gelegd</option>
+              <option value="qualified">Gekwalificeerd</option>
+              <option value="quote_requested">Offerte aangevraagd</option>
+              <option value="submitted">Naar partner</option>
+              <option value="approved">Goedgekeurd</option>
+              <option value="won">Afgesloten</option>
+              <option value="lost">Verloren</option>
+            </select>
+          </div>
+          <div id="applicationsState" class="empty">Leads laden…</div>
+          <div class="table-wrap">
+            <table id="applicationsTable">
+              <thead><tr><th>Lead</th><th>Object</th><th>Status</th><th>Partner</th><th>Commissie</th><th>Uitbetaling</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-quotes">
         <div class="panel future">
-          <span class="pill">Fase 2 voorbereid</span>
-          <h2>Leaseaanvragen</h2>
-          <p>De database ondersteunt aanvragen en overdracht naar een specifieke leasepartner al. We zetten de workflow pas aan nadat bekend is welke gegevens, documenten en aflevermethode elke leverancier vereist.</p>
+          <span class="pill">Voorbereid</span>
+          <h2>Offertes</h2>
+          <p>De database is alvast voorbereid om offertes per lead en leasepartner vast te leggen. Zodra de exacte werkwijze met de leasepartner bekend is, kunnen we hier offertebedrag, looptijd, maandbedrag, aanbetaling, slottermijn en status tonen en offertes genereren.</p>
           <div class="future-grid">
-            <div><strong>1</strong><span>Aanvraag ontvangen</span></div>
-            <div><strong>2</strong><span>Controleren & aanvullen</span></div>
-            <div><strong>3</strong><span>Matchen met partner</span></div>
-            <div><strong>4</strong><span>Doorzetten & volgen</span></div>
+            <div><strong>1</strong><span>Lead selecteren</span></div>
+            <div><strong>2</strong><span>Partnerofferte vastleggen</span></div>
+            <div><strong>3</strong><span>Klantofferte genereren</span></div>
+            <div><strong>4</strong><span>Akkoord & commissie volgen</span></div>
           </div>
         </div>
       </section>
@@ -156,5 +232,54 @@
   </dialog>
 
   <script src="/app.js"></script>
+
+  <dialog id="prospectDialog">
+    <form method="dialog" id="prospectForm" class="modal-form">
+      <div class="dialog-head"><div><p class="eyebrow">Outreach</p><h2>Prospect toevoegen</h2></div><button class="icon" value="cancel">×</button></div>
+      <div class="two-col">
+        <label>Bedrijfsnaam<input name="company_name" required></label>
+        <label>Contactpersoon<input name="contact_name"></label>
+        <label>E-mail<input name="email" type="email"></label>
+        <label>Telefoon<input name="phone"></label>
+        <label>Website<input name="website"></label>
+        <label>Plaats<input name="city"></label>
+        <label>Categorie<input name="category" placeholder="Bijv. bouwbedrijf, installateur"></label>
+        <label>Bron<input name="source" placeholder="Google Maps, bedrijvengids…"></label>
+        <label class="full">Bron / pagina URL<input name="source_url" type="url"></label>
+        <label>Status<select name="status"><option value="new">Nieuw</option><option value="ready">Klaar voor outreach</option><option value="contacted">Benaderd</option><option value="follow_up">Opvolgen</option><option value="replied">Reactie</option><option value="qualified">Gekwalificeerd</option><option value="converted">Geconverteerd</option><option value="no_match">Geen match</option></select></label>
+        <label>Volgende opvolging<input name="next_followup_at" type="datetime-local"></label>
+      </div>
+      <label>Notities<textarea name="notes" rows="4"></textarea></label>
+      <div class="form-actions"><button class="ghost" value="cancel">Annuleren</button><button class="primary" type="submit" value="save">Opslaan</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="leadDialog">
+    <form method="dialog" id="leadForm" class="modal-form">
+      <input type="hidden" name="id">
+      <div class="dialog-head"><div><p class="eyebrow">CRM</p><h2 id="leadDialogTitle">Lead toevoegen</h2></div><button class="icon" value="cancel">×</button></div>
+      <div class="two-col">
+        <label>Naam<input name="applicant_name"></label>
+        <label>Bedrijf<input name="company_name"></label>
+        <label>E-mail<input name="email" type="email"></label>
+        <label>Telefoon<input name="phone"></label>
+        <label>KVK<input name="kvk"></label>
+        <label>Bron<select name="lead_source"><option value="website">Website</option><option value="outreach">Outreach</option><option value="referral">Referral</option><option value="partner">Partner</option><option value="manual">Handmatig</option></select></label>
+        <label>Categorie<input name="category" placeholder="Bus, minigraver, aanhanger…"></label>
+        <label>Koopprijs<input name="purchase_price" inputmode="decimal" placeholder="25000"></label>
+        <label class="full">Object / advertentie URL<input name="product_url" type="url"></label>
+        <label>Status<select name="status"><option value="new">Nieuw</option><option value="contacted">Contact gelegd</option><option value="qualified">Gekwalificeerd</option><option value="quote_requested">Offerte aangevraagd</option><option value="submitted">Naar partner</option><option value="approved">Goedgekeurd</option><option value="won">Afgesloten</option><option value="lost">Verloren</option></select></label>
+        <label>Leasepartner<select name="assigned_partner_id" id="leadPartnerSelect"><option value="">Nog niet gekoppeld</option></select></label>
+        <label>Verwachte commissie €<input name="expected_commission" inputmode="decimal" value="0"></label>
+        <label>Verdiende commissie €<input name="earned_commission" inputmode="decimal" value="0"></label>
+        <label>Uitbetaling<select name="commission_status"><option value="none">Nog niet van toepassing</option><option value="expected">Verwacht</option><option value="invoiced">Te factureren / gefactureerd</option><option value="paid">Uitbetaald</option></select></label>
+        <label>Volgende opvolging<input name="next_followup_at" type="datetime-local"></label>
+        <label class="full">Reden verloren<input name="lost_reason"></label>
+      </div>
+      <label>Notities<textarea name="notes" rows="4"></textarea></label>
+      <div class="form-actions"><button class="ghost" value="cancel">Annuleren</button><button class="primary" type="submit" value="save">Opslaan</button></div>
+    </form>
+  </dialog>
+
 </body>
 </html>
