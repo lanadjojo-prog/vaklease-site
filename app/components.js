@@ -87,7 +87,7 @@ export function Footer() {
           </div>
           <div>
             <h4>Financiering</h4>
-            <p>VakLease helpt bij de intake en werkt voor de financiering samen met PG Lease.</p>
+            <p>VakLease helpt je van eerste aanvraag tot een duidelijk financieringsvoorstel voor jouw bedrijfsmiddel.</p>
           </div>
         </div>
         <div className="vl-footer-bottom">
