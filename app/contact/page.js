@@ -25,7 +25,7 @@ export default function Page() {
             <span className="vl-kicker">Wat gebeurt hierna?</span>
             <div><b>01</b><span><strong>We controleren je aanvraag</strong><p>We kijken of de belangrijkste gegevens aanwezig zijn.</p></span></div>
             <div><b>02</b><span><strong>We nemen contact op</strong><p>Zo nodig vragen we aanvullende informatie over het object of je onderneming.</p></span></div>
-            <div><b>03</b><span><strong>Beoordeling via leasepartner</strong><p>Een complete aanvraag kan worden voorgelegd aan PG Lease voor financieringsbeoordeling.</p></span></div>
+            <div><b>03</b><span><strong>Financieringsbeoordeling</strong><p>Een complete aanvraag wordt beoordeeld op de financieringsmogelijkheden voor het gekozen bedrijfsmiddel.</p></span></div>
             <div className="vl-contact-note"><strong>Nog geen object gevonden?</strong><p>Geen probleem. Kies een categorie en omschrijf wat je zoekt.</p></div>
           </aside>
         </div>
