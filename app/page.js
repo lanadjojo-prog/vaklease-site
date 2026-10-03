@@ -104,10 +104,10 @@ export default function Home() {
         <div className="vl-shell vl-partner-grid">
           <div>
             <span className="vl-kicker vl-kicker-dark">Eén route voor je zakelijke lease</span>
-            <h2>VakLease vooraan. PG Lease voor de financiering.</h2>
+            <h2>Van aanvraag naar een passend financieringsvoorstel.</h2>
           </div>
           <div>
-            <p>VakLease richt zich op ondernemers die snel een bedrijfswagen, machine of aanhanger willen financieren. Wij verzorgen de intake en begeleiden de aanvraag; de financieringsbeoordeling loopt via onze gespecialiseerde leasepartner PG Lease.</p>
+            <p>VakLease richt zich op ondernemers die snel een bedrijfswagen, machine of aanhanger willen financieren. Wij verzorgen de intake, begeleiden de aanvraag en zorgen dat je duidelijkheid krijgt over de financieringsmogelijkheden.</p>
             <a className="vl-text-link vl-text-link-light" href="/contact/">Bespreek je aanvraag →</a>
           </div>
         </div>
