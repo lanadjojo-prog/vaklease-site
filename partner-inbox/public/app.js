@@ -1,4 +1,4 @@
-const state = { partners: [], templates: [], config: null };
+const state = { partners: [], templates: [], prospects: [], applications: [], quotes: [], config: null };
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -21,10 +21,13 @@ function go(view) {
   $('#view-' + view).classList.add('active');
   $('#pageTitle').textContent = {
     inbox:'Inbox', sent:'Verzonden', compose:'Nieuwe mail', partners:'Partners',
-    templates:'Templates', applications:'Aanvragen'
+    templates:'Templates', outreach:'Lead Outreach', applications:'Leads', quotes:'Offertes'
   }[view] || 'VakLease';
   if (view === 'inbox') loadInbox();
   if (view === 'sent') loadSent();
+  if (view === 'outreach') loadProspects();
+  if (view === 'applications') loadApplications();
+  if (view === 'quotes') loadQuotes();
 }
 
 $$('.nav').forEach(b => b.addEventListener('click', () => go(b.dataset.view)));
@@ -204,6 +207,7 @@ function composeForPartner(id) {
   if (!p) return;
   $('#composeTo').value = p.email || '';
   $('#composePartnerId').value = p.id;
+  $('#composeProspectId').value = '';
   go('compose');
 }
 
@@ -270,11 +274,20 @@ $('#composeForm').addEventListener('submit', async e => {
       body: $('#composeBody').value,
       partnerId: $('#composePartnerId').value || null
     })});
+    const prospectId = $('#composeProspectId').value;
+    if (prospectId) {
+      await api('/api/prospects/' + prospectId, {
+        method:'PATCH',
+        body:JSON.stringify({status:'contacted', last_contacted_at:new Date().toISOString()})
+      }).catch(() => {});
+    }
     status.textContent = 'Verzonden';
     e.currentTarget.reset();
     $('#composePartnerId').value = '';
+    $('#composeProspectId').value = '';
     setTimeout(() => { status.textContent = ''; go('sent'); }, 700);
     loadPartners();
+    if (prospectId) loadProspects();
   } catch (err) {
     status.textContent = err.message;
   }
@@ -293,8 +306,301 @@ $('#templateForm').addEventListener('submit', async e => {
   } catch (err) { alert(err.message); }
 });
 
+
+const euro = new Intl.NumberFormat('nl-NL', { style:'currency', currency:'EUR', maximumFractionDigits:2 });
+
+function prospectStatusLabel(status) {
+  return {
+    new:'Nieuw', ready:'Klaar voor outreach', contacted:'Benaderd', follow_up:'Opvolgen',
+    replied:'Reactie', qualified:'Gekwalificeerd', converted:'Geconverteerd', no_match:'Geen match'
+  }[status] || status;
+}
+
+function leadStatusLabel(status) {
+  return {
+    new:'Nieuw', contacted:'Contact gelegd', qualified:'Gekwalificeerd',
+    quote_requested:'Offerte aangevraagd', submitted:'Naar partner',
+    approved:'Goedgekeurd', won:'Afgesloten', lost:'Verloren'
+  }[status] || status;
+}
+
+function commissionStatusLabel(status) {
+  return { none:'—', expected:'Verwacht', invoiced:'Te factureren', paid:'Uitbetaald' }[status] || status || '—';
+}
+
+function formatFollowup(value) {
+  if (!value) return '—';
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString('nl-NL', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+function toLocalInput(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0,16);
+}
+
+function prospectMatches(p) {
+  const q = ($('#prospectSearch')?.value || '').trim().toLowerCase();
+  const status = $('#prospectFilter')?.value || '';
+  if (status && p.status !== status) return false;
+  if (!q) return true;
+  return [p.company_name,p.contact_name,p.email,p.city,p.category,p.source].some(v => String(v || '').toLowerCase().includes(q));
+}
+
+async function loadProspects() {
+  const marker = $('#prospectsState');
+  if (!marker) return;
+  try {
+    const data = await api('/api/prospects');
+    state.prospects = data.prospects || [];
+    renderProspects();
+  } catch (err) {
+    marker.style.display = 'block';
+    marker.textContent = err.message;
+  }
+}
+
+function renderProspects() {
+  const marker = $('#prospectsState');
+  const body = $('#prospectsTable tbody');
+  if (!marker || !body) return;
+  const rows = state.prospects.filter(prospectMatches);
+  marker.style.display = rows.length ? 'none' : 'block';
+  marker.textContent = state.prospects.length ? 'Geen prospects binnen dit filter.' : 'Nog geen prospects toegevoegd.';
+  body.innerHTML = rows.map(p => `
+    <tr>
+      <td><span class="company">${escapeHtml(p.company_name)}</span><span class="sub">${escapeHtml(p.contact_name || p.email || '')}</span></td>
+      <td>${escapeHtml(p.category || '—')}<span class="sub">${escapeHtml(p.city || p.source || '')}</span></td>
+      <td><select class="status-select" data-prospect-status="${p.id}">
+        ${['new','ready','contacted','follow_up','replied','qualified','converted','no_match'].map(x => `<option value="${x}" ${x===p.status?'selected':''}>${prospectStatusLabel(x)}</option>`).join('')}
+      </select></td>
+      <td>${escapeHtml(formatFollowup(p.next_followup_at))}</td>
+      <td class="row-actions">
+        ${p.email ? `<button class="mail-action" data-mail-prospect="${p.id}">Mail</button>` : ''}
+        ${p.status !== 'converted' ? `<button class="ghost small" data-convert-prospect="${p.id}">→ Lead</button>` : `<span class="mini-ok">Lead ✓</span>`}
+      </td>
+    </tr>
+  `).join('');
+
+  const count = status => state.prospects.filter(p => p.status === status).length;
+  $('#outreachStatNew').textContent = count('new') + count('ready');
+  $('#outreachStatContacted').textContent = count('contacted') + count('follow_up');
+  $('#outreachStatReplied').textContent = count('replied') + count('qualified');
+  $('#outreachStatConverted').textContent = count('converted');
+
+  $$('[data-prospect-status]').forEach(select => select.addEventListener('change', async () => {
+    try {
+      await api('/api/prospects/' + select.dataset.prospectStatus, {method:'PATCH',body:JSON.stringify({status:select.value})});
+      await loadProspects();
+    } catch (err) { alert(err.message); }
+  }));
+  $$('[data-mail-prospect]').forEach(btn => btn.addEventListener('click', () => composeForProspect(btn.dataset.mailProspect)));
+  $$('[data-convert-prospect]').forEach(btn => btn.addEventListener('click', async () => {
+    try {
+      await api('/api/prospects/' + btn.dataset.convertProspect + '/convert', {method:'POST',body:'{}'});
+      await Promise.all([loadProspects(), loadApplications()]);
+      go('applications');
+    } catch (err) { alert(err.message); }
+  }));
+}
+
+function composeForProspect(id) {
+  const p = state.prospects.find(x => String(x.id) === String(id));
+  if (!p) return;
+  $('#composeTo').value = p.email || '';
+  $('#composePartnerId').value = '';
+  $('#composeProspectId').value = p.id;
+  go('compose');
+}
+
+$('#addProspect')?.addEventListener('click', () => $('#prospectDialog').showModal());
+$('#prospectSearch')?.addEventListener('input', renderProspects);
+$('#prospectFilter')?.addEventListener('change', renderProspects);
+
+$('#prospectForm')?.addEventListener('submit', async e => {
+  if (e.submitter?.value === 'cancel') return;
+  e.preventDefault();
+  const obj = Object.fromEntries(new FormData(e.currentTarget).entries());
+  if (obj.next_followup_at) obj.next_followup_at = new Date(obj.next_followup_at).toISOString();
+  else obj.next_followup_at = null;
+  try {
+    await api('/api/prospects', {method:'POST',body:JSON.stringify(obj)});
+    $('#prospectDialog').close();
+    e.currentTarget.reset();
+    await loadProspects();
+  } catch (err) { alert(err.message); }
+});
+
+function leadMatches(a) {
+  const q = ($('#leadSearch')?.value || '').trim().toLowerCase();
+  const status = $('#leadFilter')?.value || '';
+  if (status && a.status !== status) return false;
+  if (!q) return true;
+  const vr = a.vehicle_request || {};
+  return [a.applicant_name,a.company_name,a.email,a.phone,vr.category,vr.object_description,vr.product_url].some(v => String(v || '').toLowerCase().includes(q));
+}
+
+async function loadApplications() {
+  const marker = $('#applicationsState');
+  if (!marker) return;
+  try {
+    const data = await api('/api/applications');
+    state.applications = data.applications || [];
+    renderApplications();
+  } catch (err) {
+    marker.style.display = 'block';
+    marker.textContent = err.message;
+  }
+}
+
+function renderLeadStats() {
+  const apps = state.applications;
+  const active = apps.filter(a => !['won','lost'].includes(a.status)).length;
+  const won = apps.filter(a => a.status === 'won').length;
+  const expected = apps.reduce((n,a) => n + Number(a.expected_commission || 0), 0);
+  const earned = apps.reduce((n,a) => n + Number(a.earned_commission || 0), 0);
+  $('#leadStatTotal').textContent = apps.length;
+  $('#leadStatActive').textContent = active;
+  $('#leadStatWon').textContent = won;
+  $('#leadStatExpected').textContent = euro.format(expected);
+  $('#leadStatEarned').textContent = euro.format(earned);
+}
+
+function renderApplications() {
+  const marker = $('#applicationsState');
+  const body = $('#applicationsTable tbody');
+  if (!marker || !body) return;
+  const rows = state.applications.filter(leadMatches);
+  marker.style.display = rows.length ? 'none' : 'block';
+  marker.textContent = state.applications.length ? 'Geen leads binnen dit filter.' : 'Nog geen leads.';
+  body.innerHTML = rows.map(a => {
+    const vr = a.vehicle_request || {};
+    const partner = state.partners.find(p => String(p.id) === String(a.assigned_partner_id));
+    const objectText = vr.category || vr.object_description || '—';
+    const commission = Number(a.earned_commission || 0) > 0 ? euro.format(a.earned_commission) : euro.format(a.expected_commission || 0);
+    return `
+      <tr>
+        <td><span class="company">${escapeHtml(a.company_name || a.applicant_name || 'Onbekend')}</span><span class="sub">${escapeHtml(a.applicant_name || a.email || '')}</span></td>
+        <td>${escapeHtml(objectText)}${vr.purchase_price ? `<span class="sub">${escapeHtml(String(vr.purchase_price))}</span>` : ''}</td>
+        <td><span class="status-chip status-${escapeHtml(a.status)}">${escapeHtml(leadStatusLabel(a.status))}</span></td>
+        <td>${escapeHtml(partner?.company_name || '—')}</td>
+        <td><strong>${escapeHtml(commission)}</strong><span class="sub">${Number(a.earned_commission || 0) > 0 ? 'verdiend' : 'verwacht'}</span></td>
+        <td><span class="status-chip pay-${escapeHtml(a.commission_status || 'none')}">${escapeHtml(commissionStatusLabel(a.commission_status))}</span></td>
+        <td><button class="ghost small" data-edit-lead="${a.id}">Open</button></td>
+      </tr>
+    `;
+  }).join('');
+  renderLeadStats();
+  $$('[data-edit-lead]').forEach(btn => btn.addEventListener('click', () => openLeadDialog(btn.dataset.editLead)));
+}
+
+function refreshLeadPartnerOptions(selected = '') {
+  const select = $('#leadPartnerSelect');
+  if (!select) return;
+  select.innerHTML = '<option value="">Nog niet gekoppeld</option>' + state.partners.map(p =>
+    `<option value="${p.id}" ${String(selected)===String(p.id)?'selected':''}>${escapeHtml(p.company_name)}</option>`
+  ).join('');
+}
+
+function openLeadDialog(id = '') {
+  const form = $('#leadForm');
+  form.reset();
+  form.elements.id.value = '';
+  $('#leadDialogTitle').textContent = id ? 'Lead bewerken' : 'Lead toevoegen';
+  const a = state.applications.find(x => String(x.id) === String(id));
+  refreshLeadPartnerOptions(a?.assigned_partner_id || '');
+  if (a) {
+    const vr = a.vehicle_request || {};
+    form.elements.id.value = a.id;
+    form.elements.applicant_name.value = a.applicant_name || '';
+    form.elements.company_name.value = a.company_name || '';
+    form.elements.email.value = a.email || '';
+    form.elements.phone.value = a.phone || '';
+    form.elements.kvk.value = a.kvk || '';
+    form.elements.lead_source.value = a.lead_source || 'manual';
+    form.elements.category.value = vr.category || '';
+    form.elements.purchase_price.value = vr.purchase_price || '';
+    form.elements.product_url.value = vr.product_url || '';
+    form.elements.status.value = a.status || 'new';
+    form.elements.assigned_partner_id.value = a.assigned_partner_id || '';
+    form.elements.expected_commission.value = a.expected_commission || 0;
+    form.elements.earned_commission.value = a.earned_commission || 0;
+    form.elements.commission_status.value = a.commission_status || 'none';
+    form.elements.next_followup_at.value = toLocalInput(a.next_followup_at);
+    form.elements.lost_reason.value = a.lost_reason || '';
+    form.elements.notes.value = a.notes || '';
+  } else {
+    form.elements.lead_source.value = 'manual';
+    form.elements.status.value = 'new';
+    form.elements.commission_status.value = 'none';
+  }
+  $('#leadDialog').showModal();
+}
+
+$('#addLead')?.addEventListener('click', () => openLeadDialog());
+$('#leadSearch')?.addEventListener('input', renderApplications);
+$('#leadFilter')?.addEventListener('change', renderApplications);
+
+$('#leadForm')?.addEventListener('submit', async e => {
+  if (e.submitter?.value === 'cancel') return;
+  e.preventDefault();
+  const form = e.currentTarget;
+  const v = Object.fromEntries(new FormData(form).entries());
+  const existing = state.applications.find(x => String(x.id) === String(v.id));
+  const vehicle_request = {
+    ...(existing?.vehicle_request || {}),
+    category: v.category || '',
+    product_url: v.product_url || '',
+    purchase_price: v.purchase_price || '',
+    source: v.lead_source || 'manual'
+  };
+  const common = {
+    applicant_name:v.applicant_name || null,
+    company_name:v.company_name || null,
+    email:v.email || null,
+    phone:v.phone || null,
+    kvk:v.kvk || null,
+    vehicle_request,
+    status:v.status || 'new'
+  };
+  const tracking = {
+    lead_source:v.lead_source || 'manual',
+    assigned_partner_id:v.assigned_partner_id || null,
+    expected_commission:Number(String(v.expected_commission || '0').replace(',','.')) || 0,
+    earned_commission:Number(String(v.earned_commission || '0').replace(',','.')) || 0,
+    commission_status:v.commission_status || 'none',
+    next_followup_at:v.next_followup_at ? new Date(v.next_followup_at).toISOString() : null,
+    lost_reason:v.lost_reason || null,
+    notes:v.notes || null,
+    vehicle_request
+  };
+  try {
+    let id = v.id;
+    if (id) {
+      await api('/api/applications/' + id, {method:'PATCH',body:JSON.stringify({...common,...tracking})});
+    } else {
+      const created = await api('/api/applications', {method:'POST',body:JSON.stringify(common)});
+      id = created.application.id;
+      await api('/api/applications/' + id, {method:'PATCH',body:JSON.stringify(tracking)});
+    }
+    $('#leadDialog').close();
+    await loadApplications();
+  } catch (err) { alert(err.message); }
+});
+
+async function loadQuotes() {
+  try {
+    const data = await api('/api/quotes');
+    state.quotes = data.quotes || [];
+  } catch {}
+}
+
 (async function init() {
   await loadConfig();
   await Promise.allSettled([loadPartners(), loadTemplates()]);
+  await Promise.allSettled([loadProspects(), loadApplications(), loadQuotes()]);
   loadInbox();
 })();
