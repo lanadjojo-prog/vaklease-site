@@ -25,6 +25,64 @@ app.use(helmet({
 app.use(express.json({ limit: '1mb' }));
 app.use('/api', rateLimit({ windowMs: 60 * 1000, max: 180 }));
 
+const publicApplicationLimiter = rateLimit({ windowMs: 60 * 1000, max: 15 });
+
+function setPublicCors(req, res) {
+  const origin = req.headers.origin || '';
+  const allowed = new Set([
+    'https://vaklease.nl',
+    'https://www.vaklease.nl',
+    'https://vaklease-site.onrender.com',
+    'http://localhost:3000'
+  ]);
+  if (allowed.has(origin)) res.set('Access-Control-Allow-Origin', origin);
+  res.set('Vary', 'Origin');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+}
+
+app.options('/api/public-applications', (req, res) => {
+  setPublicCors(req, res);
+  res.sendStatus(204);
+});
+
+app.post('/api/public-applications', publicApplicationLimiter, async (req, res, next) => {
+  setPublicCors(req, res);
+  const a = req.body || {};
+  const email = String(a.email || '').trim();
+  const phone = String(a.phone || '').trim();
+  const consent = Boolean(a.consent);
+
+  if (!consent) return res.status(400).json({ error: 'Toestemming is vereist.' });
+  if (!email && !phone) return res.status(400).json({ error: 'Vul een e-mailadres of telefoonnummer in.' });
+
+  const request = {
+    category: String(a.category || '').slice(0, 80),
+    product_url: String(a.product_url || '').slice(0, 1000),
+    purchase_price: String(a.purchase_price || '').slice(0, 80),
+    object_description: String(a.object_description || '').slice(0, 1000),
+    source: String(a.source || 'website').slice(0, 80)
+  };
+
+  try {
+    const result = await dbQuery(
+      `INSERT INTO lease_applications (applicant_name, company_name, email, phone, kvk, vehicle_request, status, consent_at)
+       VALUES ($1,$2,$3,$4,$5,$6::jsonb,'new',NOW()) RETURNING id, created_at`,
+      [
+        String(a.applicant_name || '').trim().slice(0, 160) || null,
+        String(a.company_name || '').trim().slice(0, 200) || null,
+        email.slice(0, 240) || null,
+        phone.slice(0, 80) || null,
+        String(a.kvk || '').trim().slice(0, 40) || null,
+        JSON.stringify(request)
+      ]
+    );
+    res.status(201).json({ ok: true, application: result.rows[0] });
+  } catch (err) {
+    next(err);
+  }
+});
+
 function configured(name) {
   return Boolean(process.env[name] && String(process.env[name]).trim());
 }
@@ -37,7 +95,7 @@ function safeEqual(a, b) {
 }
 
 function auth(req, res, next) {
-  if (req.path === '/api/health') return next();
+  if (req.path === '/api/health' || req.path === '/api/public-applications') return next();
 
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASSWORD;
