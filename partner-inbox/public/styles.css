@@ -366,3 +366,101 @@ dialog{border:0;border-radius:18px;padding:0;width:min(680px,calc(100vw - 30px))
     scroll-margin-top:125px;
   }
 }
+
+
+/* ===== VakLease Lead CRM ===== */
+.lead-toolbar{
+  display:flex;
+  gap:10px;
+  padding:14px 18px;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:#fbfcfb;
+}
+.lead-toolbar input,
+.lead-toolbar select{
+  min-height:42px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  padding:9px 11px;
+  font:inherit;
+}
+.lead-toolbar input{flex:1;min-width:180px}
+.lead-toolbar select{min-width:190px}
+.lead-stats{grid-template-columns:repeat(5,1fr)}
+.stat.money strong{font-size:22px}
+.row-actions{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.ghost.small,.mail-action{min-height:36px;padding:8px 10px;font-size:12px}
+.status-chip{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#eef2f0;
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.status-new{background:#eef2f0}
+.status-contacted,.status-quote_requested{background:#fff4d8}
+.status-qualified,.status-submitted{background:#e7f2ff}
+.status-approved{background:#e7f8ef}
+.status-won,.pay-paid{background:#daf5e6;color:#17663a}
+.status-lost{background:#fde9e7;color:#9b2d23}
+.pay-expected{background:#fff4d8}
+.pay-invoiced{background:#e7f2ff}
+.pay-none{background:#f1f3f2;color:#66716c}
+.mini-ok{font-size:12px;font-weight:700;color:#26744a}
+.modal-form .full{grid-column:1 / -1}
+#prospectsTable td,
+#applicationsTable td{vertical-align:middle}
+#applicationsTable .sub,
+#prospectsTable .sub{display:block;margin-top:3px;color:var(--muted);font-size:12px}
+
+@media(max-width:1100px){
+  .lead-stats{grid-template-columns:repeat(3,1fr)}
+}
+
+@media(max-width:760px){
+  .lead-toolbar{display:grid;grid-template-columns:1fr;padding:12px}
+  .lead-toolbar input,.lead-toolbar select{width:100%;min-width:0}
+  .lead-stats{grid-template-columns:1fr 1fr}
+
+  #prospectsTable,
+  #prospectsTable tbody,
+  #prospectsTable tr,
+  #prospectsTable td,
+  #applicationsTable,
+  #applicationsTable tbody,
+  #applicationsTable tr,
+  #applicationsTable td{
+    display:block;
+    width:100%;
+  }
+  #prospectsTable thead,
+  #applicationsTable thead{display:none}
+  #prospectsTable tbody,
+  #applicationsTable tbody{padding:10px}
+  #prospectsTable tr,
+  #applicationsTable tr{
+    margin-bottom:10px;
+    padding:14px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:#fff;
+  }
+  #prospectsTable td,
+  #applicationsTable td{
+    border:0;
+    padding:5px 0;
+  }
+  #prospectsTable .status-select{width:100%;min-height:42px}
+  .row-actions{justify-content:stretch;padding-top:10px!important}
+  .row-actions button{flex:1}
+}
+
+@media(max-width:420px){
+  .lead-stats{grid-template-columns:1fr}
+}
