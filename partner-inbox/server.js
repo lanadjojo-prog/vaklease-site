@@ -10,6 +10,7 @@ const { simpleParser } = require('mailparser');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
+app.set('trust proxy', 1);
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -131,10 +132,71 @@ app.use(auth);
 app.use(express.static(path.join(__dirname, 'public')));
 
 const hasDatabase = configured('DATABASE_URL');
+const hasSupabase = configured('SUPABASE_URL') && configured('SUPABASE_PUBLISHABLE_KEY') && configured('CRM_API_KEY');
+
 const pool = hasDatabase ? new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false }
 }) : null;
+
+const supabase = {
+  url: String(process.env.SUPABASE_URL || '').replace(/\/$/, ''),
+  key: String(process.env.SUPABASE_PUBLISHABLE_KEY || ''),
+  crmKey: String(process.env.CRM_API_KEY || '')
+};
+
+function databaseConfigured() {
+  return Boolean(pool || hasSupabase);
+}
+
+async function supabaseRest(resource, options = {}) {
+  if (!hasSupabase) {
+    const err = new Error('Database is nog niet gekoppeld.');
+    err.status = 503;
+    throw err;
+  }
+  const response = await fetch(`${supabase.url}/rest/v1/${resource}`, {
+    method: options.method || 'GET',
+    headers: {
+      apikey: supabase.key,
+      Authorization: `Bearer ${supabase.key}`,
+      'x-app-api-key': supabase.crmKey,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...(options.prefer ? { Prefer: options.prefer } : {}),
+      ...(options.headers || {})
+    },
+    body: options.body === undefined ? undefined : JSON.stringify(options.body)
+  });
+  const text = await response.text();
+  let data = null;
+  try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+  if (!response.ok) {
+    const err = new Error(data?.message || data?.error || `Database API error (${response.status})`);
+    err.status = response.status >= 400 && response.status < 500 ? response.status : 502;
+    throw err;
+  }
+  return data;
+}
+
+async function restInsert(table, row, { upsert = false, conflict = '' } = {}) {
+  const suffix = conflict ? `?on_conflict=${encodeURIComponent(conflict)}` : '';
+  const data = await supabaseRest(table + suffix, {
+    method: 'POST',
+    prefer: upsert ? 'resolution=merge-duplicates,return=representation' : 'return=representation',
+    body: row
+  });
+  return Array.isArray(data) ? data[0] : data;
+}
+
+async function restPatch(table, id, patch) {
+  const data = await supabaseRest(`${table}?id=eq.${encodeURIComponent(id)}&select=*`, {
+    method: 'PATCH',
+    prefer: 'return=representation',
+    body: patch
+  });
+  return Array.isArray(data) ? data[0] : data;
+}
 
 async function initDatabase() {
   if (!pool) return;
@@ -192,6 +254,17 @@ async function initDatabase() {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
 
+    ALTER TABLE lease_applications
+      ADD COLUMN IF NOT EXISTS lead_source TEXT NOT NULL DEFAULT 'website',
+      ADD COLUMN IF NOT EXISTS lead_source_detail TEXT,
+      ADD COLUMN IF NOT EXISTS notes TEXT,
+      ADD COLUMN IF NOT EXISTS assigned_partner_id BIGINT REFERENCES partners(id) ON DELETE SET NULL,
+      ADD COLUMN IF NOT EXISTS expected_commission NUMERIC(12,2) NOT NULL DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS earned_commission NUMERIC(12,2) NOT NULL DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS commission_status TEXT NOT NULL DEFAULT 'none',
+      ADD COLUMN IF NOT EXISTS next_followup_at TIMESTAMPTZ,
+      ADD COLUMN IF NOT EXISTS lost_reason TEXT;
+
     CREATE TABLE IF NOT EXISTS application_handoffs (
       id BIGSERIAL PRIMARY KEY,
       application_id BIGINT NOT NULL REFERENCES lease_applications(id) ON DELETE CASCADE,
@@ -202,6 +275,26 @@ async function initDatabase() {
       sent_at TIMESTAMPTZ,
       response_at TIMESTAMPTZ,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS lead_prospects (
+      id BIGSERIAL PRIMARY KEY,
+      company_name TEXT NOT NULL,
+      contact_name TEXT,
+      email TEXT,
+      phone TEXT,
+      website TEXT,
+      category TEXT,
+      city TEXT,
+      source TEXT,
+      source_url TEXT,
+      status TEXT NOT NULL DEFAULT 'new',
+      notes TEXT,
+      last_contacted_at TIMESTAMPTZ,
+      next_followup_at TIMESTAMPTZ,
+      linked_application_id BIGINT REFERENCES lease_applications(id) ON DELETE SET NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `);
 
@@ -217,12 +310,102 @@ async function initDatabase() {
 }
 
 async function dbQuery(text, params = []) {
-  if (!pool) {
+  if (pool) return pool.query(text, params);
+  if (!hasSupabase) {
     const err = new Error('Database is nog niet gekoppeld.');
     err.status = 503;
     throw err;
   }
-  return pool.query(text, params);
+
+  const q = String(text).replace(/\s+/g, ' ').trim();
+
+  if (q.startsWith('SELECT id, message_id, from_email, to_email, subject, body_preview, occurred_at FROM email_log')) {
+    const rows = await supabaseRest('email_log?select=id,message_id,from_email,to_email,subject,body_preview,occurred_at&direction=eq.outbound&order=occurred_at.desc&limit=100');
+    return { rows: rows || [] };
+  }
+  if (q.startsWith('SELECT id, message_id, from_email, to_email, subject, body_preview, body, occurred_at FROM email_log')) {
+    const rows = await supabaseRest(`email_log?select=id,message_id,from_email,to_email,subject,body_preview,body,occurred_at&id=eq.${encodeURIComponent(params[0])}&direction=eq.outbound&limit=1`);
+    return { rows: rows || [] };
+  }
+  if (q.startsWith('INSERT INTO email_log')) {
+    const row = await restInsert('email_log', {
+      direction: 'outbound',
+      partner_id: params[0] || null,
+      message_id: params[1] || null,
+      from_email: params[2] || null,
+      to_email: params[3] || null,
+      subject: params[4] || null,
+      body_preview: params[5] || null,
+      body: params[6] || null
+    });
+    return { rows: row ? [row] : [] };
+  }
+  if (q.startsWith('UPDATE partners SET last_contacted_at = NOW()')) {
+    const row = await restPatch('partners', params[0], { last_contacted_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+    return { rows: row ? [row] : [] };
+  }
+  if (q === 'SELECT * FROM partners ORDER BY created_at DESC') {
+    const rows = await supabaseRest('partners?select=*&order=created_at.desc');
+    return { rows: rows || [] };
+  }
+  if (q.startsWith('INSERT INTO partners')) {
+    const row = await restInsert('partners', {
+      company_name: params[0],
+      contact_name: params[1],
+      email: params[2],
+      phone: params[3],
+      website: params[4],
+      partner_url: params[5],
+      status: params[6],
+      notes: params[7]
+    });
+    return { rows: row ? [row] : [] };
+  }
+  if (q.startsWith('UPDATE partners SET ')) {
+    const section = q.split('UPDATE partners SET ')[1].split(', updated_at = NOW() WHERE')[0];
+    const fields = section.split(',').map(x => x.trim().split('=')[0].trim());
+    const patch = Object.fromEntries(fields.map((field, i) => [field, params[i]]));
+    patch.updated_at = new Date().toISOString();
+    const row = await restPatch('partners', params[params.length - 1], patch);
+    return { rows: row ? [row] : [] };
+  }
+  if (q === 'SELECT * FROM templates ORDER BY name') {
+    const rows = await supabaseRest('templates?select=*&order=name.asc');
+    return { rows: rows || [] };
+  }
+  if (q.startsWith('INSERT INTO templates')) {
+    const row = await restInsert('templates', {
+      name: params[0],
+      subject: params[1],
+      body: params[2],
+      updated_at: new Date().toISOString()
+    }, { upsert: true, conflict: 'name' });
+    return { rows: row ? [row] : [] };
+  }
+  if (q === 'SELECT * FROM lease_applications ORDER BY created_at DESC LIMIT 100') {
+    const rows = await supabaseRest('lease_applications?select=*&order=created_at.desc&limit=100');
+    return { rows: rows || [] };
+  }
+  if (q.startsWith('INSERT INTO lease_applications')) {
+    const request = typeof params[5] === 'string' ? JSON.parse(params[5] || '{}') : (params[5] || {});
+    const isPublic = params.length === 6;
+    const row = await restInsert('lease_applications', {
+      applicant_name: params[0],
+      company_name: params[1],
+      email: params[2],
+      phone: params[3],
+      kvk: params[4],
+      vehicle_request: request,
+      status: isPublic ? 'new' : (params[6] || 'new'),
+      consent_at: isPublic ? new Date().toISOString() : (params[7] || null),
+      lead_source: request.source || (isPublic ? 'website' : 'manual')
+    });
+    return { rows: row ? [row] : [] };
+  }
+
+  const err = new Error('Deze databasebewerking wordt nog niet ondersteund.');
+  err.status = 500;
+  throw err;
 }
 
 const mailConfig = {
@@ -349,11 +532,16 @@ app.get('/api/health', async (req, res) => {
       await pool.query('SELECT 1');
       db = true;
     } catch {}
+  } else if (hasSupabase) {
+    try {
+      await supabaseRest('partners?select=id&limit=1');
+      db = true;
+    } catch {}
   }
   res.json({
     ok: true,
     app: 'vaklease-partner-inbox',
-    databaseConfigured: hasDatabase,
+    databaseConfigured: databaseConfigured(),
     databaseConnected: db,
     mailConfigured: mailReady(),
     sendConfigured: sendReady(),
@@ -365,7 +553,7 @@ app.get('/api/health', async (req, res) => {
 
 app.get('/api/config', async (req, res) => {
   res.json({
-    databaseConfigured: hasDatabase,
+    databaseConfigured: databaseConfigured(),
     mailConfigured: mailReady(),
     sendConfigured: sendReady(),
     sendProvider: mailConfig.resendApiKey ? 'resend' : 'smtp',
@@ -525,14 +713,14 @@ app.post('/api/send', async (req, res, next) => {
   try {
     const info = await sendOutboundMail({ to, subject, body });
 
-    if (pool) {
-      await pool.query(
+    if (databaseConfigured()) {
+      await dbQuery(
         `INSERT INTO email_log (direction, partner_id, message_id, from_email, to_email, subject, body_preview, body)
          VALUES ('outbound', $1, $2, $3, $4, $5, $6, $7)`,
         [partnerId || null, info.messageId || null, mailConfig.user, String(to).trim(), String(subject).trim(), String(body).slice(0, 500), String(body)]
       );
       if (partnerId) {
-        await pool.query('UPDATE partners SET last_contacted_at = NOW(), updated_at = NOW() WHERE id = $1', [partnerId]);
+        await dbQuery('UPDATE partners SET last_contacted_at = NOW(), updated_at = NOW() WHERE id = $1', [partnerId]);
       }
     }
 
@@ -627,6 +815,108 @@ app.post('/api/applications', async (req, res, next) => {
       ]
     );
     res.status(201).json({ application: result.rows[0] });
+  } catch (err) { next(err); }
+});
+
+
+app.get('/api/prospects', async (req, res, next) => {
+  try {
+    const rows = await supabaseRest('lead_prospects?select=*&order=created_at.desc&limit=500');
+    res.json({ prospects: rows || [] });
+  } catch (err) { next(err); }
+});
+
+app.post('/api/prospects', async (req, res, next) => {
+  const p = req.body || {};
+  if (!p.company_name) return res.status(400).json({ error: 'Bedrijfsnaam is verplicht.' });
+  try {
+    const prospect = await restInsert('lead_prospects', {
+      company_name: String(p.company_name).trim().slice(0, 200),
+      contact_name: String(p.contact_name || '').trim().slice(0, 160) || null,
+      email: String(p.email || '').trim().slice(0, 240) || null,
+      phone: String(p.phone || '').trim().slice(0, 80) || null,
+      website: String(p.website || '').trim().slice(0, 500) || null,
+      category: String(p.category || '').trim().slice(0, 100) || null,
+      city: String(p.city || '').trim().slice(0, 120) || null,
+      source: String(p.source || '').trim().slice(0, 120) || null,
+      source_url: String(p.source_url || '').trim().slice(0, 1000) || null,
+      status: p.status || 'new',
+      notes: String(p.notes || '').slice(0, 3000) || null,
+      next_followup_at: p.next_followup_at || null
+    });
+    res.status(201).json({ prospect });
+  } catch (err) { next(err); }
+});
+
+app.patch('/api/prospects/:id', async (req, res, next) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'Ongeldige prospect.' });
+  const allowed = ['company_name','contact_name','email','phone','website','category','city','source','source_url','status','notes','last_contacted_at','next_followup_at','linked_application_id'];
+  const patch = {};
+  for (const key of allowed) if (Object.prototype.hasOwnProperty.call(req.body || {}, key)) patch[key] = req.body[key] === '' ? null : req.body[key];
+  patch.updated_at = new Date().toISOString();
+  try {
+    const prospect = await restPatch('lead_prospects', id, patch);
+    if (!prospect) return res.status(404).json({ error: 'Prospect niet gevonden.' });
+    res.json({ prospect });
+  } catch (err) { next(err); }
+});
+
+app.post('/api/prospects/:id/convert', async (req, res, next) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'Ongeldige prospect.' });
+  try {
+    const prospects = await supabaseRest(`lead_prospects?select=*&id=eq.${encodeURIComponent(id)}&limit=1`);
+    const p = prospects?.[0];
+    if (!p) return res.status(404).json({ error: 'Prospect niet gevonden.' });
+    if (p.linked_application_id) return res.json({ application_id: p.linked_application_id });
+
+    const application = await restInsert('lease_applications', {
+      applicant_name: p.contact_name || null,
+      company_name: p.company_name,
+      email: p.email || null,
+      phone: p.phone || null,
+      vehicle_request: { category: p.category || '', product_url: p.source_url || '', source: 'outreach' },
+      status: 'qualified',
+      lead_source: 'outreach',
+      lead_source_detail: p.source || null,
+      notes: p.notes || null
+    });
+    await restPatch('lead_prospects', id, {
+      status: 'converted',
+      linked_application_id: application.id,
+      updated_at: new Date().toISOString()
+    });
+    res.status(201).json({ application });
+  } catch (err) { next(err); }
+});
+
+app.patch('/api/applications/:id', async (req, res, next) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'Ongeldige lead.' });
+  const allowed = ['applicant_name','company_name','email','phone','kvk','vehicle_request','status','lead_source','lead_source_detail','notes','assigned_partner_id','expected_commission','earned_commission','commission_status','next_followup_at','lost_reason'];
+  const patch = {};
+  for (const key of allowed) {
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, key)) {
+      let value = req.body[key];
+      if (value === '') value = null;
+      if (['expected_commission','earned_commission'].includes(key)) value = value === null ? 0 : Number(value || 0);
+      if (key === 'assigned_partner_id' && value !== null) value = Number(value);
+      patch[key] = value;
+    }
+  }
+  patch.updated_at = new Date().toISOString();
+  try {
+    const application = await restPatch('lease_applications', id, patch);
+    if (!application) return res.status(404).json({ error: 'Lead niet gevonden.' });
+    res.json({ application });
+  } catch (err) { next(err); }
+});
+
+app.get('/api/quotes', async (req, res, next) => {
+  try {
+    const rows = await supabaseRest('quotes?select=*&order=created_at.desc&limit=200');
+    res.json({ quotes: rows || [] });
   } catch (err) { next(err); }
 });
 
