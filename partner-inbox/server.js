@@ -529,22 +529,32 @@ async function researchCompany(website) {
 function scoreLeaseProspect(category, text) {
   const hay = String(text || '').toLowerCase();
   let score = ({
-    'Grondverzet & infra': 48,
-    'Bouw & aannemers': 42,
-    'Installatie & techniek': 40,
-    'Groen & buitenwerk': 40,
+    'Grondverzet & infra': 52,
+    'Bouw & aannemers': 40,
+    'Installatie & techniek': 38,
+    'Groen & buitenwerk': 36,
     'Transport & service': 38,
-    'Onderhoud & facilitair': 34
-  })[category] || 30;
+    'Onderhoud & facilitair': 32
+  })[category] || 28;
   const reasons = [`Branchefit: ${category}`];
+  const strongAssetTerms = new Set([
+    'graafmachine','minigraver','shovel','hoogwerker','grondverzet','machinepark','materieel',
+    'loonwerk','aanhanger','kippers','tractor','bestelbus','bedrijfswagen','wagenpark','servicebus','montagebus'
+  ]);
+  let strongAssetSignal = category === 'Grondverzet & infra';
   for (const [term, points] of LEASE_SIGNAL_WEIGHTS) {
     if (hay.includes(term)) {
       score += points;
+      if (strongAssetTerms.has(term)) strongAssetSignal = true;
       reasons.push(`+${points} signaal: ${term}`);
     }
   }
+  if (!strongAssetSignal) {
+    score = Math.min(score, 54);
+    reasons.push('Score begrensd: nog geen expliciet voertuig/materieel-signaal');
+  }
   score = Math.max(0, Math.min(100, score));
-  return { score, reason: reasons.slice(0, 8).join(' · ') };
+  return { score, reason: reasons.slice(0, 9).join(' · '), strongAssetSignal };
 }
 
 function buildLeaseOutreach(company, category) {
@@ -571,15 +581,17 @@ async function discoverBusinesses(query, region, limit) {
 function dailySearchPlan(settings) {
   const regions = Array.isArray(settings?.target_regions) && settings.target_regions.length
     ? settings.target_regions : ['Breda','Tilburg','Eindhoven','Den Bosch','Oosterhout','Roosendaal','Nederland'];
-  const all = [];
-  for (const target of LEAD_MACHINE_TARGETS) {
-    for (const query of target.queries) {
-      for (const region of regions) all.push({ category: target.category, query, region });
-    }
-  }
   const day = Math.floor(Date.now() / 86400000);
-  const offset = all.length ? (day * 17) % all.length : 0;
-  return all.slice(offset).concat(all.slice(0, offset));
+  const plan = [];
+  const maxSteps = Math.max(60, LEAD_MACHINE_TARGETS.length * regions.length * 2);
+  for (let step = 0; step < maxSteps; step++) {
+    const target = LEAD_MACHINE_TARGETS[(day + step) % LEAD_MACHINE_TARGETS.length];
+    const query = target.queries[(day * 3 + step) % target.queries.length];
+    const region = regions[(day * 5 + step * 2) % regions.length];
+    const key = `${target.category}|${query}|${region}`;
+    if (!plan.some(x => x.key === key)) plan.push({ key, category: target.category, query, region });
+  }
+  return plan;
 }
 
 async function updateMachineRun(id, patch) {
