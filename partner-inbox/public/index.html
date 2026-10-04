@@ -124,6 +124,10 @@
           </div>
           <div class="machine-actions">
             <span class="machine-live"><i id="machineDot"></i><span id="machineState">Status laden…</span></span>
+            <label class="autopilot-control">
+              <input type="checkbox" id="autopilotToggle">
+              <span><strong>Autopilot</strong><small id="autopilotInfo">max. 30 per 24 uur</small></span>
+            </label>
             <button class="primary" id="runLeadMachine">Nu zoekronde starten</button>
           </div>
         </div>
@@ -243,8 +247,6 @@
     </form>
   </dialog>
 
-  <script src="/app.js"></script>
-
   <dialog id="leadDialog">
     <form method="dialog" id="leadForm" class="modal-form">
       <input type="hidden" name="id">
@@ -278,6 +280,8 @@
       <div id="prospectDetailBody" class="prospect-detail"></div>
     </div>
   </dialog>
+
+  <script src="/app.js"></script>
 
 </body>
 </html>
