@@ -464,3 +464,103 @@ dialog{border:0;border-radius:18px;padding:0;width:min(680px,calc(100vw - 30px))
 @media(max-width:420px){
   .lead-stats{grid-template-columns:1fr}
 }
+
+
+/* ===== VakLease Lead Machine ===== */
+.machine-hero{
+  display:flex;
+  justify-content:space-between;
+  gap:24px;
+  align-items:center;
+  padding:24px;
+  margin-bottom:16px;
+}
+.machine-hero h2{margin:2px 0 8px}
+.machine-hero p{margin:0;color:var(--muted);max-width:760px;line-height:1.55}
+.machine-actions{display:flex;flex-direction:column;gap:10px;align-items:flex-end;min-width:210px}
+.machine-live{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.machine-live i{
+  width:10px;height:10px;border-radius:50%;background:#98a19d;display:inline-block;
+}
+.machine-live i.ok{background:#2d9d62;box-shadow:0 0 0 4px rgba(45,157,98,.12)}
+.machine-live i.working{background:#d59a21;box-shadow:0 0 0 4px rgba(213,154,33,.12);animation:pulseDot 1.2s infinite}
+.machine-live i.bad{background:#c64f44}
+@keyframes pulseDot{50%{opacity:.35}}
+.machine-summary{
+  padding:12px 18px;
+  border-top:1px solid var(--line);
+  background:#f7faf8;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+.text-bad{color:#a33830}
+.score-badge{
+  display:inline-flex;
+  min-width:42px;
+  height:34px;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  font-weight:800;
+  font-size:13px;
+}
+.score-high{background:#daf5e6;color:#17663a}
+.score-mid{background:#fff4d8;color:#7a5815}
+.score-low{background:#eef2f0;color:#59645f}
+.machine-ready_for_review{background:#e7f2ff;color:#245d8f}
+.machine-research{background:#fff4d8;color:#7a5815}
+.machine-no_contact{background:#f1f3f2;color:#66716c}
+.machine-contacted{background:#e7f8ef;color:#236a43}
+.machine-replied,.machine-converted{background:#daf5e6;color:#17663a}
+.prospect-detail{padding:0 18px 20px}
+.detail-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:18px;
+}
+.detail-grid>div{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  background:#fbfcfb;
+}
+.detail-grid span{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
+.detail-grid strong{font-size:14px}
+.detail-section{padding:14px 0;border-top:1px solid var(--line)}
+.detail-section h3{font-size:14px;margin:0 0 8px}
+.detail-section p{margin:0 0 6px;line-height:1.55}
+.draft-subject{
+  font-weight:800;
+  border:1px solid var(--line);
+  border-bottom:0;
+  border-radius:10px 10px 0 0;
+  padding:11px 12px;
+  background:#f8faf9;
+}
+.draft-body{
+  margin:0;
+  white-space:pre-wrap;
+  font:inherit;
+  line-height:1.55;
+  border:1px solid var(--line);
+  border-radius:0 0 10px 10px;
+  padding:14px 12px;
+  background:#fff;
+  max-height:330px;
+  overflow:auto;
+}
+#prospectDetailDialog{max-width:760px;width:calc(100vw - 30px)}
+#runLeadMachine:disabled{opacity:.6;cursor:wait}
+
+@media(max-width:760px){
+  .machine-hero{display:block;padding:18px 16px}
+  .machine-actions{align-items:stretch;margin-top:16px;min-width:0}
+  .machine-live{justify-content:flex-start}
+  .detail-grid{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:420px){
+  .detail-grid{grid-template-columns:1fr}
+}
