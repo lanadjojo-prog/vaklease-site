@@ -563,6 +563,47 @@ function buildLeaseOutreach(company, category) {
   return { subject, body };
 }
 
+async function autoSendPermissionedProspects(limit = 10) {
+  if (!sendReady() || !hasSupabase) return 0;
+  const rows = await supabaseRest(
+    'lead_prospects?select=*&status=eq.ready_for_review&permission_status=in.(consented,existing_customer,inbound_request)&order=score.desc&limit=' + Math.max(1, Math.min(limit, 25))
+  );
+  let sent = 0;
+  for (const prospect of rows || []) {
+    if (!prospect.email || !prospect.outreach_subject || !prospect.outreach_body) continue;
+    try {
+      const info = await sendOutboundMail({
+        to: prospect.email,
+        subject: prospect.outreach_subject,
+        body: prospect.outreach_body
+      });
+      await restInsert('email_log', {
+        direction: 'outbound',
+        partner_id: null,
+        message_id: info.messageId || null,
+        from_email: mailConfig.user || null,
+        to_email: prospect.email,
+        subject: prospect.outreach_subject,
+        body_preview: String(prospect.outreach_body).slice(0, 500),
+        body: prospect.outreach_body
+      });
+      await restPatch('lead_prospects', prospect.id, {
+        status: 'contacted',
+        last_contacted_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+      sent += 1;
+    } catch (err) {
+      await restPatch('lead_prospects', prospect.id, {
+        status: 'send_failed',
+        notes: 'Automatisch verzenden mislukt: ' + String(err.message || err).slice(0, 500),
+        updated_at: new Date().toISOString()
+      }).catch(() => {});
+    }
+  }
+  return sent;
+}
+
 async function discoverBusinesses(query, region, limit) {
   const response = await fetch(leadMachineConfig.discoveryUrl, {
     method: 'POST',
@@ -684,10 +725,11 @@ async function runLeadMachine(mode = 'manual') {
       await updateMachineRun(run.id, { ...counters, last_message: `${item.category}: ${item.query} in ${item.region}` });
     }
 
+    counters.auto_sent = await autoSendPermissionedProspects(Math.max(1, Math.min(10, counters.queued_for_review || 1)));
     const result = {
       status: 'completed',
       ...counters,
-      last_message: `Klaar: ${counters.qualified} relevante prospects, ${counters.queued_for_review} met mailconcept klaar.`,
+      last_message: `Klaar: ${counters.qualified} relevante prospects, ${counters.queued_for_review} met mailconcept klaar, ${counters.auto_sent} toegestaan automatisch verzonden.`,
       finished_at: new Date().toISOString()
     };
     await updateMachineRun(run.id, result);
@@ -710,6 +752,14 @@ async function runLeadMachine(mode = 'manual') {
 async function runLeadMachineIfDue() {
   if (!machineReady() || leadMachineRunning) return;
   try {
+    const interrupted = await supabaseRest('lead_machine_runs?select=id&status=eq.running&order=started_at.desc&limit=10');
+    for (const row of interrupted || []) {
+      await restPatch('lead_machine_runs', row.id, {
+        status: 'interrupted',
+        last_message: 'Vorige run werd onderbroken door een herstart/deploy.',
+        finished_at: new Date().toISOString()
+      }).catch(() => {});
+    }
     const settingsRows = await supabaseRest('lead_machine_settings?select=*&id=eq.1&limit=1');
     const settings = settingsRows?.[0];
     if (!settings?.enabled || !settings?.auto_run_on_start) return;
