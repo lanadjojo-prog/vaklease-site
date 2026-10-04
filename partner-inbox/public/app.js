@@ -361,6 +361,17 @@ function renderLeadMachineStatus() {
   $('#machineState').textContent = !data.configured
     ? 'Niet volledig geconfigureerd'
     : data.running ? 'Zoekronde draait' : 'Automatisch zoeken actief';
+
+  const autopilot = $('#autopilotToggle');
+  if (autopilot) {
+    autopilot.checked = Boolean(data.settings?.auto_send_enabled);
+    autopilot.disabled = !data.configured;
+  }
+  const autoInfo = $('#autopilotInfo');
+  if (autoInfo) {
+    const max = Math.min(30, Number(data.settings?.daily_send_limit || 30));
+    autoInfo.textContent = `${Number(data.auto_sent_last_24h || 0)}/${max} automatisch verzonden in 24u`;
+  }
   const run = data.latest_run;
   const summary = $('#machineRunSummary');
   if (summary) {
@@ -428,6 +439,43 @@ function renderProspects() {
   $$('[data-view-prospect]').forEach(btn => btn.addEventListener('click', () => openProspectDetail(btn.dataset.viewProspect)));
 }
 
+async function saveProspectDraft(id, closeAfter = false) {
+  const subject = $('#prospectSubject')?.value?.trim() || '';
+  const body = $('#prospectBody')?.value?.trim() || '';
+  const permission_status = $('#prospectPermission')?.value || 'unknown';
+  if (!subject || !body) throw new Error('Onderwerp en mailtekst zijn verplicht.');
+  const data = await api('/api/prospects/' + id, {
+    method:'PATCH',
+    body:JSON.stringify({outreach_subject:subject, outreach_body:body, permission_status})
+  });
+  const index = state.prospects.findIndex(x => String(x.id) === String(id));
+  if (index >= 0 && data.prospect) state.prospects[index] = data.prospect;
+  renderProspects();
+  if (closeAfter) $('#prospectDetailDialog').close();
+  return data.prospect;
+}
+
+async function sendProspectNow(id) {
+  const subject = $('#prospectSubject')?.value?.trim() || '';
+  const body = $('#prospectBody')?.value?.trim() || '';
+  if (!subject || !body) return alert('Onderwerp en mailtekst zijn verplicht.');
+  if (!confirm('Deze mail nu versturen naar deze prospect?')) return;
+  const btn = $('#sendProspectMail');
+  if (btn) { btn.disabled = true; btn.textContent = 'Verzenden…'; }
+  try {
+    await saveProspectDraft(id);
+    await api('/api/prospects/' + id + '/send', {
+      method:'POST',
+      body:JSON.stringify({subject, body})
+    });
+    await Promise.allSettled([loadProspects(), loadLeadMachine()]);
+    $('#prospectDetailDialog').close();
+  } catch (err) {
+    alert(err.message);
+    if (btn) { btn.disabled = false; btn.textContent = 'Verzenden'; }
+  }
+}
+
 function openProspectDetail(id) {
   const p = state.prospects.find(x => String(x.id) === String(id));
   if (!p) return;
@@ -444,13 +492,40 @@ function openProspectDetail(id) {
     <div class="detail-section"><h3>Contact</h3><p>${escapeHtml(p.email || 'Geen bruikbaar e-mailadres gevonden.')}</p>
       ${p.email_source_url ? `<p class="sub">Bron: ${escapeHtml(p.email_source_url)}</p>` : ''}
     </div>
+    <div class="detail-section">
+      <h3>Contactgrond voor autopilot</h3>
+      <select id="prospectPermission" class="detail-select">
+        <option value="unknown" ${(p.permission_status || 'unknown') === 'unknown' ? 'selected' : ''}>Onbekend / koude prospect</option>
+        <option value="consented" ${p.permission_status === 'consented' ? 'selected' : ''}>Toestemming</option>
+        <option value="existing_customer" ${p.permission_status === 'existing_customer' ? 'selected' : ''}>Bestaande klant</option>
+        <option value="inbound_request" ${p.permission_status === 'inbound_request' ? 'selected' : ''}>Inkomende aanvraag</option>
+      </select>
+      <p class="sub">Alleen de drie toegestane statussen hierboven worden door Autopilot automatisch verstuurd.</p>
+    </div>
     <div class="detail-section"><h3>Mailconcept</h3>
-      <p class="sub">Automatisch verzenden staat alleen open als toestemming of een bestaande-klantgrond aantoonbaar is. Nieuwe koude prospects blijven daarom in review.</p>
-      <div class="draft-subject">${escapeHtml(p.outreach_subject || '—')}</div>
-      <pre class="draft-body">${escapeHtml(p.outreach_body || 'Nog geen concept beschikbaar.')}</pre>
+      <label class="edit-mail-label">Onderwerp
+        <input id="prospectSubject" class="edit-mail-input" value="${escapeHtml(p.outreach_subject || '')}">
+      </label>
+      <label class="edit-mail-label">Bericht
+        <textarea id="prospectBody" class="edit-mail-textarea" rows="13">${escapeHtml(p.outreach_body || '')}</textarea>
+      </label>
+      <div class="mail-actions">
+        <button class="ghost" id="saveProspectDraft">Opslaan</button>
+        <button class="primary" id="sendProspectMail" ${p.email ? '' : 'disabled'}>Verzenden</button>
+      </div>
     </div>
   `;
   $('#prospectDetailDialog').showModal();
+  $('#saveProspectDraft')?.addEventListener('click', async () => {
+    try {
+      const btn = $('#saveProspectDraft');
+      btn.disabled = true; btn.textContent = 'Opslaan…';
+      await saveProspectDraft(id);
+      btn.textContent = 'Opgeslagen';
+      setTimeout(() => { btn.disabled = false; btn.textContent = 'Opslaan'; }, 900);
+    } catch (err) { alert(err.message); }
+  });
+  $('#sendProspectMail')?.addEventListener('click', () => sendProspectNow(id));
 }
 
 $('#runLeadMachine')?.addEventListener('click', startLeadMachine);
@@ -458,6 +533,19 @@ $('#refreshMachine')?.addEventListener('click', () => Promise.allSettled([loadLe
 $('#prospectSearch')?.addEventListener('input', renderProspects);
 $('#prospectFilter')?.addEventListener('change', renderProspects);
 $('#closeProspectDetail')?.addEventListener('click', () => $('#prospectDetailDialog').close());
+$('#autopilotToggle')?.addEventListener('change', async e => {
+  const enabled = e.currentTarget.checked;
+  try {
+    await api('/api/lead-machine/settings', {
+      method:'PATCH',
+      body:JSON.stringify({auto_send_enabled: enabled, daily_send_limit:30})
+    });
+    await loadLeadMachine();
+  } catch (err) {
+    e.currentTarget.checked = !enabled;
+    alert(err.message);
+  }
+});
 
 function leadMatches(a) {
   const q = ($('#leadSearch')?.value || '').trim().toLowerCase();
