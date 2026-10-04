@@ -1,4 +1,4 @@
-const state = { partners: [], templates: [], prospects: [], applications: [], quotes: [], config: null };
+const state = { partners: [], templates: [], prospects: [], applications: [], quotes: [], machine: null, config: null };
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -21,11 +21,11 @@ function go(view) {
   $('#view-' + view).classList.add('active');
   $('#pageTitle').textContent = {
     inbox:'Inbox', sent:'Verzonden', compose:'Nieuwe mail', partners:'Partners',
-    templates:'Templates', outreach:'Lead Outreach', applications:'Leads', quotes:'Offertes'
+    templates:'Templates', outreach:'Lead Machine', applications:'Aanvragen', quotes:'Offertes'
   }[view] || 'VakLease';
   if (view === 'inbox') loadInbox();
   if (view === 'sent') loadSent();
-  if (view === 'outreach') loadProspects();
+  if (view === 'outreach') { loadLeadMachine(); loadProspects(); }
   if (view === 'applications') loadApplications();
   if (view === 'quotes') loadQuotes();
 }
@@ -311,35 +311,9 @@ const euro = new Intl.NumberFormat('nl-NL', { style:'currency', currency:'EUR', 
 
 function prospectStatusLabel(status) {
   return {
-    new:'Nieuw', ready:'Klaar voor outreach', contacted:'Benaderd', follow_up:'Opvolgen',
-    replied:'Reactie', qualified:'Gekwalificeerd', converted:'Geconverteerd', no_match:'Geen match'
-  }[status] || status;
-}
-
-function leadStatusLabel(status) {
-  return {
-    new:'Nieuw', contacted:'Contact gelegd', qualified:'Gekwalificeerd',
-    quote_requested:'Offerte aangevraagd', submitted:'Naar partner',
-    approved:'Goedgekeurd', won:'Afgesloten', lost:'Verloren'
-  }[status] || status;
-}
-
-function commissionStatusLabel(status) {
-  return { none:'—', expected:'Verwacht', invoiced:'Te factureren', paid:'Uitbetaald' }[status] || status || '—';
-}
-
-function formatFollowup(value) {
-  if (!value) return '—';
-  const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString('nl-NL', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-}
-
-function toLocalInput(value) {
-  if (!value) return '';
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return '';
-  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-  return local.toISOString().slice(0,16);
+    ready_for_review:'Mail klaar', research:'Verder onderzoeken', no_contact:'Geen e-mail',
+    contacted:'Benaderd', replied:'Reactie', converted:'Aanvraag', send_failed:'Verzendfout'
+  }[status] || status || 'Nieuw';
 }
 
 function prospectMatches(p) {
@@ -347,7 +321,78 @@ function prospectMatches(p) {
   const status = $('#prospectFilter')?.value || '';
   if (status && p.status !== status) return false;
   if (!q) return true;
-  return [p.company_name,p.contact_name,p.email,p.city,p.category,p.source].some(v => String(v || '').toLowerCase().includes(q));
+  return [p.company_name,p.email,p.city,p.category,p.source_query,p.source_region].some(v => String(v || '').toLowerCase().includes(q));
+}
+
+async function loadLeadMachine() {
+  try {
+    const data = await api('/api/lead-machine/status');
+    state.machine = data;
+    renderLeadMachineStatus();
+    if (data.running) scheduleMachinePoll();
+  } catch (err) {
+    $('#machineState').textContent = err.message;
+    $('#machineDot')?.classList.add('bad');
+  }
+}
+
+let machinePollTimer = null;
+function scheduleMachinePoll() {
+  clearTimeout(machinePollTimer);
+  machinePollTimer = setTimeout(async () => {
+    await Promise.allSettled([loadLeadMachine(), loadProspects()]);
+  }, 4500);
+}
+
+function renderLeadMachineStatus() {
+  const data = state.machine || {};
+  const totals = data.totals || {};
+  $('#machineStatFound').textContent = totals.found || 0;
+  $('#machineStatQualified').textContent = totals.qualified || 0;
+  $('#machineStatReady').textContent = totals.ready_for_review || 0;
+  $('#machineStatContacted').textContent = totals.contacted || 0;
+  $('#machineStatReplied').textContent = totals.replied || 0;
+  const dot = $('#machineDot');
+  if (dot) {
+    dot.classList.toggle('ok', Boolean(data.configured && !data.running));
+    dot.classList.toggle('working', Boolean(data.running));
+    dot.classList.toggle('bad', !data.configured);
+  }
+  $('#machineState').textContent = !data.configured
+    ? 'Niet volledig geconfigureerd'
+    : data.running ? 'Zoekronde draait' : 'Automatisch zoeken actief';
+  const run = data.latest_run;
+  const summary = $('#machineRunSummary');
+  if (summary) {
+    if (!run) summary.textContent = 'Nog geen zoekronde uitgevoerd.';
+    else {
+      const when = run.started_at ? new Date(run.started_at).toLocaleString('nl-NL') : '';
+      summary.innerHTML = `<strong>Laatste run:</strong> ${escapeHtml(when)}
+        · ${Number(run.searches_completed || 0)}/${Number(run.searches_requested || 0)} zoekopdrachten
+        · ${Number(run.companies_found || 0)} bedrijven
+        · ${Number(run.contacts_found || 0)} contactadressen
+        · ${Number(run.qualified || 0)} relevant
+        · <span class="${run.status === 'error' ? 'text-bad' : ''}">${escapeHtml(run.last_message || run.status || '')}</span>`;
+    }
+  }
+  const btn = $('#runLeadMachine');
+  if (btn) {
+    btn.disabled = Boolean(data.running || !data.configured);
+    btn.textContent = data.running ? 'Zoekronde draait…' : 'Nu zoekronde starten';
+  }
+}
+
+async function startLeadMachine() {
+  const btn = $('#runLeadMachine');
+  if (btn) btn.disabled = true;
+  try {
+    await api('/api/lead-machine/run', {method:'POST',body:'{}'});
+    await loadLeadMachine();
+    scheduleMachinePoll();
+  } catch (err) {
+    alert(err.message);
+    if (btn) btn.disabled = false;
+  }
 }
 
 async function loadProspects() {
@@ -369,70 +414,50 @@ function renderProspects() {
   if (!marker || !body) return;
   const rows = state.prospects.filter(prospectMatches);
   marker.style.display = rows.length ? 'none' : 'block';
-  marker.textContent = state.prospects.length ? 'Geen prospects binnen dit filter.' : 'Nog geen prospects toegevoegd.';
+  marker.textContent = state.prospects.length ? 'Geen prospects binnen dit filter.' : 'Nog geen bedrijven gevonden door de leadmachine.';
   body.innerHTML = rows.map(p => `
     <tr>
-      <td><span class="company">${escapeHtml(p.company_name)}</span><span class="sub">${escapeHtml(p.contact_name || p.email || '')}</span></td>
-      <td>${escapeHtml(p.category || '—')}<span class="sub">${escapeHtml(p.city || p.source || '')}</span></td>
-      <td><select class="status-select" data-prospect-status="${p.id}">
-        ${['new','ready','contacted','follow_up','replied','qualified','converted','no_match'].map(x => `<option value="${x}" ${x===p.status?'selected':''}>${prospectStatusLabel(x)}</option>`).join('')}
-      </select></td>
-      <td>${escapeHtml(formatFollowup(p.next_followup_at))}</td>
-      <td class="row-actions">
-        ${p.email ? `<button class="mail-action" data-mail-prospect="${p.id}">Mail</button>` : ''}
-        ${p.status !== 'converted' ? `<button class="ghost small" data-convert-prospect="${p.id}">→ Lead</button>` : `<span class="mini-ok">Lead ✓</span>`}
-      </td>
+      <td><span class="score-badge score-${Number(p.score || 0) >= 70 ? 'high' : Number(p.score || 0) >= 55 ? 'mid' : 'low'}">${Number(p.score || 0)}</span></td>
+      <td><span class="company">${escapeHtml(p.company_name)}</span><span class="sub">${escapeHtml(p.website || '')}</span></td>
+      <td>${escapeHtml(p.category || '—')}<span class="sub">${escapeHtml(p.source_region || p.city || '')}</span></td>
+      <td>${escapeHtml(p.email || 'Geen e-mail gevonden')}<span class="sub">${p.email ? 'automatisch gevonden' : 'website onderzocht'}</span></td>
+      <td><span class="status-chip machine-${escapeHtml(p.status || 'new')}">${escapeHtml(prospectStatusLabel(p.status))}</span></td>
+      <td><button class="ghost small" data-view-prospect="${p.id}">Bekijk</button></td>
     </tr>
   `).join('');
-
-  const count = status => state.prospects.filter(p => p.status === status).length;
-  $('#outreachStatNew').textContent = count('new') + count('ready');
-  $('#outreachStatContacted').textContent = count('contacted') + count('follow_up');
-  $('#outreachStatReplied').textContent = count('replied') + count('qualified');
-  $('#outreachStatConverted').textContent = count('converted');
-
-  $$('[data-prospect-status]').forEach(select => select.addEventListener('change', async () => {
-    try {
-      await api('/api/prospects/' + select.dataset.prospectStatus, {method:'PATCH',body:JSON.stringify({status:select.value})});
-      await loadProspects();
-    } catch (err) { alert(err.message); }
-  }));
-  $$('[data-mail-prospect]').forEach(btn => btn.addEventListener('click', () => composeForProspect(btn.dataset.mailProspect)));
-  $$('[data-convert-prospect]').forEach(btn => btn.addEventListener('click', async () => {
-    try {
-      await api('/api/prospects/' + btn.dataset.convertProspect + '/convert', {method:'POST',body:'{}'});
-      await Promise.all([loadProspects(), loadApplications()]);
-      go('applications');
-    } catch (err) { alert(err.message); }
-  }));
+  $$('[data-view-prospect]').forEach(btn => btn.addEventListener('click', () => openProspectDetail(btn.dataset.viewProspect)));
 }
 
-function composeForProspect(id) {
+function openProspectDetail(id) {
   const p = state.prospects.find(x => String(x.id) === String(id));
   if (!p) return;
-  $('#composeTo').value = p.email || '';
-  $('#composePartnerId').value = '';
-  $('#composeProspectId').value = p.id;
-  go('compose');
+  $('#prospectDetailTitle').textContent = p.company_name || 'Prospect';
+  const body = $('#prospectDetailBody');
+  body.innerHTML = `
+    <div class="detail-grid">
+      <div><span>Score</span><strong>${Number(p.score || 0)}/100</strong></div>
+      <div><span>Status</span><strong>${escapeHtml(prospectStatusLabel(p.status))}</strong></div>
+      <div><span>Segment</span><strong>${escapeHtml(p.category || '—')}</strong></div>
+      <div><span>Regio</span><strong>${escapeHtml(p.source_region || p.city || '—')}</strong></div>
+    </div>
+    <div class="detail-section"><h3>Waarom deze prospect?</h3><p>${escapeHtml(p.score_reason || 'Geen score-uitleg beschikbaar.')}</p></div>
+    <div class="detail-section"><h3>Contact</h3><p>${escapeHtml(p.email || 'Geen bruikbaar e-mailadres gevonden.')}</p>
+      ${p.email_source_url ? `<p class="sub">Bron: ${escapeHtml(p.email_source_url)}</p>` : ''}
+    </div>
+    <div class="detail-section"><h3>Mailconcept</h3>
+      <p class="sub">Automatisch verzenden staat alleen open als toestemming of een bestaande-klantgrond aantoonbaar is. Nieuwe koude prospects blijven daarom in review.</p>
+      <div class="draft-subject">${escapeHtml(p.outreach_subject || '—')}</div>
+      <pre class="draft-body">${escapeHtml(p.outreach_body || 'Nog geen concept beschikbaar.')}</pre>
+    </div>
+  `;
+  $('#prospectDetailDialog').showModal();
 }
 
-$('#addProspect')?.addEventListener('click', () => $('#prospectDialog').showModal());
+$('#runLeadMachine')?.addEventListener('click', startLeadMachine);
+$('#refreshMachine')?.addEventListener('click', () => Promise.allSettled([loadLeadMachine(), loadProspects()]));
 $('#prospectSearch')?.addEventListener('input', renderProspects);
 $('#prospectFilter')?.addEventListener('change', renderProspects);
-
-$('#prospectForm')?.addEventListener('submit', async e => {
-  if (e.submitter?.value === 'cancel') return;
-  e.preventDefault();
-  const obj = Object.fromEntries(new FormData(e.currentTarget).entries());
-  if (obj.next_followup_at) obj.next_followup_at = new Date(obj.next_followup_at).toISOString();
-  else obj.next_followup_at = null;
-  try {
-    await api('/api/prospects', {method:'POST',body:JSON.stringify(obj)});
-    $('#prospectDialog').close();
-    e.currentTarget.reset();
-    await loadProspects();
-  } catch (err) { alert(err.message); }
-});
+$('#closeProspectDetail')?.addEventListener('click', () => $('#prospectDetailDialog').close());
 
 function leadMatches(a) {
   const q = ($('#leadSearch')?.value || '').trim().toLowerCase();
@@ -601,6 +626,6 @@ async function loadQuotes() {
 (async function init() {
   await loadConfig();
   await Promise.allSettled([loadPartners(), loadTemplates()]);
-  await Promise.allSettled([loadProspects(), loadApplications(), loadQuotes()]);
+  await Promise.allSettled([loadLeadMachine(), loadProspects(), loadApplications(), loadQuotes()]);
   loadInbox();
 })();
