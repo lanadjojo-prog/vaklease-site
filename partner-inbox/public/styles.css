@@ -564,3 +564,70 @@ dialog{border:0;border-radius:18px;padding:0;width:min(680px,calc(100vw - 30px))
 @media(max-width:420px){
   .detail-grid{grid-template-columns:1fr}
 }
+
+
+/* Lead Machine mail editor + autopilot */
+.autopilot-control{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  cursor:pointer;
+}
+.autopilot-control input{
+  width:20px;
+  height:20px;
+  accent-color:#2d9d62;
+  flex:0 0 auto;
+}
+.autopilot-control span{display:flex;flex-direction:column;gap:2px}
+.autopilot-control strong{font-size:13px}
+.autopilot-control small{font-size:11px;color:var(--muted);font-weight:600}
+.detail-select,
+.edit-mail-input,
+.edit-mail-textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:11px 12px;
+  background:#fff;
+  font:inherit;
+  color:inherit;
+}
+.edit-mail-textarea{
+  resize:vertical;
+  min-height:220px;
+  line-height:1.55;
+}
+.edit-mail-label{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  margin:0 0 12px;
+}
+.edit-mail-label input,
+.edit-mail-label textarea{
+  margin-top:6px;
+  font-weight:400;
+}
+.mail-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:12px;
+  padding-bottom:6px;
+}
+.mail-actions button{min-width:120px}
+#closeProspectDetail{
+  position:relative;
+  z-index:3;
+  cursor:pointer;
+}
+@media(max-width:520px){
+  .mail-actions{display:grid;grid-template-columns:1fr 1fr}
+  .mail-actions button{width:100%;min-width:0}
+}
