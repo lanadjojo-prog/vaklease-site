@@ -96,7 +96,7 @@ function safeEqual(a, b) {
 }
 
 function auth(req, res, next) {
-  if (req.path === '/api/health' || req.path === '/api/public-applications') return next();
+  if (req.path === '/api/health' || req.path === '/api/public-applications' || req.path === '/api/internal/lead-machine-run') return next();
 
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASSWORD;
@@ -408,6 +408,308 @@ async function dbQuery(text, params = []) {
   throw err;
 }
 
+const leadMachineConfig = {
+  discoveryUrl: process.env.DISCOVERY_BRIDGE_URL || '',
+  discoveryToken: process.env.DISCOVERY_BRIDGE_TOKEN || '',
+  jobToken: process.env.LEAD_MACHINE_JOB_TOKEN || '',
+  enabled: String(process.env.LEAD_MACHINE_ENABLED || 'true').toLowerCase() !== 'false'
+};
+
+const LEAD_MACHINE_TARGETS = [
+  { category: 'Bouw & aannemers', queries: ['aannemer', 'bouwbedrijf', 'renovatiebedrijf', 'timmerbedrijf', 'dakdekker'] },
+  { category: 'Installatie & techniek', queries: ['installatiebedrijf', 'elektricien', 'loodgieter', 'warmtepomp installateur', 'airco installateur'] },
+  { category: 'Grondverzet & infra', queries: ['grondverzetbedrijf', 'loonbedrijf', 'stratenmaker', 'infrabedrijf', 'sloopbedrijf'] },
+  { category: 'Groen & buitenwerk', queries: ['hovenier', 'boomverzorger', 'bestratingsbedrijf', 'groenvoorziening bedrijf'] },
+  { category: 'Onderhoud & facilitair', queries: ['schildersbedrijf', 'schoonmaakbedrijf', 'glazenwasser bedrijf', 'ongediertebestrijding'] },
+  { category: 'Transport & service', queries: ['koeriersbedrijf', 'transportbedrijf', 'servicebedrijf buitendienst', 'montagebedrijf'] }
+];
+
+const LEASE_SIGNAL_WEIGHTS = [
+  ['graafmachine', 22], ['minigraver', 22], ['shovel', 22], ['hoogwerker', 18],
+  ['grondverzet', 20], ['machinepark', 18], ['materieel', 15], ['loonwerk', 18],
+  ['aanhanger', 15], ['kippers', 14], ['tractor', 16], ['bestelbus', 16],
+  ['bedrijfswagen', 16], ['wagenpark', 18], ['servicebus', 15], ['montagebus', 15],
+  ['projecten', 6], ['vacature', 6], ['vacatures', 6], ['medewerkers', 5], ['team', 4],
+  ['uitbreiding', 8], ['groei', 6], ['nieuw materieel', 16], ['nieuw wagenpark', 18]
+];
+
+let leadMachineRunning = false;
+
+function machineReady() {
+  return Boolean(leadMachineConfig.enabled && leadMachineConfig.discoveryUrl && leadMachineConfig.discoveryToken && hasSupabase);
+}
+
+function normalizeDomain(url) {
+  try {
+    const u = new URL(String(url || '').startsWith('http') ? String(url) : 'https://' + String(url || ''));
+    return u.hostname.toLowerCase().replace(/^www\./, '');
+  } catch { return ''; }
+}
+
+function stripWebText(html) {
+  return String(html || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;|&#160;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractEmails(html) {
+  const emails = [...new Set((String(html || '').match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || []).map(x => x.toLowerCase()))];
+  return emails.filter(e => !/(example\.|sentry\.|wixpress\.|noreply|no-reply|wordpress|cloudflare)/i.test(e));
+}
+
+function chooseEmail(emails, domain) {
+  const own = emails.filter(e => !domain || e.endsWith('@' + domain));
+  const candidates = own.length ? own : emails;
+  const rank = e => {
+    if (/^(info|contact|office|administratie|sales|verkoop)@/.test(e)) return 0;
+    if (/^(planning|service|werkplaats)@/.test(e)) return 1;
+    return 2;
+  };
+  return [...candidates].sort((a,b) => rank(a)-rank(b))[0] || null;
+}
+
+function relevantInternalLinks(html, baseUrl) {
+  const links = [];
+  const re = /href=["']([^"'#]+)["']/gi;
+  let m;
+  while ((m = re.exec(String(html || ''))) && links.length < 12) {
+    try {
+      const u = new URL(m[1], baseUrl);
+      if (normalizeDomain(u.href) !== normalizeDomain(baseUrl)) continue;
+      if (!/(contact|over-ons|over|team|diensten|project|materieel|machine|wagenpark|vacature|werken-bij)/i.test(u.pathname)) continue;
+      if (!links.includes(u.href)) links.push(u.href);
+    } catch {}
+  }
+  return links.slice(0, 4);
+}
+
+async function fetchPage(url) {
+  try {
+    const res = await fetch(url, {
+      redirect: 'follow',
+      signal: AbortSignal.timeout(9000),
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VakLeaseLeadResearch/1.0; +https://vaklease.nl/)' }
+    });
+    if (!res.ok || !String(res.headers.get('content-type') || '').includes('text/html')) return null;
+    const html = await res.text();
+    return { url: res.url || url, html: html.slice(0, 600000), text: stripWebText(html).slice(0, 50000) };
+  } catch { return null; }
+}
+
+async function researchCompany(website) {
+  const first = await fetchPage(website);
+  if (!first) return { text: '', email: null, emailSourceUrl: null, pages: 0 };
+  const pages = [first];
+  for (const link of relevantInternalLinks(first.html, first.url)) {
+    const page = await fetchPage(link);
+    if (page) pages.push(page);
+    if (pages.length >= 4) break;
+  }
+  const domain = normalizeDomain(first.url);
+  const allEmails = [];
+  let emailSourceUrl = null;
+  for (const page of pages) {
+    const found = extractEmails(page.html);
+    if (found.length && !emailSourceUrl) emailSourceUrl = page.url;
+    allEmails.push(...found);
+  }
+  return {
+    text: pages.map(p => p.text).join(' ').slice(0, 120000),
+    email: chooseEmail([...new Set(allEmails)], domain),
+    emailSourceUrl,
+    pages: pages.length
+  };
+}
+
+function scoreLeaseProspect(category, text) {
+  const hay = String(text || '').toLowerCase();
+  let score = ({
+    'Grondverzet & infra': 48,
+    'Bouw & aannemers': 42,
+    'Installatie & techniek': 40,
+    'Groen & buitenwerk': 40,
+    'Transport & service': 38,
+    'Onderhoud & facilitair': 34
+  })[category] || 30;
+  const reasons = [`Branchefit: ${category}`];
+  for (const [term, points] of LEASE_SIGNAL_WEIGHTS) {
+    if (hay.includes(term)) {
+      score += points;
+      reasons.push(`+${points} signaal: ${term}`);
+    }
+  }
+  score = Math.max(0, Math.min(100, score));
+  return { score, reason: reasons.slice(0, 8).join(' · ') };
+}
+
+function buildLeaseOutreach(company, category) {
+  const subject = `Zakelijke lease voor ${company}`;
+  const body = `Hi,\n\nIk kwam ${company} tegen tijdens mijn zoektocht naar ondernemers in ${category.toLowerCase()} die werken met bedrijfswagens, aanhangers of machines.\n\nMet VakLease helpen we ondernemers die al een voertuig of bedrijfsmiddel op het oog hebben om de financieringsmogelijkheden te laten beoordelen. Je kunt simpelweg de advertentielink of gegevens van het object doorsturen; wij zetten de aanvraag vervolgens door naar een passende leasepartner.\n\nAls dit nu of binnenkort relevant is, stuur gerust de link van het object dat je wilt financieren.\n\nMet vriendelijke groet,\nGiovanni\nVakLease\nvaklease.nl`;
+  return { subject, body };
+}
+
+async function discoverBusinesses(query, region, limit) {
+  const response = await fetch(leadMachineConfig.discoveryUrl, {
+    method: 'POST',
+    signal: AbortSignal.timeout(30000),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Discovery-Bridge-Token': leadMachineConfig.discoveryToken
+    },
+    body: JSON.stringify({ query, region, limit })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.detail || data.error || `Discovery service HTTP ${response.status}`);
+  return Array.isArray(data.companies) ? data.companies : [];
+}
+
+function dailySearchPlan(settings) {
+  const regions = Array.isArray(settings?.target_regions) && settings.target_regions.length
+    ? settings.target_regions : ['Breda','Tilburg','Eindhoven','Den Bosch','Oosterhout','Roosendaal','Nederland'];
+  const all = [];
+  for (const target of LEAD_MACHINE_TARGETS) {
+    for (const query of target.queries) {
+      for (const region of regions) all.push({ category: target.category, query, region });
+    }
+  }
+  const day = Math.floor(Date.now() / 86400000);
+  const offset = all.length ? (day * 17) % all.length : 0;
+  return all.slice(offset).concat(all.slice(0, offset));
+}
+
+async function updateMachineRun(id, patch) {
+  return restPatch('lead_machine_runs', id, patch);
+}
+
+async function runLeadMachine(mode = 'manual') {
+  if (!machineReady()) throw new Error('Lead Machine is nog niet volledig geconfigureerd.');
+  if (leadMachineRunning) return { ok: true, status: 'already_running' };
+  leadMachineRunning = true;
+  let run = null;
+  const counters = {
+    searches_completed: 0, companies_found: 0, websites_scanned: 0, contacts_found: 0,
+    qualified: 0, queued_for_review: 0, auto_sent: 0, duplicates_skipped: 0, errors: 0
+  };
+
+  try {
+    const settingsRows = await supabaseRest('lead_machine_settings?select=*&id=eq.1&limit=1');
+    const settings = settingsRows?.[0] || {};
+    const maxSearches = Math.max(1, Math.min(Number(settings.max_searches_per_run || 6), 20));
+    const maxResults = Math.max(3, Math.min(Number(settings.max_results_per_search || 12), 25));
+    const minScore = Math.max(30, Math.min(Number(settings.min_score || 55), 90));
+    run = await restInsert('lead_machine_runs', {
+      status: 'running', mode, searches_requested: maxSearches, last_message: 'Zoekronde gestart'
+    });
+
+    const existingRows = await supabaseRest('lead_prospects?select=id,company_name,website,email,status,permission_status&limit=5000');
+    const seenDomains = new Set((existingRows || []).map(x => normalizeDomain(x.website)).filter(Boolean));
+    const seenCompanies = new Set((existingRows || []).map(x => String(x.company_name || '').trim().toLowerCase()).filter(Boolean));
+    const plan = dailySearchPlan(settings).slice(0, maxSearches);
+
+    for (const item of plan) {
+      let companies = [];
+      try {
+        companies = await discoverBusinesses(item.query, item.region, maxResults);
+      } catch (err) {
+        counters.errors += 1;
+        await updateMachineRun(run.id, { ...counters, last_message: `Zoeken mislukt: ${item.query} / ${item.region}` });
+        continue;
+      }
+      counters.searches_completed += 1;
+      counters.companies_found += companies.length;
+
+      for (const company of companies) {
+        const domain = normalizeDomain(company.website);
+        const companyKey = String(company.name || '').trim().toLowerCase();
+        if (!domain || seenDomains.has(domain) || seenCompanies.has(companyKey)) {
+          counters.duplicates_skipped += 1;
+          continue;
+        }
+        seenDomains.add(domain);
+        seenCompanies.add(companyKey);
+
+        const research = await researchCompany(company.website);
+        counters.websites_scanned += research.pages > 0 ? 1 : 0;
+        if (research.email) counters.contacts_found += 1;
+
+        const scored = scoreLeaseProspect(item.category, research.text);
+        if (scored.score < Math.max(40, minScore - 12) && !research.email) continue;
+
+        const draft = buildLeaseOutreach(company.name, item.category);
+        const status = research.email && scored.score >= minScore ? 'ready_for_review' : (research.email ? 'research' : 'no_contact');
+        if (status === 'ready_for_review') counters.queued_for_review += 1;
+        if (scored.score >= minScore) counters.qualified += 1;
+
+        await restInsert('lead_prospects', {
+          company_name: String(company.name || domain).slice(0, 200),
+          email: research.email,
+          website: String(company.website || '').slice(0, 500),
+          category: item.category,
+          city: String(company.address || item.region || '').slice(0, 200),
+          source: 'Google Places + website crawl',
+          source_url: String(company.website || '').slice(0, 1000),
+          status,
+          score: scored.score,
+          score_reason: scored.reason,
+          email_source_url: research.emailSourceUrl,
+          outreach_subject: draft.subject,
+          outreach_body: draft.body,
+          permission_status: 'unknown',
+          discovered_at: new Date().toISOString(),
+          last_scanned_at: new Date().toISOString(),
+          machine_run_id: run.id,
+          source_query: item.query,
+          source_region: item.region,
+          notes: research.email ? 'Contactadres automatisch gevonden op de bedrijfswebsite.' : 'Geen bruikbaar e-mailadres automatisch gevonden.'
+        });
+      }
+
+      await updateMachineRun(run.id, { ...counters, last_message: `${item.category}: ${item.query} in ${item.region}` });
+    }
+
+    const result = {
+      status: 'completed',
+      ...counters,
+      last_message: `Klaar: ${counters.qualified} relevante prospects, ${counters.queued_for_review} met mailconcept klaar.`,
+      finished_at: new Date().toISOString()
+    };
+    await updateMachineRun(run.id, result);
+    return { ok: true, run_id: run.id, ...result };
+  } catch (err) {
+    if (run?.id) {
+      await updateMachineRun(run.id, {
+        status: 'error',
+        errors: counters.errors + 1,
+        last_message: String(err.message || err).slice(0, 1000),
+        finished_at: new Date().toISOString()
+      }).catch(() => {});
+    }
+    throw err;
+  } finally {
+    leadMachineRunning = false;
+  }
+}
+
+async function runLeadMachineIfDue() {
+  if (!machineReady() || leadMachineRunning) return;
+  try {
+    const settingsRows = await supabaseRest('lead_machine_settings?select=*&id=eq.1&limit=1');
+    const settings = settingsRows?.[0];
+    if (!settings?.enabled || !settings?.auto_run_on_start) return;
+    const latest = await supabaseRest('lead_machine_runs?select=*&status=eq.completed&order=finished_at.desc&limit=1');
+    const last = latest?.[0]?.finished_at ? new Date(latest[0].finished_at) : null;
+    const due = !last || (Date.now() - last.getTime()) >= 6 * 60 * 60 * 1000;
+    if (due) runLeadMachine('auto').catch(err => console.error('Lead Machine auto-run mislukt:', err));
+  } catch (err) {
+    console.error('Lead Machine due-check mislukt:', err);
+  }
+}
+
 const mailConfig = {
   imapHost: process.env.MAIL_IMAP_HOST || 'imap.strato.de',
   imapPort: Number(process.env.MAIL_IMAP_PORT || 993),
@@ -547,7 +849,9 @@ app.get('/api/health', async (req, res) => {
     sendConfigured: sendReady(),
     sendProvider: mailConfig.resendApiKey ? 'resend' : 'smtp',
     sentHistoryConfigured: Boolean(mailConfig.resendReadApiKey || pool),
-    mailUser: mailConfig.user || null
+    mailUser: mailConfig.user || null,
+    leadMachineConfigured: machineReady(),
+    leadMachineRunning
   });
 });
 
@@ -819,6 +1123,49 @@ app.post('/api/applications', async (req, res, next) => {
 });
 
 
+app.get('/api/lead-machine/status', async (req, res, next) => {
+  try {
+    const [runs, settings, prospects] = await Promise.all([
+      supabaseRest('lead_machine_runs?select=*&order=started_at.desc&limit=10'),
+      supabaseRest('lead_machine_settings?select=*&id=eq.1&limit=1'),
+      supabaseRest('lead_prospects?select=id,status,score,email,permission_status&order=created_at.desc&limit=2000')
+    ]);
+    const rows = prospects || [];
+    res.json({
+      configured: machineReady(),
+      running: leadMachineRunning,
+      settings: settings?.[0] || null,
+      latest_run: runs?.[0] || null,
+      recent_runs: runs || [],
+      totals: {
+        found: rows.length,
+        qualified: rows.filter(x => Number(x.score || 0) >= Number(settings?.[0]?.min_score || 55)).length,
+        ready_for_review: rows.filter(x => x.status === 'ready_for_review').length,
+        contacted: rows.filter(x => x.status === 'contacted').length,
+        replied: rows.filter(x => x.status === 'replied').length
+      }
+    });
+  } catch (err) { next(err); }
+});
+
+app.post('/api/lead-machine/run', async (req, res, next) => {
+  if (!machineReady()) return res.status(503).json({ error: 'Lead Machine is nog niet volledig geconfigureerd.' });
+  if (leadMachineRunning) return res.status(202).json({ ok: true, status: 'already_running' });
+  setImmediate(() => runLeadMachine('manual').catch(err => console.error('Lead Machine run mislukt:', err)));
+  res.status(202).json({ ok: true, status: 'started' });
+});
+
+app.post('/api/internal/lead-machine-run', async (req, res, next) => {
+  const token = String(req.headers['x-lead-machine-token'] || '');
+  if (!leadMachineConfig.jobToken || !safeEqual(token, leadMachineConfig.jobToken)) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  if (!machineReady()) return res.status(503).json({ error: 'Lead Machine is nog niet volledig geconfigureerd.' });
+  if (leadMachineRunning) return res.status(202).json({ ok: true, status: 'already_running' });
+  setImmediate(() => runLeadMachine('scheduled').catch(err => console.error('Lead Machine scheduled run mislukt:', err)));
+  res.status(202).json({ ok: true, status: 'started' });
+});
+
 app.get('/api/prospects', async (req, res, next) => {
   try {
     const rows = await supabaseRest('lead_prospects?select=*&order=created_at.desc&limit=500');
@@ -932,7 +1279,11 @@ app.use((err, req, res, next) => {
 
 initDatabase()
   .then(() => {
-    app.listen(PORT, '0.0.0.0', () => console.log(`VakLease Partner Inbox draait op poort ${PORT}`));
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`VakLease Partner Inbox draait op poort ${PORT}`);
+      setTimeout(() => runLeadMachineIfDue(), 12000);
+      setInterval(() => runLeadMachineIfDue(), 60 * 60 * 1000);
+    });
   })
   .catch(err => {
     console.error('Database initialisatie mislukt:', err);
