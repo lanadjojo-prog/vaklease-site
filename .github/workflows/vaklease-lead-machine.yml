@@ -1,0 +1,14 @@
+name: VakLease Lead Machine
+
+on:
+  schedule:
+    - cron: "20 6 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  wake-lead-machine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake VakLease Lead Machine
+        run: |
+          curl --fail --silent --show-error             --retry 3 --retry-delay 10             -X POST             -H "Content-Type: application/json"             --data '{}'             https://vaklease-partner-inbox.onrender.com/api/lead-machine-wake
