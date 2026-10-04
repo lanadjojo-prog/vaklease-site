@@ -563,35 +563,76 @@ function buildLeaseOutreach(company, category) {
   return { subject, body };
 }
 
-async function autoSendPermissionedProspects(limit = 10) {
-  if (!sendReady() || !hasSupabase) return 0;
+async function leadMachineSettings() {
+  const rows = await supabaseRest('lead_machine_settings?select=*&id=eq.1&limit=1');
+  return rows?.[0] || {};
+}
+
+async function autoSentLast24h() {
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const rows = await supabaseRest(
-    'lead_prospects?select=*&status=eq.ready_for_review&permission_status=in.(consented,existing_customer,inbound_request)&order=score.desc&limit=' + Math.max(1, Math.min(limit, 25))
+    'lead_prospects?select=id&last_send_mode=eq.auto&last_contacted_at=gte.' + encodeURIComponent(since) + '&limit=200'
   );
+  return (rows || []).length;
+}
+
+async function sendProspectRecord(prospect, mode = 'manual') {
+  if (!sendReady()) {
+    const err = new Error('Uitgaande mail is nog niet ingesteld.');
+    err.status = 503;
+    throw err;
+  }
+  if (!prospect?.email || !prospect?.outreach_subject || !prospect?.outreach_body) {
+    const err = new Error('E-mailadres, onderwerp of mailtekst ontbreekt.');
+    err.status = 400;
+    throw err;
+  }
+
+  const info = await sendOutboundMail({
+    to: prospect.email,
+    subject: prospect.outreach_subject,
+    body: prospect.outreach_body
+  });
+
+  await restInsert('email_log', {
+    direction: 'outbound',
+    partner_id: null,
+    message_id: info.messageId || null,
+    from_email: mailConfig.user || null,
+    to_email: prospect.email,
+    subject: prospect.outreach_subject,
+    body_preview: String(prospect.outreach_body).slice(0, 500),
+    body: prospect.outreach_body
+  });
+
+  return restPatch('lead_prospects', prospect.id, {
+    status: 'contacted',
+    last_contacted_at: new Date().toISOString(),
+    last_send_mode: mode,
+    updated_at: new Date().toISOString()
+  });
+}
+
+async function autoSendPermissionedProspects(requestedLimit = 30) {
+  if (!sendReady() || !hasSupabase) return 0;
+
+  const settings = await leadMachineSettings();
+  if (!settings.auto_send_enabled) return 0;
+
+  const hardLimit = Math.min(30, Math.max(1, Number(settings.daily_send_limit || 30)));
+  const alreadySent = await autoSentLast24h();
+  const remaining = Math.max(0, hardLimit - alreadySent);
+  const limit = Math.min(remaining, Math.max(1, Number(requestedLimit || hardLimit)));
+  if (limit <= 0) return 0;
+
+  const rows = await supabaseRest(
+    'lead_prospects?select=*&status=eq.ready_for_review&permission_status=in.(consented,existing_customer,inbound_request)&order=score.desc&limit=' + limit
+  );
+
   let sent = 0;
   for (const prospect of rows || []) {
-    if (!prospect.email || !prospect.outreach_subject || !prospect.outreach_body) continue;
     try {
-      const info = await sendOutboundMail({
-        to: prospect.email,
-        subject: prospect.outreach_subject,
-        body: prospect.outreach_body
-      });
-      await restInsert('email_log', {
-        direction: 'outbound',
-        partner_id: null,
-        message_id: info.messageId || null,
-        from_email: mailConfig.user || null,
-        to_email: prospect.email,
-        subject: prospect.outreach_subject,
-        body_preview: String(prospect.outreach_body).slice(0, 500),
-        body: prospect.outreach_body
-      });
-      await restPatch('lead_prospects', prospect.id, {
-        status: 'contacted',
-        last_contacted_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
+      await sendProspectRecord(prospect, 'auto');
       sent += 1;
     } catch (err) {
       await restPatch('lead_prospects', prospect.id, {
@@ -760,9 +801,14 @@ async function runLeadMachineIfDue() {
         finished_at: new Date().toISOString()
       }).catch(() => {});
     }
-    const settingsRows = await supabaseRest('lead_machine_settings?select=*&id=eq.1&limit=1');
-    const settings = settingsRows?.[0];
+    const settings = await leadMachineSettings();
     if (!settings?.enabled || !settings?.auto_run_on_start) return;
+
+    if (settings.auto_send_enabled) {
+      autoSendPermissionedProspects(Math.min(30, Number(settings.daily_send_limit || 30)))
+        .catch(err => console.error('Lead Machine autopilot send mislukt:', err));
+    }
+
     const latestAttempt = await supabaseRest('lead_machine_runs?select=*&order=started_at.desc&limit=1');
     const lastAttempt = latestAttempt?.[0]?.started_at ? new Date(latestAttempt[0].started_at) : null;
     if (lastAttempt && (Date.now() - lastAttempt.getTime()) < 60 * 60 * 1000) return;
@@ -1196,16 +1242,18 @@ app.post('/api/lead-machine-wake', async (req, res) => {
 
 app.get('/api/lead-machine/status', async (req, res, next) => {
   try {
-    const [runs, settings, prospects] = await Promise.all([
+    const [runs, settings, prospects, autoSent24h] = await Promise.all([
       supabaseRest('lead_machine_runs?select=*&order=started_at.desc&limit=10'),
       supabaseRest('lead_machine_settings?select=*&id=eq.1&limit=1'),
-      supabaseRest('lead_prospects?select=id,status,score,email,permission_status&order=created_at.desc&limit=2000')
+      supabaseRest('lead_prospects?select=id,status,score,email,permission_status&order=created_at.desc&limit=2000'),
+      autoSentLast24h().catch(() => 0)
     ]);
     const rows = prospects || [];
     res.json({
       configured: machineReady(),
       running: leadMachineRunning,
       settings: settings?.[0] || null,
+      auto_sent_last_24h: autoSent24h,
       latest_run: runs?.[0] || null,
       recent_runs: runs || [],
       totals: {
@@ -1216,6 +1264,25 @@ app.get('/api/lead-machine/status', async (req, res, next) => {
         replied: rows.filter(x => x.status === 'replied').length
       }
     });
+  } catch (err) { next(err); }
+});
+
+app.patch('/api/lead-machine/settings', async (req, res, next) => {
+  try {
+    const current = await leadMachineSettings();
+    const patch = {};
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'auto_send_enabled')) {
+      patch.auto_send_enabled = Boolean(req.body.auto_send_enabled);
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'daily_send_limit')) {
+      patch.daily_send_limit = Math.min(30, Math.max(1, Number(req.body.daily_send_limit || 30)));
+    }
+    patch.updated_at = new Date().toISOString();
+    const updated = await restPatch('lead_machine_settings', 1, patch);
+    if (updated?.auto_send_enabled) {
+      setImmediate(() => autoSendPermissionedProspects(updated.daily_send_limit || 30).catch(err => console.error('Autopilot send mislukt:', err)));
+    }
+    res.json({ settings: updated || current });
   } catch (err) { next(err); }
 });
 
@@ -1269,7 +1336,7 @@ app.post('/api/prospects', async (req, res, next) => {
 app.patch('/api/prospects/:id', async (req, res, next) => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'Ongeldige prospect.' });
-  const allowed = ['company_name','contact_name','email','phone','website','category','city','source','source_url','status','notes','last_contacted_at','next_followup_at','linked_application_id'];
+  const allowed = ['company_name','contact_name','email','phone','website','category','city','source','source_url','status','notes','last_contacted_at','next_followup_at','linked_application_id','outreach_subject','outreach_body','permission_status'];
   const patch = {};
   for (const key of allowed) if (Object.prototype.hasOwnProperty.call(req.body || {}, key)) patch[key] = req.body[key] === '' ? null : req.body[key];
   patch.updated_at = new Date().toISOString();
@@ -1277,6 +1344,28 @@ app.patch('/api/prospects/:id', async (req, res, next) => {
     const prospect = await restPatch('lead_prospects', id, patch);
     if (!prospect) return res.status(404).json({ error: 'Prospect niet gevonden.' });
     res.json({ prospect });
+  } catch (err) { next(err); }
+});
+
+app.post('/api/prospects/:id/send', async (req, res, next) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'Ongeldige prospect.' });
+
+  try {
+    const prospects = await supabaseRest(`lead_prospects?select=*&id=eq.${encodeURIComponent(id)}&limit=1`);
+    let prospect = prospects?.[0];
+    if (!prospect) return res.status(404).json({ error: 'Prospect niet gevonden.' });
+
+    const edit = {};
+    if (typeof req.body?.subject === 'string') edit.outreach_subject = req.body.subject.trim().slice(0, 250);
+    if (typeof req.body?.body === 'string') edit.outreach_body = req.body.body.trim().slice(0, 12000);
+    if (Object.keys(edit).length) {
+      edit.updated_at = new Date().toISOString();
+      prospect = await restPatch('lead_prospects', id, edit);
+    }
+
+    const updated = await sendProspectRecord(prospect, 'manual');
+    res.json({ ok: true, prospect: updated });
   } catch (err) { next(err); }
 });
 
