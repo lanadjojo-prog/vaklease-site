@@ -19,8 +19,8 @@
         <button class="nav" data-view="compose">Nieuwe mail</button>
         <button class="nav" data-view="partners">Partners</button>
         <button class="nav" data-view="templates">Templates</button>
-        <button class="nav" data-view="outreach">Lead Outreach</button>
-        <button class="nav" data-view="applications">Leads</button>
+        <button class="nav" data-view="outreach">Lead Machine</button>
+        <button class="nav" data-view="applications">Aanvragen</button>
         <button class="nav" data-view="quotes">Offertes</button>
       </nav>
       <div class="sidebar-bottom">
@@ -116,35 +116,48 @@
       </section>
 
       <section class="view" id="view-outreach">
-        <div class="stats">
-          <div class="stat"><span>Nieuw</span><strong id="outreachStatNew">0</strong></div>
-          <div class="stat"><span>Benaderd</span><strong id="outreachStatContacted">0</strong></div>
-          <div class="stat"><span>Reactie</span><strong id="outreachStatReplied">0</strong></div>
-          <div class="stat"><span>Geconverteerd</span><strong id="outreachStatConverted">0</strong></div>
+        <div class="machine-hero panel">
+          <div>
+            <p class="eyebrow">Autonome acquisitie</p>
+            <h2>VakLease Lead Machine</h2>
+            <p>Zoekt zelf relevante bedrijven, crawlt hun website, vindt contactgegevens, beoordeelt lease-potentie en maakt een passend mailconcept.</p>
+          </div>
+          <div class="machine-actions">
+            <span class="machine-live"><i id="machineDot"></i><span id="machineState">Status laden…</span></span>
+            <button class="primary" id="runLeadMachine">Nu zoekronde starten</button>
+          </div>
         </div>
+
+        <div class="stats lead-stats">
+          <div class="stat"><span>Gevonden</span><strong id="machineStatFound">0</strong></div>
+          <div class="stat"><span>Relevant</span><strong id="machineStatQualified">0</strong></div>
+          <div class="stat"><span>Mail klaar</span><strong id="machineStatReady">0</strong></div>
+          <div class="stat"><span>Benaderd</span><strong id="machineStatContacted">0</strong></div>
+          <div class="stat"><span>Reacties</span><strong id="machineStatReplied">0</strong></div>
+        </div>
+
         <div class="panel">
           <div class="panel-head">
-            <div><h2>Lead Outreach</h2><p>Potentiële klanten verzamelen, benaderen, opvolgen en omzetten naar echte leads.</p></div>
-            <button class="primary" id="addProspect">+ Prospect</button>
+            <div><h2>Gevonden prospects</h2><p>Geen handmatige invoer. Deze lijst wordt uitsluitend door de leadmachine gevuld.</p></div>
+            <button class="ghost" id="refreshMachine">Vernieuwen</button>
           </div>
+          <div id="machineRunSummary" class="machine-summary">Nog geen runinformatie.</div>
           <div class="lead-toolbar">
-            <input id="prospectSearch" type="search" placeholder="Zoek bedrijf, plaats, categorie…">
+            <input id="prospectSearch" type="search" placeholder="Zoek in gevonden bedrijven…">
             <select id="prospectFilter">
               <option value="">Alle statussen</option>
-              <option value="new">Nieuw</option>
-              <option value="ready">Klaar voor outreach</option>
+              <option value="ready_for_review">Mail klaar</option>
+              <option value="research">Verder onderzoeken</option>
+              <option value="no_contact">Geen e-mail gevonden</option>
               <option value="contacted">Benaderd</option>
-              <option value="follow_up">Opvolgen</option>
               <option value="replied">Reactie</option>
-              <option value="qualified">Gekwalificeerd</option>
-              <option value="converted">Geconverteerd</option>
-              <option value="no_match">Geen match</option>
+              <option value="converted">Aanvraag geworden</option>
             </select>
           </div>
-          <div id="prospectsState" class="empty">Prospects laden…</div>
+          <div id="prospectsState" class="empty">Leadmachine-resultaten laden…</div>
           <div class="table-wrap">
             <table id="prospectsTable">
-              <thead><tr><th>Bedrijf</th><th>Categorie / plaats</th><th>Status</th><th>Opvolging</th><th></th></tr></thead>
+              <thead><tr><th>Score</th><th>Bedrijf</th><th>Segment</th><th>Contact</th><th>Status</th><th></th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -161,8 +174,7 @@
         </div>
         <div class="panel">
           <div class="panel-head">
-            <div><h2>Leads</h2><p>Volg iedere aanvraag van eerste contact tot uitbetaling van je commissie.</p></div>
-            <button class="primary" id="addLead">+ Lead toevoegen</button>
+            <div><h2>Aanvragen</h2><p>Volg echte aanvragen en reacties door tot goedkeuring, afsluiting en uitbetaling van je commissie.</p></div>
           </div>
           <div class="lead-toolbar">
             <input id="leadSearch" type="search" placeholder="Zoek naam, bedrijf, object…">
@@ -233,27 +245,6 @@
 
   <script src="/app.js"></script>
 
-  <dialog id="prospectDialog">
-    <form method="dialog" id="prospectForm" class="modal-form">
-      <div class="dialog-head"><div><p class="eyebrow">Outreach</p><h2>Prospect toevoegen</h2></div><button class="icon" value="cancel">×</button></div>
-      <div class="two-col">
-        <label>Bedrijfsnaam<input name="company_name" required></label>
-        <label>Contactpersoon<input name="contact_name"></label>
-        <label>E-mail<input name="email" type="email"></label>
-        <label>Telefoon<input name="phone"></label>
-        <label>Website<input name="website"></label>
-        <label>Plaats<input name="city"></label>
-        <label>Categorie<input name="category" placeholder="Bijv. bouwbedrijf, installateur"></label>
-        <label>Bron<input name="source" placeholder="Google Maps, bedrijvengids…"></label>
-        <label class="full">Bron / pagina URL<input name="source_url" type="url"></label>
-        <label>Status<select name="status"><option value="new">Nieuw</option><option value="ready">Klaar voor outreach</option><option value="contacted">Benaderd</option><option value="follow_up">Opvolgen</option><option value="replied">Reactie</option><option value="qualified">Gekwalificeerd</option><option value="converted">Geconverteerd</option><option value="no_match">Geen match</option></select></label>
-        <label>Volgende opvolging<input name="next_followup_at" type="datetime-local"></label>
-      </div>
-      <label>Notities<textarea name="notes" rows="4"></textarea></label>
-      <div class="form-actions"><button class="ghost" value="cancel">Annuleren</button><button class="primary" type="submit" value="save">Opslaan</button></div>
-    </form>
-  </dialog>
-
   <dialog id="leadDialog">
     <form method="dialog" id="leadForm" class="modal-form">
       <input type="hidden" name="id">
@@ -279,6 +270,13 @@
       <label>Notities<textarea name="notes" rows="4"></textarea></label>
       <div class="form-actions"><button class="ghost" value="cancel">Annuleren</button><button class="primary" type="submit" value="save">Opslaan</button></div>
     </form>
+  </dialog>
+
+  <dialog id="prospectDetailDialog">
+    <div class="modal-form">
+      <div class="dialog-head"><div><p class="eyebrow">Lead Machine</p><h2 id="prospectDetailTitle">Prospect</h2></div><button class="icon" id="closeProspectDetail">×</button></div>
+      <div id="prospectDetailBody" class="prospect-detail"></div>
+    </div>
   </dialog>
 
 </body>
