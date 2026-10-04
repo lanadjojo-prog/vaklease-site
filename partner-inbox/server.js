@@ -96,7 +96,7 @@ function safeEqual(a, b) {
 }
 
 function auth(req, res, next) {
-  if (req.path === '/api/health' || req.path === '/api/public-applications' || req.path === '/api/internal/lead-machine-run') return next();
+  if (req.path === '/api/health' || req.path === '/api/public-applications' || req.path === '/api/lead-machine-wake' || req.path === '/api/internal/lead-machine-run') return next();
 
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASSWORD;
@@ -763,6 +763,9 @@ async function runLeadMachineIfDue() {
     const settingsRows = await supabaseRest('lead_machine_settings?select=*&id=eq.1&limit=1');
     const settings = settingsRows?.[0];
     if (!settings?.enabled || !settings?.auto_run_on_start) return;
+    const latestAttempt = await supabaseRest('lead_machine_runs?select=*&order=started_at.desc&limit=1');
+    const lastAttempt = latestAttempt?.[0]?.started_at ? new Date(latestAttempt[0].started_at) : null;
+    if (lastAttempt && (Date.now() - lastAttempt.getTime()) < 60 * 60 * 1000) return;
     const latest = await supabaseRest('lead_machine_runs?select=*&status=eq.completed&order=finished_at.desc&limit=1');
     const last = latest?.[0]?.finished_at ? new Date(latest[0].finished_at) : null;
     const due = !last || (Date.now() - last.getTime()) >= 6 * 60 * 60 * 1000;
@@ -1184,6 +1187,12 @@ app.post('/api/applications', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+
+app.post('/api/lead-machine-wake', async (req, res) => {
+  if (!machineReady()) return res.status(503).json({ error: 'Lead Machine is niet geconfigureerd.' });
+  setImmediate(() => runLeadMachineIfDue());
+  res.status(202).json({ ok: true, status: 'due_check_started' });
+});
 
 app.get('/api/lead-machine/status', async (req, res, next) => {
   try {
