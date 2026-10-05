@@ -33,33 +33,45 @@ export function Header() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <header className="vl-header">
+      <header className="vl-header vl-header-refined">
         <div className="vl-shell vl-header-inner">
-          <a className="vl-logo" href="/"><img src={LOGO} alt="VakLease" /></a>
-          <nav className="vl-nav">
+          <div className="vl-header-brand">
+            <a className="vl-logo" href="/"><img src={LOGO} alt="VakLease" /></a>
+            <span className="vl-header-tagline">Zakelijke lease<br/>voor vakbedrijven</span>
+          </div>
+
+          <nav className="vl-nav" aria-label="Hoofdnavigatie">
             <a href="/bedrijfswagens/">Bedrijfswagens</a>
             <a href="/machines/">Machines</a>
             <a href="/aanhangers/">Aanhangers</a>
-            <a href="/#bestickering">Busbestickering</a>
-            <a href="/#werkwijze">Zo werkt het</a>
-            <a href="/#faq">Veelgestelde vragen</a>
+            <a href="/#bestickering">Bestickering</a>
+            <a href="/#werkwijze">Werkwijze</a>
+            <a href="/#faq">FAQ</a>
           </nav>
-          <a className="vl-btn vl-btn-primary vl-header-cta" href="/#quickcheck">Check mogelijkheden <span>→</span></a>
+
+          <div className="vl-header-actions">
+            <a className="vl-header-link" href="/contact/">Contact</a>
+            <a className="vl-header-cta vl-header-cta-refined" href="/#quickcheck">
+              <span>Start aanvraag</span><b>↗</b>
+            </a>
+          </div>
+
           <button className="vl-menu" onClick={() => setOpen(!open)} aria-label="Menu openen" aria-expanded={open}>
             <span></span><span></span><span></span>
           </button>
         </div>
       </header>
       {open && (
-        <div className="vl-mobile-nav">
+        <div className="vl-mobile-nav vl-mobile-nav-refined">
           <div className="vl-shell">
             <a href="/bedrijfswagens/">Bedrijfswagens</a>
             <a href="/machines/">Machines</a>
             <a href="/aanhangers/">Aanhangers</a>
-            <a href="/#bestickering">Busbestickering</a>
-            <a href="/#werkwijze">Zo werkt het</a>
-            <a href="/#faq">Veelgestelde vragen</a>
-            <a className="vl-btn vl-btn-primary" href="/#quickcheck">Check mogelijkheden →</a>
+            <a href="/#bestickering">Bestickering</a>
+            <a href="/#werkwijze">Werkwijze</a>
+            <a href="/#faq">FAQ</a>
+            <a href="/contact/">Contact</a>
+            <a className="vl-header-cta vl-header-cta-refined" href="/#quickcheck">Start aanvraag <b>↗</b></a>
           </div>
         </div>
       )}
