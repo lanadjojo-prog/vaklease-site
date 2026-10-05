@@ -1,6 +1,8 @@
 import { Header, Footer, QuickLead, ChatAssistant, FAQ, MobileSticky } from './components';
 
 const HERO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-home-hero-2026.png?v=1791188664';
+const HERO_MACHINE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-machines-2026.png?v=1791188682';
+const HERO_TRAILER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-aanhanger-2026.png?v=1791188690';
 const BRANDING = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bestickering-studio-2026.png?v=1791188699';
 
 const categories = [
@@ -36,8 +38,10 @@ export default function Home() {
       <Header />
 
       <section className="vl-vw-hero vl-conversion-hero">
-        <div className="vl-vw-hero-media">
-          <img src={HERO} alt="VakLease bedrijfswagen bij een moderne bouwlocatie" />
+        <div className="vl-vw-hero-media vl-cinematic-hero" aria-hidden="true">
+          <img className="vl-hero-frame vl-hero-frame-1" src={HERO} alt="" />
+          <img className="vl-hero-frame vl-hero-frame-2" src={HERO_MACHINE} alt="" />
+          <img className="vl-hero-frame vl-hero-frame-3" src={HERO_TRAILER} alt="" />
         </div>
         <div className="vl-vw-hero-shade"></div>
         <div className="vl-shell vl-vw-hero-content">
@@ -61,15 +65,11 @@ export default function Home() {
             <p>Heb je al iets gezien? Plak de advertentie of dealerlink. Nog niets gevonden? Vertel kort wat je zoekt.</p>
           </div>
           <QuickLead source="homepage-abovefold" />
-        </div>
-      </section>
-
-      <section className="vl-conversion-trust">
-        <div className="vl-shell vl-conversion-trust-grid">
-          <article><b>01</b><strong>Jij kiest</strong><p>Geen verplichte eigen voorraad. Zoek het object dat bij jouw bedrijf past.</p></article>
-          <article><b>02</b><strong>Wij structureren</strong><p>VakLease verzamelt de relevante gegevens voor een gerichte financieringsaanvraag.</p></article>
-          <article><b>03</b><strong>Financierende partij beoordeelt</strong><p>De uiteindelijke mogelijkheden en voorwaarden volgen uit de beoordeling van jouw dossier.</p></article>
-          <article><b>04</b><strong>Geen loze beloftes</strong><p>We beloven geen goedkeuring vooraf, maar maken de route naar een beoordeling zo duidelijk mogelijk.</p></article>
+          <div className="vl-quick-confidence">
+            <span>✓ Zelf object kiezen</span>
+            <span>✓ Nieuw of gebruikt indienen</span>
+            <span>✓ Beoordeling door financierende partij</span>
+          </div>
         </div>
       </section>
 
@@ -91,9 +91,8 @@ export default function Home() {
                   <h3>{item.label}</h3>
                   <strong>{item.title}</strong>
                   <p>{item.text}</p>
-                  <div className="vl-vw-model-actions">
+                  <div className="vl-vw-model-actions vl-vw-model-actions-simple">
                     <a className="vl-vw-btn vl-vw-btn-dark" href={item.href}>Bekijk {item.label.toLowerCase()}</a>
-                    <a className="vl-vw-btn vl-vw-btn-outline" href="#quickcheck">Check mogelijkheden</a>
                   </div>
                 </div>
               </article>
@@ -148,43 +147,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="vl-proof-explainer">
-        <div className="vl-shell vl-proof-explainer-grid">
-          <div>
-            <span>Voor je gegevens achterlaat</span>
-            <h2>Wat VakLease wel en niet doet.</h2>
-          </div>
-          <div className="vl-proof-columns">
-            <article>
-              <strong>Wel</strong>
-              <p>Je helpen de aanvraag logisch op te bouwen, objectgegevens verzamelen en het dossier begeleiden richting beoordeling.</p>
-            </article>
-            <article>
-              <strong>Niet</strong>
-              <p>Vooraf goedkeuring garanderen of doen alsof iedere ondernemer dezelfde voorwaarden krijgt. De financierende partij beslist.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
       <FAQ />
 
-      <section className="vl-vw-lead vl-second-conversion">
-        <div className="vl-shell">
-          <div className="vl-vw-lead-title">
-            <span>Klaar om te beginnen?</span>
-            <h2>Stuur eerst alleen de belangrijkste gegevens.</h2>
-            <p>Daarna bespreken we gericht wat er nog nodig is voor jouw situatie.</p>
-          </div>
-          <QuickLead source="homepage-bottom" />
-        </div>
-      </section>
-
-      <section className="vl-vw-end">
+      <section className="vl-vw-end vl-final-conversion">
         <div className="vl-shell vl-vw-end-inner">
           <div>
-            <span>Bedrijfswagen, machine of aanhanger</span>
-            <h2>Je hoeft nog niet alles te weten om te beginnen.</h2>
+            <span>Klaar om te beginnen?</span>
+            <h2>Stuur het object door. Wij pakken het vanaf daar op.</h2>
           </div>
           <a className="vl-vw-btn vl-vw-btn-dark" href="#quickcheck">Check mijn mogelijkheden</a>
         </div>
