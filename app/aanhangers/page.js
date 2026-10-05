@@ -17,8 +17,8 @@ export default function Page() {
       ['Gesloten aanhanger','Voor gereedschap en materiaal dat droog en veilig mee moet.'],
       ['Autotransporter','Voor zakelijk voertuigtransport en specialistisch gebruik.']
     ]}
-    image="https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-aanhanger-bestickering.png?v=1791187312"
-    imageAlt="VakLease aanhanger met bestickering op een industrieterrein"
+    image="https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-aanhanger-2026.png?v=1791188690"
+    imageAlt="VakLease aanhanger op industrieterrein"
     benefits={['Gericht op zakelijk gebruik','Object van dealer of leverancier zelf kiezen','Eenvoudig link of offerte meesturen','Eén aanspreekpunt voor de aanvraag']}
   />;
 }
