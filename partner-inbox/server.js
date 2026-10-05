@@ -946,6 +946,119 @@ function addressText(list) {
   return list.map(x => x.name ? `${x.name} <${x.address}>` : x.address).filter(Boolean).join(', ');
 }
 
+
+let inboxSyncRunning = false;
+
+async function inboundAlreadyStored(messageId) {
+  if (!messageId) return false;
+  if (pool) {
+    const result = await pool.query(
+      "SELECT id FROM email_log WHERE direction = 'inbound' AND message_id = $1 LIMIT 1",
+      [messageId]
+    );
+    return Boolean(result.rows[0]);
+  }
+  if (!hasSupabase) return false;
+  const rows = await supabaseRest(
+    'email_log?select=id&direction=eq.inbound&message_id=eq.' + encodeURIComponent(messageId) + '&limit=1'
+  );
+  return Boolean(rows?.[0]);
+}
+
+async function storeInboundEmail(message) {
+  if (pool) {
+    await pool.query(
+      `INSERT INTO email_log
+       (direction, partner_id, message_id, from_email, to_email, subject, body_preview, body, occurred_at)
+       VALUES ('inbound', NULL, $1, $2, $3, $4, $5, $6, $7)`,
+      [
+        message.message_id,
+        message.from_email,
+        message.to_email,
+        message.subject,
+        message.body_preview,
+        message.body,
+        message.occurred_at
+      ]
+    );
+    return;
+  }
+  await restInsert('email_log', {
+    direction: 'inbound',
+    partner_id: null,
+    message_id: message.message_id,
+    from_email: message.from_email,
+    to_email: message.to_email,
+    subject: message.subject,
+    body_preview: message.body_preview,
+    body: message.body,
+    occurred_at: message.occurred_at
+  });
+}
+
+async function syncInboundMailbox(limit = 100) {
+  if (!mailReady() || !databaseConfigured() || inboxSyncRunning) {
+    return { synced: 0, skipped: 0 };
+  }
+
+  inboxSyncRunning = true;
+  const client = imapClient();
+  let synced = 0;
+  let skipped = 0;
+
+  try {
+    await client.connect();
+    const lock = await client.getMailboxLock('INBOX');
+    try {
+      const total = client.mailbox.exists || 0;
+      if (!total) return { synced: 0, skipped: 0 };
+
+      const start = Math.max(1, total - Math.max(1, Number(limit || 100)) + 1);
+      const rows = await client.fetchAll(`${start}:*`, {
+        uid: true,
+        source: true,
+        envelope: true,
+        internalDate: true
+      });
+
+      for (const row of rows) {
+        try {
+          if (!row.source) continue;
+          const parsed = await simpleParser(row.source);
+          const messageId = String(parsed.messageId || `imap:${mailConfig.user}:${row.uid}`).trim();
+          if (await inboundAlreadyStored(messageId)) {
+            skipped += 1;
+            continue;
+          }
+
+          const body = String(parsed.text || stripHtml(parsed.html || '') || '').trim();
+          const fromEmail = parsed.from?.value?.[0]?.address || parsed.from?.text || addressText(row.envelope?.from);
+          const toEmail = parsed.to?.value?.map(x => x.address).filter(Boolean).join(', ') || parsed.to?.text || addressText(row.envelope?.to);
+
+          await storeInboundEmail({
+            message_id: messageId,
+            from_email: fromEmail || '',
+            to_email: toEmail || mailConfig.user || '',
+            subject: parsed.subject || row.envelope?.subject || '(geen onderwerp)',
+            body_preview: body.slice(0, 500),
+            body,
+            occurred_at: (parsed.date || row.internalDate || new Date()).toISOString()
+          });
+          synced += 1;
+        } catch (err) {
+          console.error('Inkomende mail opslaan mislukt:', err);
+        }
+      }
+    } finally {
+      lock.release();
+    }
+    return { synced, skipped };
+  } finally {
+    inboxSyncRunning = false;
+    try { await client.logout(); } catch {}
+  }
+}
+
 app.get('/api/health', async (req, res) => {
   let db = false;
   if (pool) {
@@ -1451,6 +1564,8 @@ initDatabase()
       console.log(`VakLease Partner Inbox draait op poort ${PORT}`);
       setTimeout(() => runLeadMachineIfDue(), 12000);
       setInterval(() => runLeadMachineIfDue(), 60 * 60 * 1000);
+      setTimeout(() => syncInboundMailbox(100).then(r => console.log('Inbox sync:', r)).catch(err => console.error('Inbox sync mislukt:', err)), 5000);
+      setInterval(() => syncInboundMailbox(100).catch(err => console.error('Inbox sync mislukt:', err)), 5 * 60 * 1000);
     });
   })
   .catch(err => {
