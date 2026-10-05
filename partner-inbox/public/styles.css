@@ -631,3 +631,18 @@ dialog{border:0;border-radius:18px;padding:0;width:min(680px,calc(100vw - 30px))
   .mail-actions{display:grid;grid-template-columns:1fr 1fr}
   .mail-actions button{width:100%;min-width:0}
 }
+
+
+/* Website lead source visibility */
+.source-chip{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#e8eef9;
+  color:#284b7a;
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+}
