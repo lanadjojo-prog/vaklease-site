@@ -569,6 +569,21 @@ async function loadApplications() {
   }
 }
 
+function leadSourceLabel(a) {
+  const detail = String(a.lead_source_detail || a.vehicle_request?.source || '').trim();
+  if (detail === 'website-chat') return 'Website chat';
+  if (detail.includes('homepage')) return 'Homepage';
+  if (detail.includes('category-')) return 'Categoriepagina';
+  if (detail.includes('contact')) return 'Contactpagina';
+  return {
+    website:'Website',
+    outreach:'Outreach',
+    referral:'Referral',
+    partner:'Partner',
+    manual:'Handmatig'
+  }[a.lead_source] || detail || a.lead_source || 'Onbekend';
+}
+
 function renderLeadStats() {
   const apps = state.applications;
   const active = apps.filter(a => !['won','lost'].includes(a.status)).length;
@@ -597,6 +612,7 @@ function renderApplications() {
     return `
       <tr>
         <td><span class="company">${escapeHtml(a.company_name || a.applicant_name || 'Onbekend')}</span><span class="sub">${escapeHtml(a.applicant_name || a.email || '')}</span></td>
+        <td><span class="source-chip">${escapeHtml(leadSourceLabel(a))}</span><span class="sub">${escapeHtml(a.lead_source_detail || '')}</span></td>
         <td>${escapeHtml(objectText)}${vr.purchase_price ? `<span class="sub">${escapeHtml(String(vr.purchase_price))}</span>` : ''}</td>
         <td><span class="status-chip status-${escapeHtml(a.status)}">${escapeHtml(leadStatusLabel(a.status))}</span></td>
         <td>${escapeHtml(partner?.company_name || '—')}</td>
@@ -634,6 +650,7 @@ function openLeadDialog(id = '') {
     form.elements.phone.value = a.phone || '';
     form.elements.kvk.value = a.kvk || '';
     form.elements.lead_source.value = a.lead_source || 'manual';
+    form.elements.lead_source_detail.value = a.lead_source_detail || vr.source || '';
     form.elements.category.value = vr.category || '';
     form.elements.purchase_price.value = vr.purchase_price || '';
     form.elements.product_url.value = vr.product_url || '';
@@ -647,6 +664,7 @@ function openLeadDialog(id = '') {
     form.elements.notes.value = a.notes || '';
   } else {
     form.elements.lead_source.value = 'manual';
+    form.elements.lead_source_detail.value = '';
     form.elements.status.value = 'new';
     form.elements.commission_status.value = 'none';
   }
@@ -681,6 +699,7 @@ $('#leadForm')?.addEventListener('submit', async e => {
   };
   const tracking = {
     lead_source:v.lead_source || 'manual',
+    lead_source_detail:v.lead_source_detail || null,
     assigned_partner_id:v.assigned_partner_id || null,
     expected_commission:Number(String(v.expected_commission || '0').replace(',','.')) || 0,
     earned_commission:Number(String(v.earned_commission || '0').replace(',','.')) || 0,
