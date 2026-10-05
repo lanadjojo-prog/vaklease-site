@@ -17,8 +17,8 @@ export default function Page() {
       ['Heftruck & hoogwerker','Voor logistiek, montage, magazijn en werken op hoogte.'],
       ['Overige bedrijfsmachines','Stuur het type, de prijs en bij voorkeur een link naar het object.']
     ]}
-    image="https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machines-bestickering.png?v=1791187301"
-    imageAlt="VakLease machines met bestickering op een bouwterrein"
+    image="https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-machines-2026.png?v=1791188682"
+    imageAlt="VakLease machines op industrieterrein"
     benefits={['Aanvraag op basis van het concrete bedrijfsmiddel','Link of offerte van leverancier meesturen','Geschikt voor uiteenlopende vakbedrijven','VakLease begeleidt de intake richting leasepartner']}
   />;
 }
