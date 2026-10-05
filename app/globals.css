@@ -4840,3 +4840,202 @@ body{
     padding-top:78px!important;
   }
 }
+
+
+/* ===== Desktop visual scale / zoom-out pass · 2026-10-05 ===== */
+@media(min-width:1051px){
+  /* More canvas around the content */
+  .vl-shell{
+    width:min(1320px,calc(100% - 120px))!important;
+  }
+
+  /* Header */
+  .vl-header-inner{
+    height:68px!important;
+  }
+  .vl-logo img{
+    height:36px!important;
+  }
+  .vl-nav{
+    gap:26px!important;
+    font-size:12px!important;
+  }
+  .vl-header-cta{
+    padding:11px 18px!important;
+    font-size:12px!important;
+  }
+
+  /* Hero: same composition, lighter visual scale */
+  .vl-guided-hero{
+    padding-top:108px!important;
+    padding-bottom:150px!important;
+  }
+  .vl-guided-copy{
+    max-width:820px!important;
+    margin-bottom:62px!important;
+  }
+  .vl-guided-copy h1{
+    font-size:clamp(48px,4.7vw,66px)!important;
+    line-height:1!important;
+  }
+  .vl-guided-copy p{
+    max-width:650px!important;
+    margin-top:22px!important;
+    font-size:15px!important;
+  }
+  .vl-guided-stage{
+    grid-template-columns:minmax(0,1.72fr) minmax(350px,.68fr)!important;
+  }
+  .vl-guided-visual{
+    min-height:540px!important;
+    margin-right:-104px!important;
+  }
+  .vl-guided-visual>img{
+    width:106%!important;
+    bottom:-12px!important;
+  }
+  .vl-guided-card{
+    min-height:540px!important;
+    padding:27px!important;
+    border-radius:24px!important;
+  }
+  .vl-guided-card-badge{
+    min-height:40px!important;
+    min-width:120px!important;
+    font-size:10px!important;
+  }
+  .vl-guided-card h2{
+    font-size:clamp(30px,2.5vw,38px)!important;
+  }
+  .vl-guided-card>p{
+    font-size:12px!important;
+    margin:14px 0 18px!important;
+  }
+  .vl-guided-card .vl-conversion-fields select,
+  .vl-guided-card .vl-conversion-fields input{
+    height:43px!important;
+  }
+  .vl-guided-card .vl-conversion-fields .vl-btn{
+    min-height:44px!important;
+  }
+  .vl-guided-callout{
+    padding:10px 13px!important;
+    font-size:11px!important;
+  }
+
+  /* Category/model section */
+  .vl-vw-models{
+    padding-top:96px!important;
+    padding-bottom:102px!important;
+  }
+  .vl-vw-section-title{
+    max-width:800px!important;
+    margin-bottom:40px!important;
+  }
+  .vl-vw-section-title h2{
+    font-size:clamp(34px,3.4vw,50px)!important;
+  }
+  .vl-section-subcopy{
+    max-width:620px!important;
+    font-size:14px!important;
+  }
+  .vl-vw-model-grid{
+    gap:16px!important;
+  }
+  .vl-vw-model-card{
+    border-radius:15px!important;
+  }
+  .vl-vw-model-body{
+    padding:23px!important;
+  }
+  .vl-vw-model-body h3{
+    font-size:24px!important;
+  }
+  .vl-vw-model-body>strong{
+    font-size:14px!important;
+  }
+  .vl-vw-model-body>p{
+    font-size:13px!important;
+    min-height:58px!important;
+  }
+  .vl-vw-btn{
+    min-height:46px!important;
+    padding:0 22px!important;
+    font-size:13px!important;
+  }
+
+  /* Process */
+  .vl-vw-process{
+    padding:96px 0!important;
+  }
+  .vl-vw-process-grid{
+    gap:46px!important;
+    margin-top:46px!important;
+  }
+  .vl-vw-process-grid h3{
+    font-size:23px!important;
+  }
+  .vl-vw-process-grid p{
+    font-size:14px!important;
+  }
+
+  /* Branding feature */
+  .vl-vw-feature{
+    padding:90px 0!important;
+  }
+  .vl-vw-feature-panel{
+    min-height:500px!important;
+    border-radius:22px!important;
+  }
+  .vl-vw-feature-copy{
+    padding:56px 28px 56px 56px!important;
+  }
+  .vl-vw-feature-copy h2{
+    font-size:clamp(34px,3.6vw,50px)!important;
+  }
+  .vl-vw-feature-copy p{
+    font-size:15px!important;
+  }
+  .vl-vw-feature-image,
+  .vl-vw-feature-before-after{
+    min-height:420px!important;
+    margin:38px -30px 38px 0!important;
+    border-radius:22px!important;
+  }
+
+  /* FAQ */
+  .vl-faq-section{
+    padding:96px 0!important;
+  }
+  .vl-faq-layout{
+    gap:78px!important;
+  }
+  .vl-faq-intro h2{
+    font-size:clamp(34px,3.4vw,46px)!important;
+  }
+  .vl-faq-list summary{
+    padding:21px 2px!important;
+    font-size:15px!important;
+  }
+
+  /* Final CTA */
+  .vl-final-conversion{
+    padding-top:76px!important;
+    padding-bottom:76px!important;
+  }
+  .vl-vw-end h2{
+    font-size:clamp(30px,3vw,44px)!important;
+  }
+
+  /* Footer */
+  .vl-footer-premium .vl-footer-cta{
+    padding:42px 0 38px!important;
+  }
+  .vl-footer-cta h2{
+    font-size:clamp(28px,2.8vw,40px)!important;
+  }
+  .vl-footer-premium .vl-footer-top{
+    gap:52px!important;
+    padding:50px 0 42px!important;
+  }
+}
