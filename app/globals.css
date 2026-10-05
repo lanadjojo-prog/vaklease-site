@@ -5239,3 +5239,19 @@ body{
     margin-left:auto!important;
   }
 }
+
+
+/* ===== Mobile hero layering fix · 2026-10-05 =====
+   Keep the right-hand feature pill behind the van instead of covering it. */
+@media(max-width:700px){
+  .vl-guided-visual>img{
+    z-index:3!important;
+  }
+  .vl-guided-callout-a,
+  .vl-guided-callout-b{
+    z-index:5!important;
+  }
+  .vl-guided-callout-c{
+    z-index:2!important;
+  }
+}
