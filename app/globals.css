@@ -2384,3 +2384,140 @@ body{
   .vl-category-visual-overlay{left:18px;bottom:17px}
   .vl-footer{padding-top:44px}
 }
+
+
+/* ===== Branded imagery + bus branding section · 2026-10-05 ===== */
+.vl-category-photo{
+  height:auto;
+  aspect-ratio:16/9;
+}
+.vl-category-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center center;
+}
+.vl-category-visual-photo{
+  height:auto;
+  aspect-ratio:16/9;
+}
+.vl-category-visual-photo>img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center center;
+}
+
+.vl-branding-section{
+  padding:96px 0;
+  background:#fff;
+}
+.vl-branding-grid{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:72px;
+  align-items:center;
+}
+.vl-branding-visual{
+  position:relative;
+  overflow:hidden;
+  border-radius:28px;
+  aspect-ratio:16/9;
+  background:#e9eef5;
+  box-shadow:0 24px 60px rgba(10,38,82,.10);
+}
+.vl-branding-visual:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,transparent 62%,rgba(4,17,43,.20));
+}
+.vl-branding-visual img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center center;
+}
+.vl-branding-badge{
+  position:absolute;
+  top:18px;
+  right:18px;
+  z-index:2;
+  padding:10px 14px;
+  border-radius:999px;
+  background:var(--vl-orange);
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 10px 26px rgba(255,122,26,.28);
+}
+.vl-branding-copy h2{
+  max-width:570px;
+  margin:0 0 20px;
+  color:var(--vl-navy);
+  font-size:clamp(38px,4vw,56px);
+  line-height:1.02;
+  letter-spacing:-.045em;
+}
+.vl-branding-copy h2 span{color:var(--vl-blue)}
+.vl-branding-copy>p{
+  max-width:570px;
+  margin:0;
+  color:var(--vl-muted);
+  font-size:16px;
+  line-height:1.72;
+}
+.vl-branding-points{
+  display:grid;
+  gap:0;
+  margin:30px 0 34px;
+}
+.vl-branding-points>div{
+  display:grid;
+  grid-template-columns:42px 1fr;
+  gap:14px;
+  align-items:start;
+  padding:16px 0;
+  border-bottom:1px solid #e7ecf3;
+}
+.vl-branding-points>div:last-child{border-bottom:0}
+.vl-branding-points b{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#fff1e6;
+  color:var(--vl-orange);
+  font-size:11px;
+  font-weight:900;
+}
+.vl-branding-points span{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.vl-branding-points strong{
+  color:var(--vl-navy);
+  font-size:14px;
+}
+.vl-branding-points small{
+  color:#7a8799;
+  font-size:12px;
+  line-height:1.5;
+}
+
+@media(max-width:900px){
+  .vl-branding-grid{
+    grid-template-columns:1fr;
+    gap:42px;
+  }
+}
+@media(max-width:600px){
+  .vl-branding-section{padding:66px 0}
+  .vl-branding-visual{border-radius:22px}
+  .vl-branding-badge{top:12px;right:12px;font-size:11px;padding:9px 12px}
+  .vl-branding-copy h2{font-size:36px}
+}
