@@ -43,12 +43,7 @@ export default function Home() {
         <div className="vl-shell vl-vw-hero-content">
           <span className="vl-vw-eyebrow">Zakelijke lease voor vakbedrijven</span>
           <h1>Object gevonden? <span>Stuur de link.</span></h1>
-          <p>Bedrijfswagen, machine of aanhanger: jij kiest het object bij een dealer of leverancier. VakLease helpt je de financieringsaanvraag gericht in gang te zetten.</p>
-          <div className="vl-hero-proofline">
-            <span>✓ Zelf leverancier kiezen</span>
-            <span>✓ Ook gebruikt indienen</span>
-            <span>✓ Eén aanspreekpunt voor de intake</span>
-          </div>
+          <p>Jij kiest de bedrijfswagen, machine of aanhanger. VakLease begeleidt de aanvraag van intake tot beoordeling.</p>
           <div className="vl-vw-actions">
             <a className="vl-vw-btn vl-vw-btn-light" href="#quickcheck">Check mijn mogelijkheden</a>
             <a className="vl-vw-btn vl-vw-btn-outline-light" href="#mogelijkheden">Ik zoek nog een object</a>
