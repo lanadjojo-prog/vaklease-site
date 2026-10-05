@@ -1,9 +1,9 @@
 import { Header, Footer, QuickLead, ChatAssistant, FAQ, MobileSticky } from './components';
 
-const HERO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-home-hero-2026.png?v=1791188664';
+const HERO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-vrijstaande-bus.png?v=1791198370';
 const HERO_MACHINE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-machines-2026.png?v=1791188682';
 const HERO_TRAILER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-aanhanger-2026.png?v=1791188690';
-const BRANDING = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bestickering-studio-2026.png?v=1791188699';
+const BRANDING = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-before-after-bestickering_41b0cc7d-311e-45fa-996e-2c4bc842fb42.png?v=1791198380';
 
 const categories = [
   {
@@ -47,7 +47,7 @@ export default function Home() {
 
           <div className="vl-guided-stage">
             <div className="vl-guided-visual">
-              <img src={HERO} alt="VakLease bedrijfswagen bij een moderne bouwlocatie" />
+              <img src={HERO} alt="Vrijstaande VakLease bedrijfswagen in witte studio" />
               <div className="vl-guided-callout vl-guided-callout-a"><b>✓</b><span>Zelf dealer of leverancier kiezen</span></div>
               <div className="vl-guided-callout vl-guided-callout-b"><b>✓</b><span>Nieuw of gebruikt indienen</span></div>
               <div className="vl-guided-callout vl-guided-callout-c"><b>✓</b><span>Bestickering als extra optie</span></div>
@@ -128,16 +128,15 @@ export default function Home() {
           <div className="vl-vw-feature-panel">
             <div className="vl-vw-feature-copy">
               <span className="vl-vw-eyebrow">Extra voor bedrijfswagens</span>
-              <h2>Leasebus gevonden? Maak er meteen een <strong>rijdend visitekaartje</strong> van.</h2>
-              <p>Naast de lease-intake kun je ook een vrijblijvend ontwerpvoorstel voor de bestickering aanvragen. Zo zie je vooraf hoe je bus eruit kan komen te zien.</p>
+              <h2>Van standaard bus naar <strong>rijdend visitekaartje.</strong></h2>
+              <p>Bekijk direct het verschil tussen een onbestickerde bus en een professionele VakLease-uitwerking. Naast de lease-intake kun je een vrijblijvend ontwerpvoorstel aanvragen.</p>
               <div className="vl-vw-feature-actions">
                 <a className="vl-vw-btn vl-vw-btn-light" href="/contact/">Vraag gratis ontwerp aan</a>
                 <a className="vl-vw-btn vl-vw-btn-outline-light" href="/bedrijfswagens/">Bekijk bedrijfswagens</a>
               </div>
             </div>
-            <div className="vl-vw-feature-image">
-              <img src={BRANDING} alt="VakLease ontwerpstudio voor bedrijfswagenbestickering" loading="lazy" />
-              <span>Vrijblijvend ontwerpvoorstel</span>
+            <div className="vl-vw-feature-image vl-vw-feature-before-after">
+              <img src={BRANDING} alt="Voor en na bestickering van dezelfde bedrijfswagen" loading="lazy" />
             </div>
           </div>
         </div>
