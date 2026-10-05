@@ -61,21 +61,27 @@ app.post('/api/public-applications', publicApplicationLimiter, async (req, res, 
     category: String(a.category || '').slice(0, 80),
     product_url: String(a.product_url || '').slice(0, 1000),
     purchase_price: String(a.purchase_price || '').slice(0, 80),
-    object_description: String(a.object_description || '').slice(0, 1000),
-    source: String(a.source || 'website').slice(0, 80)
+    object_description: String(a.object_description || '').slice(0, 2000),
+    source: String(a.source || 'website').slice(0, 120),
+    page_url: String(a.page_url || '').slice(0, 1000),
+    journey: String(a.journey || '').slice(0, 120)
   };
 
   try {
     const result = await dbQuery(
-      `INSERT INTO lease_applications (applicant_name, company_name, email, phone, kvk, vehicle_request, status, consent_at)
-       VALUES ($1,$2,$3,$4,$5,$6::jsonb,'new',NOW()) RETURNING id, created_at`,
+      `INSERT INTO lease_applications (applicant_name, company_name, email, phone, kvk, vehicle_request, status, consent_at, lead_source, lead_source_detail, notes)
+       VALUES ($1,$2,$3,$4,$5,$6::jsonb,'new',NOW(),'website',$7,$8) RETURNING id, created_at`,
       [
         String(a.applicant_name || '').trim().slice(0, 160) || null,
         String(a.company_name || '').trim().slice(0, 200) || null,
         email.slice(0, 240) || null,
         phone.slice(0, 80) || null,
         String(a.kvk || '').trim().slice(0, 40) || null,
-        JSON.stringify(request)
+        JSON.stringify(request),
+        request.source || 'website',
+        request.source === 'website-chat'
+          ? ('Chat-aanvraag' + (request.page_url ? ' via ' + request.page_url : ''))
+          : null
       ]
     );
     res.status(201).json({ ok: true, application: result.rows[0] });
@@ -388,7 +394,7 @@ async function dbQuery(text, params = []) {
   }
   if (q.startsWith('INSERT INTO lease_applications')) {
     const request = typeof params[5] === 'string' ? JSON.parse(params[5] || '{}') : (params[5] || {});
-    const isPublic = params.length === 6;
+    const isPublic = q.includes("VALUES ($1,$2,$3,$4,$5,$6::jsonb,'new',NOW()");
     const row = await restInsert('lease_applications', {
       applicant_name: params[0],
       company_name: params[1],
@@ -398,7 +404,9 @@ async function dbQuery(text, params = []) {
       vehicle_request: request,
       status: isPublic ? 'new' : (params[6] || 'new'),
       consent_at: isPublic ? new Date().toISOString() : (params[7] || null),
-      lead_source: request.source || (isPublic ? 'website' : 'manual')
+      lead_source: isPublic ? 'website' : (request.source || 'manual'),
+      lead_source_detail: isPublic ? (params[6] || request.source || 'website') : null,
+      notes: isPublic ? (params[7] || null) : null
     });
     return { rows: row ? [row] : [] };
   }
