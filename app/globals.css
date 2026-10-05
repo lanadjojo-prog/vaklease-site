@@ -4523,3 +4523,163 @@ body{
     min-height:300px!important;
   }
 }
+
+
+/* ===== Hero integration refinement · 2026-10-05 =====
+   Make the van a freestanding hero object instead of an image card. */
+.vl-guided-hero{
+  position:relative;
+  padding:88px 0 92px;
+  background:
+    radial-gradient(circle at 26% 72%,rgba(17,27,54,.035),transparent 30%),
+    linear-gradient(180deg,#ffffff 0%,#fbfcfd 100%);
+  overflow:hidden;
+}
+.vl-guided-stage{
+  grid-template-columns:minmax(0,1.62fr) minmax(390px,.72fr)!important;
+  gap:18px!important;
+  align-items:stretch;
+}
+.vl-guided-visual{
+  position:relative;
+  min-height:590px!important;
+  margin-left:-3.5vw;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.vl-guided-visual:before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  left:7%;
+  right:7%;
+  bottom:4px;
+  height:88px;
+  background:radial-gradient(ellipse at center,rgba(22,34,62,.14) 0%,rgba(22,34,62,.07) 38%,rgba(22,34,62,0) 72%);
+  filter:blur(11px);
+  transform:scaleY(.48);
+  pointer-events:none;
+}
+.vl-guided-visual:after{
+  display:none!important;
+}
+.vl-guided-visual>img{
+  position:absolute!important;
+  z-index:1;
+  left:-2.5%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:-16px!important;
+  width:108%!important;
+  height:auto!important;
+  max-width:none!important;
+  object-fit:contain!important;
+  object-position:left bottom!important;
+  transform:none!important;
+  filter:drop-shadow(0 22px 22px rgba(16,27,54,.055));
+}
+.vl-guided-callout{
+  z-index:3!important;
+  background:rgba(255,255,255,.90)!important;
+  border:1px solid rgba(214,221,231,.9)!important;
+  box-shadow:0 10px 28px rgba(18,31,58,.07)!important;
+  backdrop-filter:blur(14px);
+}
+.vl-guided-callout-a{
+  left:2%!important;
+  top:18px!important;
+}
+.vl-guided-callout-b{
+  left:8%!important;
+  bottom:20px!important;
+}
+.vl-guided-callout-c{
+  right:2%!important;
+  top:18px!important;
+}
+.vl-guided-card{
+  margin-top:0;
+  align-self:stretch;
+}
+
+/* Slightly more breathing room above the object so the image feels integrated with the page */
+.vl-guided-copy{
+  margin-bottom:42px!important;
+}
+
+@media(max-width:1180px){
+  .vl-guided-stage{
+    grid-template-columns:minmax(0,1.45fr) minmax(360px,.78fr)!important;
+  }
+  .vl-guided-visual{
+    min-height:540px!important;
+    margin-left:-2vw;
+  }
+  .vl-guided-visual>img{
+    left:-5%!important;
+    width:114%!important;
+  }
+}
+@media(max-width:1050px){
+  .vl-guided-stage{
+    grid-template-columns:1fr!important;
+    gap:24px!important;
+  }
+  .vl-guided-visual{
+    min-height:500px!important;
+    margin-left:0;
+  }
+  .vl-guided-visual>img{
+    left:50%!important;
+    bottom:-10px!important;
+    width:96%!important;
+    max-width:900px!important;
+    transform:translateX(-50%)!important;
+    object-position:center bottom!important;
+  }
+  .vl-guided-visual:before{
+    left:15%;
+    right:15%;
+  }
+  .vl-guided-callout-a{left:3%!important}
+  .vl-guided-callout-c{right:3%!important}
+  .vl-guided-callout-b{left:7%!important}
+}
+@media(max-width:700px){
+  .vl-guided-hero{
+    padding:56px 0 64px;
+  }
+  .vl-guided-visual{
+    min-height:390px!important;
+  }
+  .vl-guided-visual>img{
+    width:108%!important;
+    max-width:none!important;
+    bottom:-4px!important;
+  }
+  .vl-guided-visual:before{
+    left:9%;
+    right:9%;
+    bottom:-2px;
+    height:56px;
+  }
+  .vl-guided-callout{
+    max-width:205px!important;
+    font-size:9px!important;
+  }
+  .vl-guided-callout-a{
+    left:0!important;
+    top:2px!important;
+  }
+  .vl-guided-callout-c{
+    right:0!important;
+    top:2px!important;
+  }
+  .vl-guided-callout-b{
+    left:2%!important;
+    bottom:5px!important;
+  }
+}
