@@ -41,7 +41,6 @@ export function Header() {
             <a href="/aanhangers/">Aanhangers</a>
             <a href="/#bestickering">Busbestickering</a>
             <a href="/#werkwijze">Zo werkt het</a>
-            <a href="/#bestickering">Busbestickering</a>
             <a href="/contact/">Contact</a>
           </nav>
           <a className="vl-btn vl-btn-primary vl-header-cta" href="/contact/">Lease aanvragen <span>→</span></a>
