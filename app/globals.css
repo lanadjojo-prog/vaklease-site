@@ -3732,3 +3732,24 @@ body{
     bottom:136px!important;
   }
 }
+
+
+.vl-contact-hero-conversion{
+  padding:78px 0 72px;
+}
+.vl-contact-hero-conversion p{
+  max-width:800px;
+}
+.vl-contact-proof{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 22px;
+  margin-top:24px;
+  color:#46556d;
+  font-size:13px;
+  font-weight:700;
+}
+@media(max-width:600px){
+  .vl-contact-hero-conversion{padding:48px 0 46px}
+  .vl-contact-proof{gap:8px 14px;font-size:11px}
+}
