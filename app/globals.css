@@ -4170,3 +4170,307 @@ body{
     padding-bottom:64px;
   }
 }
+
+
+/* ===== Guided conversion hero · 2026-10-05 ===== */
+.vl-guided-hero{
+  padding:86px 0 96px;
+  background:#fff;
+  overflow:hidden;
+}
+.vl-guided-copy{
+  max-width:900px;
+  margin:0 auto 58px;
+  text-align:center;
+}
+.vl-guided-copy>span{
+  display:block;
+  margin-bottom:16px;
+  color:#6d7890;
+  font-size:12px;
+  font-weight:750;
+  letter-spacing:.025em;
+}
+.vl-guided-copy h1{
+  margin:0;
+  color:#0f1a3b;
+  font-size:clamp(48px,5.6vw,78px);
+  line-height:.98;
+  letter-spacing:-.055em;
+  font-weight:650;
+}
+.vl-guided-copy h1 strong{
+  color:#0b4ec6;
+  font-weight:750;
+}
+.vl-guided-copy p{
+  max-width:720px;
+  margin:24px auto 0;
+  color:#5f6b80;
+  font-size:17px;
+  line-height:1.68;
+}
+.vl-guided-stage{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1.48fr) minmax(360px,.72fr);
+  gap:28px;
+  align-items:stretch;
+}
+.vl-guided-visual{
+  position:relative;
+  min-height:520px;
+  border-radius:28px;
+  overflow:hidden;
+  background:#edf1f5;
+}
+.vl-guided-visual:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(9,20,44,0) 45%,rgba(9,20,44,.16) 100%);
+}
+.vl-guided-visual>img{
+  position:absolute;
+  inset:0;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  object-fit:cover!important;
+  object-position:center 54%!important;
+  transform:none!important;
+}
+.vl-guided-callout{
+  position:absolute;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  max-width:290px;
+  padding:12px 15px;
+  border-radius:999px;
+  background:rgba(255,255,255,.96);
+  border:1px solid rgba(16,27,54,.08);
+  box-shadow:0 12px 30px rgba(16,27,54,.12);
+  color:#1b2844;
+  font-size:12px;
+  font-weight:750;
+  backdrop-filter:blur(8px);
+}
+.vl-guided-callout b{
+  color:#1bb56b;
+  font-size:14px;
+}
+.vl-guided-callout-a{left:22px;top:26px}
+.vl-guided-callout-b{left:22px;bottom:26px}
+.vl-guided-callout-c{right:22px;top:26px}
+
+.vl-guided-card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  min-height:520px;
+  padding:32px;
+  border-radius:28px;
+  background:#0f1a3b;
+  color:#fff;
+  box-shadow:0 20px 55px rgba(15,26,59,.12);
+}
+.vl-guided-card-badge{
+  position:absolute;
+  top:-18px;
+  right:22px;
+  display:grid;
+  place-items:center;
+  min-width:132px;
+  min-height:44px;
+  padding:0 16px;
+  border-radius:999px;
+  background:#ff7417;
+  color:#fff;
+  font-size:11px;
+  font-weight:850;
+  box-shadow:0 10px 24px rgba(255,116,23,.25);
+}
+.vl-guided-card-kicker{
+  display:block;
+  margin-bottom:10px;
+  color:#aeb9cc;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.vl-guided-card h2{
+  max-width:420px;
+  margin:0;
+  color:#fff;
+  font-size:clamp(32px,3vw,43px);
+  line-height:1.02;
+  letter-spacing:-.045em;
+}
+.vl-guided-card>p{
+  margin:16px 0 22px;
+  color:#c8d0dd;
+  font-size:13px;
+  line-height:1.6;
+}
+.vl-guided-card .vl-conversion-form{
+  display:block;
+  color:#fff!important;
+}
+.vl-guided-card .vl-route-switch{
+  width:100%;
+  grid-template-columns:1fr 1fr;
+  margin-bottom:13px;
+  background:rgba(255,255,255,.09);
+}
+.vl-guided-card .vl-route-switch button{
+  min-height:40px;
+  padding:0 8px;
+  color:#c8d0dd;
+  font-size:10px;
+}
+.vl-guided-card .vl-route-switch button.active{
+  background:#fff;
+  color:#0f1a3b;
+}
+.vl-guided-card .vl-conversion-fields{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:9px!important;
+}
+.vl-guided-card .vl-conversion-fields>*,
+.vl-guided-card .vl-conversion-fields .vl-btn{
+  grid-column:1!important;
+  width:100%;
+}
+.vl-guided-card .vl-conversion-fields select,
+.vl-guided-card .vl-conversion-fields input{
+  height:46px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#17213b!important;
+  font-size:11px!important;
+}
+.vl-guided-card .vl-conversion-fields .vl-btn{
+  margin-top:2px;
+  min-height:48px;
+  background:#fff;
+  color:#111b36;
+  border-color:#fff;
+  font-size:12px;
+  font-weight:850;
+}
+.vl-guided-card .vl-conversion-foot{
+  align-items:flex-start;
+  flex-direction:column;
+  gap:7px;
+  margin-top:10px;
+}
+.vl-guided-card .vl-quick-consent{
+  color:#aeb9cc!important;
+}
+.vl-guided-card .vl-no-obligation{
+  color:#8f9bb1;
+}
+.vl-guided-card-trust{
+  display:grid;
+  gap:7px;
+  margin-top:auto;
+  padding-top:18px;
+  border-top:1px solid rgba(255,255,255,.13);
+  color:#cbd3e0;
+  font-size:10px;
+  font-weight:650;
+}
+.vl-guided-card .vl-quick-success{
+  margin-top:16px!important;
+  background:#fff!important;
+  color:#164f3f!important;
+}
+
+/* Remove obsolete above-fold spacing if old CSS is still cached */
+.vl-abovefold-check{display:none!important}
+
+@media(max-width:1050px){
+  .vl-guided-stage{
+    grid-template-columns:1fr;
+  }
+  .vl-guided-visual{
+    min-height:460px;
+  }
+  .vl-guided-card{
+    min-height:0;
+  }
+  .vl-guided-card .vl-conversion-fields{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .vl-guided-card .vl-conversion-fields>*{
+    grid-column:auto!important;
+  }
+  .vl-guided-card .vl-conversion-fields .vl-btn{
+    grid-column:1/-1!important;
+  }
+  .vl-guided-card-trust{
+    grid-template-columns:repeat(3,1fr);
+    margin-top:20px;
+  }
+}
+@media(max-width:700px){
+  .vl-guided-hero{
+    padding:54px 0 68px;
+  }
+  .vl-guided-copy{
+    margin-bottom:36px;
+  }
+  .vl-guided-copy h1{
+    font-size:43px;
+  }
+  .vl-guided-copy p{
+    margin-top:18px;
+    font-size:15px;
+  }
+  .vl-guided-stage{
+    gap:18px;
+  }
+  .vl-guided-visual{
+    min-height:355px;
+    border-radius:20px;
+  }
+  .vl-guided-callout{
+    max-width:220px;
+    padding:9px 11px;
+    font-size:9px;
+  }
+  .vl-guided-callout-a{left:12px;top:12px}
+  .vl-guided-callout-b{left:12px;bottom:12px}
+  .vl-guided-callout-c{right:12px;top:auto;bottom:12px}
+  .vl-guided-card{
+    padding:24px 18px 20px;
+    border-radius:20px;
+  }
+  .vl-guided-card-badge{
+    top:-14px;
+    right:14px;
+    min-width:0;
+    min-height:36px;
+    font-size:9px;
+  }
+  .vl-guided-card h2{
+    font-size:34px;
+  }
+  .vl-guided-card .vl-conversion-fields{
+    grid-template-columns:1fr!important;
+  }
+  .vl-guided-card .vl-conversion-fields>*,
+  .vl-guided-card .vl-conversion-fields .vl-btn{
+    grid-column:1!important;
+  }
+  .vl-guided-card-trust{
+    grid-template-columns:1fr;
+  }
+}
