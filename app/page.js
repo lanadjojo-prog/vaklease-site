@@ -37,38 +37,34 @@ export default function Home() {
     <main>
       <Header />
 
-      <section className="vl-vw-hero vl-conversion-hero">
-        <div className="vl-vw-hero-media vl-cinematic-hero" aria-hidden="true">
-          <img className="vl-hero-frame vl-hero-frame-1" src={HERO} alt="" />
-          <img className="vl-hero-frame vl-hero-frame-2" src={HERO_MACHINE} alt="" />
-          <img className="vl-hero-frame vl-hero-frame-3" src={HERO_TRAILER} alt="" />
-        </div>
-        <div className="vl-vw-hero-shade"></div>
-        <div className="vl-shell vl-vw-hero-content">
-          <span className="vl-vw-eyebrow">Zakelijke lease voor vakbedrijven</span>
-          <h1>Object gevonden? <span>Stuur de link.</span></h1>
-          <p>Jij kiest de bedrijfswagen, machine of aanhanger. VakLease begeleidt de aanvraag van intake tot beoordeling.</p>
-          <div className="vl-vw-actions">
-            <a className="vl-vw-btn vl-vw-btn-light" href="#quickcheck">Check mijn mogelijkheden</a>
-            <a className="vl-vw-btn vl-vw-btn-outline-light" href="#mogelijkheden">Ik zoek nog een object</a>
-          </div>
-        </div>
-      </section>
-
-      <section className="vl-abovefold-check" id="quickcheck">
+      <section className="vl-guided-hero">
         <div className="vl-shell">
-          <div className="vl-abovefold-head">
-            <div>
-              <span>Begin met 4 gegevens</span>
-              <h2>Geen lang formulier. Eerst kijken wat er mogelijk is.</h2>
-            </div>
-            <p>Heb je al iets gezien? Plak de advertentie of dealerlink. Nog niets gevonden? Vertel kort wat je zoekt.</p>
+          <div className="vl-guided-copy">
+            <span>Zakelijke lease voor vakbedrijven</span>
+            <h1>Lease wat je nodig hebt <strong>voor je werk.</strong></h1>
+            <p>Bedrijfswagen, machine of aanhanger. Jij kiest het object en de leverancier; VakLease helpt je de aanvraag gericht op weg.</p>
           </div>
-          <QuickLead source="homepage-abovefold" />
-          <div className="vl-quick-confidence">
-            <span>✓ Zelf object kiezen</span>
-            <span>✓ Nieuw of gebruikt indienen</span>
-            <span>✓ Beoordeling door financierende partij</span>
+
+          <div className="vl-guided-stage">
+            <div className="vl-guided-visual">
+              <img src={HERO} alt="VakLease bedrijfswagen bij een moderne bouwlocatie" />
+              <div className="vl-guided-callout vl-guided-callout-a"><b>✓</b><span>Zelf dealer of leverancier kiezen</span></div>
+              <div className="vl-guided-callout vl-guided-callout-b"><b>✓</b><span>Nieuw of gebruikt indienen</span></div>
+              <div className="vl-guided-callout vl-guided-callout-c"><b>✓</b><span>Bestickering als extra optie</span></div>
+            </div>
+
+            <aside className="vl-guided-card" id="quickcheck">
+              <div className="vl-guided-card-badge">Vrijblijvende intake</div>
+              <span className="vl-guided-card-kicker">Start hier</span>
+              <h2>Vertel ons wat je wilt leasen.</h2>
+              <p>Heb je al iets gevonden? Plak de link. Nog aan het zoeken? Vertel kort wat je nodig hebt.</p>
+              <QuickLead source="homepage-hero" compact />
+              <div className="vl-guided-card-trust">
+                <span>✓ Eén aanspreekpunt</span>
+                <span>✓ Geen verplichte voorraad</span>
+                <span>✓ Beoordeling door financierende partij</span>
+              </div>
+            </aside>
           </div>
         </div>
       </section>
