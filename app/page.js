@@ -1,6 +1,7 @@
 import { Header, Footer, QuickLead, ChatAssistant } from './components';
 
 const HERO_SCENE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-netherlands-realistic.png?v=1790691711';
+const BRANDING_STUDIO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bestickering-ontwerpstudio.png?v=1791187323';
 
 const categories = [
   {
@@ -8,24 +9,24 @@ const categories = [
     label: 'Bedrijfswagens',
     title: 'De juiste bus voor jouw werk.',
     text: 'Van compacte bestelbus tot grote bedrijfswagen. Nieuw of gebruikt: jij kiest het object.',
-    image: 'https://images.unsplash.com/photo-1780490103753-378c2f39ae7a?auto=format&fit=crop&fm=jpg&q=82&w=1400',
-    alt: 'Witte bedrijfswagen in een Nederlandse straat'
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bedrijfswagen-bestickering.png?v=1791187288',
+    alt: 'VakLease bedrijfswagen met bestickering op een bouwplaats'
   },
   {
     href: '/machines/',
     label: 'Machines',
     title: 'Capaciteit toevoegen zonder alles direct af te rekenen.',
     text: 'Voor onder meer minigravers, shovels, heftrucks, hoogwerkers en andere zakelijke machines.',
-    image: 'https://images.pexels.com/photos/3964459/pexels-photo-3964459.jpeg?auto=compress&cs=tinysrgb&w=1400',
-    alt: 'Zakelijke bouwmachine op een bedrijfsterrein'
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machines-bestickering.png?v=1791187301',
+    alt: 'VakLease machines met bestickering op een bouwterrein'
   },
   {
     href: '/aanhangers/',
     label: 'Aanhangers',
     title: 'Meer materieel mee naar iedere klus.',
     text: 'Van machinetransporter en kipper tot gesloten aanhanger of autotransporter.',
-    image: 'https://images.pexels.com/photos/38095094/pexels-photo-38095094/free-photo-of-yellow-construction-vehicle-on-flatbed-trailer.jpeg?auto=compress&cs=tinysrgb&w=1400',
-    alt: 'Flatbed aanhanger met bouwmaterieel'
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-aanhanger-bestickering.png?v=1791187312',
+    alt: 'VakLease aanhanger met bestickering op een industrieterrein'
   }
 ];
 
@@ -88,6 +89,26 @@ export default function Home() {
                 </div>
               </a>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="vl-branding-section" id="bestickering">
+        <div className="vl-shell vl-branding-grid">
+          <div className="vl-branding-visual">
+            <img src={BRANDING_STUDIO} alt="VakLease ontwerpstudio voor bedrijfswagen bestickering" loading="lazy" />
+            <div className="vl-branding-badge">✓ Gratis ontwerpvoorstel</div>
+          </div>
+          <div className="vl-branding-copy">
+            <span className="vl-kicker">Busbestickering & design</span>
+            <h2>Van leasebus naar <span>rijdend visitekaartje.</span></h2>
+            <p>Wil je je bedrijfswagen direct professioneel laten bestickeren? VakLease helpt ook met het ontwerp: van subtiel logo en contactgegevens tot een complete voertuigwrap.</p>
+            <div className="vl-branding-points">
+              <div><b>01</b><span><strong>Ontwerp op maat</strong><small>Passend bij jouw huisstijl, branche en type bus.</small></span></div>
+              <div><b>02</b><span><strong>Lease en uitstraling in één traject</strong><small>Geen losse zoektocht naar ontwerp en uitvoering.</small></span></div>
+              <div><b>03</b><span><strong>Eerst zien, dan beslissen</strong><small>Je ontvangt eerst een vrijblijvend ontwerpvoorstel.</small></span></div>
+            </div>
+            <a className="vl-btn vl-btn-primary" href="/contact/">Vraag design + leasevoorstel aan →</a>
           </div>
         </div>
       </section>
