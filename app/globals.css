@@ -4814,3 +4814,29 @@ body{
     width:111%!important;
   }
 }
+
+
+/* ===== Section spacing refinement · 2026-10-05 ===== */
+.vl-guided-hero{
+  padding-bottom:168px!important;
+}
+.vl-vw-models{
+  padding-top:112px!important;
+}
+
+@media(max-width:1050px){
+  .vl-guided-hero{
+    padding-bottom:140px!important;
+  }
+  .vl-vw-models{
+    padding-top:96px!important;
+  }
+}
+@media(max-width:700px){
+  .vl-guided-hero{
+    padding-bottom:105px!important;
+  }
+  .vl-vw-models{
+    padding-top:78px!important;
+  }
+}
