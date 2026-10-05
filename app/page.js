@@ -1,28 +1,31 @@
-import { Header, Footer, AssetIcon, QuickLead, ChatAssistant } from './components';
+import { Header, Footer, QuickLead, ChatAssistant } from './components';
 
 const HERO_SCENE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-netherlands-realistic.png?v=1790691711';
 
 const categories = [
   {
     href: '/bedrijfswagens/',
-    type: 'van',
     label: 'Bedrijfswagens',
     title: 'De juiste bus voor jouw werk.',
-    text: 'Van compacte bestelbus tot grote bedrijfswagen. Nieuw of gebruikt, jij kiest het object.'
+    text: 'Van compacte bestelbus tot grote bedrijfswagen. Nieuw of gebruikt: jij kiest het object.',
+    image: 'https://images.unsplash.com/photo-1780490103753-378c2f39ae7a?auto=format&fit=crop&fm=jpg&q=82&w=1400',
+    alt: 'Witte bedrijfswagen in een Nederlandse straat'
   },
   {
     href: '/machines/',
-    type: 'machine',
     label: 'Machines',
-    title: 'Investeer in capaciteit, niet in stilstaand geld.',
-    text: 'Denk aan graafmachines, minigravers, shovels, heftrucks en andere zakelijke machines.'
+    title: 'Capaciteit toevoegen zonder alles direct af te rekenen.',
+    text: 'Voor onder meer minigravers, shovels, heftrucks, hoogwerkers en andere zakelijke machines.',
+    image: 'https://images.pexels.com/photos/3964459/pexels-photo-3964459.jpeg?auto=compress&cs=tinysrgb&w=1400',
+    alt: 'Zakelijke bouwmachine op een bedrijfsterrein'
   },
   {
     href: '/aanhangers/',
-    type: 'trailer',
     label: 'Aanhangers',
-    title: 'Meer meenemen naar iedere klus.',
-    text: 'Van machinetransporter en kipper tot gesloten aanhanger of autotransporter.'
+    title: 'Meer materieel mee naar iedere klus.',
+    text: 'Van machinetransporter en kipper tot gesloten aanhanger of autotransporter.',
+    image: 'https://images.pexels.com/photos/38095094/pexels-photo-38095094/free-photo-of-yellow-construction-vehicle-on-flatbed-trailer.jpeg?auto=compress&cs=tinysrgb&w=1400',
+    alt: 'Flatbed aanhanger met bouwmaterieel'
   }
 ];
 
@@ -31,47 +34,58 @@ export default function Home() {
     <main>
       <Header />
 
-      <section className="vl-hero">
+      <section className="vl-hero vl-hero-pro">
         <div className="vl-shell vl-hero-grid">
           <div className="vl-hero-copy">
-            <span className="vl-kicker">Financial lease voor vakmensen</span>
-            <h1>Wat jij nodig hebt voor je <span>volgende klus.</span></h1>
-            <p>Bedrijfswagen, machine of aanhanger gevonden? VakLease helpt je de financieringsaanvraag snel en overzichtelijk te regelen.</p>
+            <span className="vl-kicker">Zakelijke lease voor vakbedrijven</span>
+            <h1>Jouw volgende bedrijfswagen, machine of aanhanger. <span>Slim gefinancierd.</span></h1>
+            <p>Kies zelf het object bij een dealer of leverancier. VakLease verzorgt de intake en begeleidt jouw aanvraag richting een passend financial lease voorstel.</p>
             <div className="vl-actions">
-              <a className="vl-btn vl-btn-primary" href="/contact/">Start je aanvraag <span>→</span></a>
+              <a className="vl-btn vl-btn-primary" href="/contact/">Lease aanvragen <span>→</span></a>
               <a className="vl-btn vl-btn-ghost" href="#categorieen">Bekijk mogelijkheden</a>
             </div>
             <div className="vl-trust-row">
-              <div><b>01</b><span><strong>Jij kiest</strong><small>Object bij dealer of leverancier</small></span></div>
-              <div><b>02</b><span><strong>Wij regelen de intake</strong><small>Duidelijk en persoonlijk</small></span></div>
-              <div><b>03</b><span><strong>Leasepartner beoordeelt</strong><small>Voorstel op basis van jouw aanvraag</small></span></div>
+              <div><b>01</b><span><strong>Jij kiest het object</strong><small>Dealer, leverancier of advertentie</small></span></div>
+              <div><b>02</b><span><strong>Eén duidelijke intake</strong><small>Zakelijk en overzichtelijk</small></span></div>
+              <div><b>03</b><span><strong>Beoordeling door leasepartner</strong><small>Voorstel op basis van jouw aanvraag</small></span></div>
             </div>
           </div>
 
-          <div className="vl-hero-visual" aria-hidden="true">
+          <div className="vl-hero-visual vl-hero-visual-pro" aria-hidden="true">
             <div className="vl-hero-shape"></div>
             <img src={HERO_SCENE} alt="" />
-            <div className="vl-floating-card vl-floating-one"><small>Lease voor</small><b>3 categorieën</b></div>
-            <div className="vl-floating-card vl-floating-two"><small>Gevonden?</small><b>Plak de link</b></div>
           </div>
+        </div>
+      </section>
+
+      <section className="vl-proofbar">
+        <div className="vl-shell vl-proofbar-grid">
+          <div><strong>Bedrijfswagens</strong><span>Compact tot groot</span></div>
+          <div><strong>Machines</strong><span>Voor bouw, infra en techniek</span></div>
+          <div><strong>Aanhangers</strong><span>Transport voor iedere klus</span></div>
+          <div><strong>Zelf kiezen</strong><span>Geen verplichte eigen voorraad</span></div>
         </div>
       </section>
 
       <section className="vl-category-section" id="categorieen">
         <div className="vl-shell">
           <div className="vl-section-head vl-section-head-row">
-            <div><span className="vl-kicker">Waar ben je naar op zoek?</span><h2>Lease voor het werk dat jij doet.</h2></div>
-            <p>VakLease richt zich bewust op bedrijfsmiddelen voor ondernemers en vakbedrijven.</p>
+            <div><span className="vl-kicker">Wat wil je leasen?</span><h2>Zakelijke financiering voor materieel dat omzet maakt.</h2></div>
+            <p>Geen catalogus waar je uit móét kiezen. Zoek het object dat bij jouw werk past en stuur de link mee.</p>
           </div>
           <div className="vl-category-grid">
             {categories.map((c,i) => (
-              <a className="vl-category-card" href={c.href} key={c.label}>
-                <div className={'vl-category-icon vl-category-icon-'+(i+1)}><AssetIcon type={c.type} /></div>
-                <span className="vl-card-number">0{i+1}</span>
-                <h3>{c.label}</h3>
-                <strong>{c.title}</strong>
-                <p>{c.text}</p>
-                <span className="vl-card-link">Bekijk {c.label.toLowerCase()} →</span>
+              <a className="vl-category-card vl-category-card-photo" href={c.href} key={c.label}>
+                <div className="vl-category-photo">
+                  <img src={c.image} alt={c.alt} loading="lazy" />
+                  <span className="vl-card-number">0{i+1}</span>
+                </div>
+                <div className="vl-category-card-body">
+                  <h3>{c.label}</h3>
+                  <strong>{c.title}</strong>
+                  <p>{c.text}</p>
+                  <span className="vl-card-link">Bekijk {c.label.toLowerCase()} <b>→</b></span>
+                </div>
               </a>
             ))}
           </div>
@@ -88,14 +102,14 @@ export default function Home() {
         <div className="vl-shell">
           <div className="vl-section-head">
             <span className="vl-kicker">Zo werkt VakLease</span>
-            <h2>Geen eindeloos zoeken in een eigen voorraad.</h2>
-            <p>Jij zoekt het bedrijfsmiddel dat bij je past. Wij helpen vervolgens met de leaseaanvraag.</p>
+            <h2>Van gevonden object naar financieringsaanvraag.</h2>
+            <p>Je hoeft niet eerst door een eigen voorraad te zoeken. Jij bepaalt wat bij je bedrijf past.</p>
           </div>
           <div className="vl-process-grid">
             <article><span>01</span><h3>Vind wat je nodig hebt</h3><p>Bij een dealer, leverancier of advertentieplatform. Nieuw of gebruikt.</p></article>
-            <article><span>02</span><h3>Stuur de gegevens</h3><p>Plak de link of omschrijf het object en vul je contact- en bedrijfsgegevens in.</p></article>
-            <article><span>03</span><h3>Wij maken de aanvraag compleet</h3><p>VakLease controleert de intake en zet de aanvraag door voor beoordeling.</p></article>
-            <article><span>04</span><h3>Je ontvangt duidelijkheid</h3><p>Bij een passende aanvraag volgt een financieringsvoorstel via onze leasepartner.</p></article>
+            <article><span>02</span><h3>Stuur de gegevens</h3><p>Plak de link of omschrijf het object en vul je bedrijfs- en contactgegevens in.</p></article>
+            <article><span>03</span><h3>Wij maken de intake compleet</h3><p>VakLease controleert de aanvraag en zorgt dat de informatie compleet wordt aangeleverd.</p></article>
+            <article><span>04</span><h3>Je krijgt duidelijkheid</h3><p>Na beoordeling ontvang je informatie over de financieringsmogelijkheden en het vervolg.</p></article>
           </div>
         </div>
       </section>
@@ -103,11 +117,11 @@ export default function Home() {
       <section className="vl-partner-section">
         <div className="vl-shell vl-partner-grid">
           <div>
-            <span className="vl-kicker vl-kicker-dark">Eén route voor je zakelijke lease</span>
-            <h2>Van aanvraag naar een passend financieringsvoorstel.</h2>
+            <span className="vl-kicker vl-kicker-dark">Zakelijk leasen zonder omwegen</span>
+            <h2>Eén route voor bedrijfswagen, machine of aanhanger.</h2>
           </div>
           <div>
-            <p>VakLease richt zich op ondernemers die snel een bedrijfswagen, machine of aanhanger willen financieren. Wij verzorgen de intake, begeleiden de aanvraag en zorgen dat je duidelijkheid krijgt over de financieringsmogelijkheden.</p>
+            <p>VakLease richt zich op ondernemers die gericht willen investeren in bedrijfsmiddelen. Wij houden de intake overzichtelijk, begeleiden het proces en zorgen dat jouw aanvraag compleet bij de financierende partij terechtkomt.</p>
             <a className="vl-text-link vl-text-link-light" href="/contact/">Bespreek je aanvraag →</a>
           </div>
         </div>
@@ -115,7 +129,7 @@ export default function Home() {
 
       <section className="vl-final-cta">
         <div className="vl-shell vl-final-box">
-          <div><span className="vl-kicker">Klaar om te starten?</span><h2>Vertel ons wat je wilt leasen.</h2><p>Een link is genoeg om het gesprek te beginnen.</p></div>
+          <div><span className="vl-kicker">Al iets gevonden?</span><h2>Plak de link. Dan kunnen we gericht beginnen.</h2><p>Bedrijfswagen, machine of aanhanger: stuur het object mee met je aanvraag.</p></div>
           <a className="vl-btn vl-btn-orange" href="/contact/">Aanvraag starten →</a>
         </div>
       </section>
