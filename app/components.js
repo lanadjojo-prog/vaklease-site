@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-logo.png?v=1790680810';
 const API = 'https://vaklease-partner-inbox.onrender.com/api/public-applications';
+const BRANDING = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bestickering-studio-2026.png?v=1791188699';
 
 export function AssetIcon({ type }) {
   if (type === 'machine') return (
@@ -41,9 +42,9 @@ export function Header() {
             <a href="/aanhangers/">Aanhangers</a>
             <a href="/#bestickering">Busbestickering</a>
             <a href="/#werkwijze">Zo werkt het</a>
-            <a href="/contact/">Contact</a>
+            <a href="/#faq">Veelgestelde vragen</a>
           </nav>
-          <a className="vl-btn vl-btn-primary vl-header-cta" href="/contact/">Lease aanvragen <span>→</span></a>
+          <a className="vl-btn vl-btn-primary vl-header-cta" href="/#quickcheck">Check mogelijkheden <span>→</span></a>
           <button className="vl-menu" onClick={() => setOpen(!open)} aria-label="Menu openen" aria-expanded={open}>
             <span></span><span></span><span></span>
           </button>
@@ -57,8 +58,8 @@ export function Header() {
             <a href="/aanhangers/">Aanhangers</a>
             <a href="/#bestickering">Busbestickering</a>
             <a href="/#werkwijze">Zo werkt het</a>
-            <a href="/contact/">Contact</a>
-            <a className="vl-btn vl-btn-primary" href="/contact/">Lease aanvragen →</a>
+            <a href="/#faq">Veelgestelde vragen</a>
+            <a className="vl-btn vl-btn-primary" href="/#quickcheck">Check mogelijkheden →</a>
           </div>
         </div>
       )}
@@ -73,7 +74,7 @@ export function Footer() {
         <div className="vl-footer-top">
           <div className="vl-footer-brand">
             <img src={LOGO} alt="VakLease" />
-            <p>Zakelijke lease voor vakmensen. Bedrijfswagens, machines en aanhangers via één duidelijke aanvraag.</p>
+            <p>Zakelijke financial lease voor ondernemers. Jij kiest het object, VakLease begeleidt de aanvraag.</p>
           </div>
           <div>
             <h4>Lease</h4>
@@ -84,12 +85,13 @@ export function Footer() {
           <div>
             <h4>VakLease</h4>
             <a href="/#werkwijze">Zo werkt het</a>
+            <a href="/#faq">Veelgestelde vragen</a>
             <a href="/contact/">Contact</a>
-            <a href="/contact/">Aanvraag starten</a>
           </div>
           <div>
-            <h4>Financiering</h4>
-            <p>VakLease helpt je van eerste aanvraag tot een duidelijk financieringsvoorstel voor jouw bedrijfsmiddel.</p>
+            <h4>Aanvragen</h4>
+            <p>Heb je al een object gevonden? Stuur de link, prijs en je contactgegevens mee voor een gerichte intake.</p>
+            <a href="/#quickcheck">Check mijn mogelijkheden →</a>
           </div>
         </div>
         <div className="vl-footer-bottom">
@@ -140,7 +142,7 @@ export function LeadForm({ defaultCategory = '' }) {
     try {
       await submitApplication({ ...form, source: 'contact-page' });
       setStatus('success');
-      setMessage('Bedankt. Je aanvraag staat bij VakLease en we nemen contact met je op.');
+      setMessage('Bedankt. Je gegevens zijn ontvangen. VakLease neemt contact op om de aanvraag verder te bespreken.');
     } catch (err) {
       setStatus('error');
       setMessage(err.message || 'Versturen is niet gelukt. Probeer het opnieuw.');
@@ -158,13 +160,13 @@ export function LeadForm({ defaultCategory = '' }) {
             <option value="Aanhanger">Aanhanger</option>
           </select>
         </label>
-        <label><span>Aanschafprijs (optioneel)</span>
+        <label><span>Aanschafprijs</span>
           <input name="purchase_price" value={form.purchase_price} onChange={change} placeholder="Bijv. € 24.500" />
         </label>
-        <label className="vl-span-2"><span>Heb je het object al gevonden?</span>
-          <input type="url" name="product_url" value={form.product_url} onChange={change} placeholder="Plak hier de link van dealer, leverancier of advertentie" />
+        <label className="vl-span-2"><span>Link naar het object</span>
+          <input type="url" name="product_url" value={form.product_url} onChange={change} placeholder="Dealer, leverancier of advertentie" />
         </label>
-        <label className="vl-span-2"><span>Wat zoek je?</span>
+        <label className="vl-span-2"><span>Wat zoek je of wat moeten we weten?</span>
           <textarea name="object_description" value={form.object_description} onChange={change} rows="4" placeholder="Bijv. Ford Transit Custom, minigraver 2,5 ton of gesloten aanhanger..." />
         </label>
         <label><span>Naam</span><input name="applicant_name" value={form.applicant_name} onChange={change} required /></label>
@@ -178,16 +180,19 @@ export function LeadForm({ defaultCategory = '' }) {
         <span>Ik geef toestemming om mijn gegevens te gebruiken om contact op te nemen over deze leaseaanvraag.</span>
       </label>
       <button className="vl-btn vl-btn-primary vl-submit" disabled={status === 'loading'}>
-        {status === 'loading' ? 'Versturen…' : 'Aanvraag vrijblijvend versturen →'}
+        {status === 'loading' ? 'Versturen…' : 'Bekijk mijn mogelijkheden →'}
       </button>
       {message && <p className={status === 'success' ? 'vl-form-success' : 'vl-form-error'}>{message}</p>}
     </form>
   );
 }
 
-export function QuickLead() {
-  const [category, setCategory] = useState('Bedrijfswagen');
+export function QuickLead({ defaultCategory = 'Bedrijfswagen', source = 'homepage-quicklead', compact = false }) {
+  const [route, setRoute] = useState('found');
+  const [category, setCategory] = useState(defaultCategory);
+  const [price, setPrice] = useState('');
   const [url, setUrl] = useState('');
+  const [description, setDescription] = useState('');
   const [contact, setContact] = useState('');
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState('idle');
@@ -198,11 +203,15 @@ export function QuickLead() {
     try {
       await submitApplication({
         category,
-        product_url: url,
+        purchase_price: price,
+        product_url: route === 'found' ? url : '',
+        object_description: route === 'found'
+          ? 'Object al gevonden.'
+          : 'Zoekt nog een object. ' + description,
         email: contact.includes('@') ? contact : '',
         phone: contact.includes('@') ? '' : contact,
         consent,
-        source: 'homepage-quicklead'
+        source
       });
       setStatus('success');
     } catch {
@@ -210,22 +219,75 @@ export function QuickLead() {
     }
   };
 
-  if (status === 'success') return <div className="vl-quick-success"><b>✓ Aanvraag ontvangen.</b><span>We nemen contact met je op om de mogelijkheden te bespreken.</span></div>;
+  if (status === 'success') {
+    return <div className="vl-quick-success"><b>✓ Gegevens ontvangen.</b><span>We nemen contact op om de mogelijkheden en het vervolg te bespreken.</span></div>;
+  }
 
   return (
-    <form className="vl-quick-form" onSubmit={submit}>
-      <div className="vl-quick-title"><span>Al iets gevonden?</span><strong>Plak de link. Wij pakken de leaseaanvraag op.</strong></div>
-      <div className="vl-quick-fields">
-        <select value={category} onChange={e => setCategory(e.target.value)}>
+    <form className={'vl-quick-form vl-conversion-form' + (compact ? ' is-compact' : '')} onSubmit={submit}>
+      <div className="vl-route-switch" aria-label="Heb je al een object gevonden?">
+        <button type="button" className={route === 'found' ? 'active' : ''} onClick={() => setRoute('found')}>Ik heb al iets gevonden</button>
+        <button type="button" className={route === 'searching' ? 'active' : ''} onClick={() => setRoute('searching')}>Ik zoek nog een object</button>
+      </div>
+      <div className="vl-quick-fields vl-conversion-fields">
+        <select value={category} onChange={e => setCategory(e.target.value)} aria-label="Categorie">
           <option>Bedrijfswagen</option><option>Machine</option><option>Aanhanger</option>
         </select>
-        <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://dealer.nl/object..." required />
+        <input value={price} onChange={e => setPrice(e.target.value)} placeholder="Aanschafprijs, bijv. € 28.500" />
+        {route === 'found' ? (
+          <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="Plak link naar object" required />
+        ) : (
+          <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Wat zoek je? Bijv. Transit Custom" required />
+        )}
         <input value={contact} onChange={e => setContact(e.target.value)} placeholder="E-mail of telefoon" required />
-        <button className="vl-btn vl-btn-orange">Aanvragen →</button>
+        <button className="vl-btn vl-btn-orange">Check mogelijkheden →</button>
       </div>
-      <label className="vl-quick-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} required /> <span>Akkoord dat VakLease contact opneemt over deze aanvraag.</span></label>
+      <div className="vl-conversion-foot">
+        <label className="vl-quick-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} required /> <span>VakLease mag contact opnemen over deze aanvraag.</span></label>
+        <span className="vl-no-obligation">Vrijblijvende intake · geen verplichting</span>
+      </div>
       {status === 'error' && <small className="vl-form-error">Versturen is niet gelukt. Probeer het opnieuw.</small>}
     </form>
+  );
+}
+
+const faqs = [
+  ['Kan ik zelf een dealer of leverancier kiezen?', 'Ja. Je kunt zelf een passend object zoeken en de link of offerte meesturen. VakLease heeft geen verplichte eigen voorraad waar je uit moet kiezen.'],
+  ['Kan ik ook een gebruikte bedrijfswagen, machine of aanhanger indienen?', 'Ja, je kunt ook een gebruikt object indienen. Of en onder welke voorwaarden financiering mogelijk is, hangt af van het object en de beoordeling van de financierende partij.'],
+  ['Kan ik als starter een aanvraag doen?', 'Ja, ook als starter kun je een aanvraag indienen. Welke informatie nodig is en welke mogelijkheden er zijn, verschilt per situatie en financierende partij.'],
+  ['Heb ik altijd jaarcijfers nodig?', 'Niet iedere aanvraag is hetzelfde. Welke documenten nodig zijn, hangt af van jouw onderneming, het object en de criteria van de financierende partij.'],
+  ['Kan een aanbetaling helpen?', 'Een aanbetaling kan invloed hebben op de financieringsopzet. Vermeld daarom bij je aanvraag wat je zelf wilt of kunt inbrengen, dan kan dit worden meegenomen in de intake.'],
+  ['Hoe snel krijg ik duidelijkheid?', 'Dat hangt af van hoe compleet de aanvraag is en van de beoordeling door de financierende partij. VakLease zorgt dat de intake zo gericht mogelijk wordt aangeleverd.']
+];
+
+export function FAQ({ title = 'Veelgestelde vragen over zakelijke lease' }) {
+  return (
+    <section className="vl-faq-section" id="faq">
+      <div className="vl-shell vl-faq-layout">
+        <div className="vl-faq-intro">
+          <span>Goed om te weten</span>
+          <h2>{title}</h2>
+          <p>Geen algemene beloften die niet bij iedere ondernemer passen. Dit zijn de vragen die we vooraf het vaakst willen verduidelijken.</p>
+        </div>
+        <div className="vl-faq-list">
+          {faqs.map(([q,a]) => (
+            <details key={q}>
+              <summary>{q}<span>+</span></summary>
+              <p>{a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function MobileSticky() {
+  return (
+    <div className="vl-mobile-sticky" aria-label="Snelle acties">
+      <a href="/contact/">Contact</a>
+      <a className="primary" href="/#quickcheck">Check mogelijkheden</a>
+    </div>
   );
 }
 
@@ -261,20 +323,20 @@ export function ChatAssistant() {
         <span className="vl-chat-dot"></span>{open ? 'Sluiten' : 'Hulp nodig?'}
       </button>
       {open && <div className="vl-chat-panel">
-        <div className="vl-chat-head"><b>VakLease assistent</b><span>Meestal ben je in 1 minuut klaar.</span></div>
+        <div className="vl-chat-head"><b>VakLease assistent</b><span>In een paar stappen je aanvraag starten.</span></div>
         {status === 'success' ? (
-          <div className="vl-chat-success"><strong>✓ Gelukt</strong><p>Je aanvraag is ontvangen. We nemen contact met je op.</p></div>
+          <div className="vl-chat-success"><strong>✓ Gelukt</strong><p>Je gegevens zijn ontvangen. We nemen contact op.</p></div>
         ) : (
           <div className="vl-chat-body">
             <p><b>Wat wil je leasen?</b></p>
             <div className="vl-chat-options">
-              {['Bedrijfswagen','Machine','Aanhanger'].map(x => <button key={x} className={category===x?'active':''} onClick={()=>setCategory(x)}>{x}</button>)}
+              {['Bedrijfswagen','Machine','Aanhanger'].map(x => <button type="button" key={x} className={category===x?'active':''} onClick={()=>setCategory(x)}>{x}</button>)}
             </div>
             <label>Link naar object <small>(optioneel)</small><input type="url" value={url} onChange={e=>setUrl(e.target.value)} placeholder="Plak een advertentie of dealerlink" /></label>
             <label>E-mail of telefoon<input value={contact} onChange={e=>setContact(e.target.value)} placeholder="Hoe kunnen we je bereiken?" /></label>
             <label className="vl-chat-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} /><span>VakLease mag contact opnemen over mijn aanvraag.</span></label>
             <button className="vl-btn vl-btn-primary vl-chat-submit" onClick={submit} disabled={!category || !contact || !consent || status==='loading'}>
-              {status==='loading'?'Versturen…':'Stuur mijn aanvraag →'}
+              {status==='loading'?'Versturen…':'Check mijn mogelijkheden →'}
             </button>
             {status === 'error' && <small className="vl-form-error">Dat ging niet goed. Probeer het opnieuw.</small>}
           </div>
@@ -285,18 +347,27 @@ export function ChatAssistant() {
 }
 
 export function CategoryPage({ category, icon, title, intro, examples, benefits, image, imageAlt }) {
+  const defaultCategory = category === 'Bedrijfswagens' ? 'Bedrijfswagen' : category === 'Machines' ? 'Machine' : 'Aanhanger';
+  const isVan = category === 'Bedrijfswagens';
+
   return (
     <main>
       <Header />
+
       <section className="vl-category-hero vl-category-hero-pro">
         <div className="vl-shell vl-category-hero-grid">
           <div>
             <span className="vl-kicker">VakLease · {category}</span>
             <h1>{title}</h1>
             <p>{intro}</p>
+            <div className="vl-category-proof">
+              <span>✓ Zelf object kiezen</span>
+              <span>✓ Link of offerte meesturen</span>
+              <span>✓ Begeleiding van intake tot beoordeling</span>
+            </div>
             <div className="vl-actions">
-              <a className="vl-btn vl-btn-primary" href="/contact/">Lease aanvragen →</a>
-              <a className="vl-text-link" href="#mogelijkheden">Bekijk mogelijkheden</a>
+              <a className="vl-btn vl-btn-primary" href="#categorie-check">Check mijn mogelijkheden →</a>
+              <a className="vl-text-link" href="#mogelijkheden">Bekijk voorbeelden</a>
             </div>
           </div>
           <div className="vl-category-visual vl-category-visual-photo">
@@ -308,30 +379,62 @@ export function CategoryPage({ category, icon, title, intro, examples, benefits,
           </div>
         </div>
       </section>
+
+      <section className="vl-category-check" id="categorie-check">
+        <div className="vl-shell">
+          <div className="vl-category-check-title">
+            <span>Al iets gevonden?</span>
+            <h2>Stuur het object direct door.</h2>
+            <p>Met categorie, prijs, objectlink en contactgegevens kunnen we veel gerichter beginnen.</p>
+          </div>
+          <QuickLead defaultCategory={defaultCategory} source={'category-' + defaultCategory.toLowerCase()} compact />
+        </div>
+      </section>
+
       <section className="vl-section" id="mogelijkheden">
         <div className="vl-shell">
-          <div className="vl-section-head"><span className="vl-kicker">Mogelijkheden</span><h2>Wat wil je financieren?</h2><p>Je hoeft niet uit een eigen voorraad te kiezen. Heb je ergens een passend object gevonden, stuur de link mee.</p></div>
+          <div className="vl-section-head"><span className="vl-kicker">Voorbeelden</span><h2>Wat kun je indienen?</h2><p>Je hoeft niet uit een vaste voorraad te kiezen. Vind een passend object en stuur de gegevens mee.</p></div>
           <div className="vl-example-grid">
             {examples.map((x,i)=><article key={x[0]}><span>0{i+1}</span><h3>{x[0]}</h3><p>{x[1]}</p></article>)}
           </div>
         </div>
       </section>
+
       <section className="vl-dark-section">
         <div className="vl-shell vl-benefit-grid">
-          <div><span className="vl-kicker vl-kicker-dark">Waarom VakLease</span><h2>Eén aanvraag. Eén aanspreekpunt.</h2><p>Wij verzamelen de informatie die nodig is en begeleiden de aanvraag richting beoordeling door de leasepartner.</p></div>
+          <div><span className="vl-kicker vl-kicker-dark">Waarom VakLease</span><h2>Eén route voor jouw aanvraag.</h2><p>VakLease helpt de informatie te verzamelen en begeleidt het dossier richting beoordeling door de financierende partij.</p></div>
           <div className="vl-benefit-list">{benefits.map(x=><div key={x}><span>✓</span><p>{x}</p></div>)}</div>
         </div>
       </section>
+
+      {isVan && (
+        <section className="vl-category-branding">
+          <div className="vl-shell vl-category-branding-grid">
+            <div>
+              <span>Extra voor bedrijfswagens</span>
+              <h2>Ook een professioneel ontwerp voor je bus?</h2>
+              <p>Vraag naast je lease-intake ook een vrijblijvend ontwerpvoorstel voor de bestickering aan.</p>
+              <a className="vl-vw-btn vl-vw-btn-dark" href="/#bestickering">Bekijk busbestickering</a>
+            </div>
+            <div className="vl-category-branding-image"><img src={BRANDING} alt="VakLease ontwerpstudio voor bedrijfswagenbestickering" /></div>
+          </div>
+        </section>
+      )}
+
+      <FAQ title={'Veelgestelde vragen over ' + category.toLowerCase() + ' leasen'} />
+
       <section className="vl-section vl-center">
         <div className="vl-shell vl-mini-cta">
-          <span className="vl-kicker">Al iets gevonden?</span>
-          <h2>Stuur de link mee met je aanvraag.</h2>
-          <p>Dat kan een dealerpagina, leverancier, advertentie of offerte zijn.</p>
-          <a className="vl-btn vl-btn-orange" href="/contact/">Start aanvraag →</a>
+          <span className="vl-kicker">Klaar om te beginnen?</span>
+          <h2>Check je mogelijkheden zonder lange aanvraag.</h2>
+          <p>Stuur eerst alleen de belangrijkste gegevens. Daarna bespreken we wat er nog nodig is.</p>
+          <a className="vl-btn vl-btn-orange" href="#categorie-check">Start met 4 gegevens →</a>
         </div>
       </section>
+
       <Footer />
       <ChatAssistant />
+      <MobileSticky />
     </main>
   );
 }
