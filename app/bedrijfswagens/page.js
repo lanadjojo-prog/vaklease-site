@@ -17,8 +17,8 @@ export default function Page() {
       ['Grote bestelbus','Extra laadruimte voor grotere klussen en teams.'],
       ['Gebruikte bedrijfswagen','Ook een occasion kan interessant zijn voor zakelijke financiering.']
     ]}
-    image="https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bedrijfswagen-bestickering.png?v=1791187288"
-    imageAlt="VakLease bedrijfswagen met bestickering op een bouwplaats"
+    image="https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-bedrijfswagen-2026.png?v=1791188673"
+    imageAlt="VakLease werkbus op bouwplaats"
     benefits={['Je kiest zelf merk, model en leverancier','Nieuw of gebruikt bespreekbaar','Eén intake in plaats van losse financieringsvragen','Direct de objectlink meesturen']}
   />;
 }
