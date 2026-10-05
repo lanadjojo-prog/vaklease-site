@@ -17,6 +17,8 @@ export default function Page() {
       ['Gesloten aanhanger','Voor gereedschap en materiaal dat droog en veilig mee moet.'],
       ['Autotransporter','Voor zakelijk voertuigtransport en specialistisch gebruik.']
     ]}
+    image="https://images.pexels.com/photos/38095094/pexels-photo-38095094/free-photo-of-yellow-construction-vehicle-on-flatbed-trailer.jpeg?auto=compress&cs=tinysrgb&w=1600"
+    imageAlt="Flatbed aanhanger met bouwmaterieel"
     benefits={['Gericht op zakelijk gebruik','Object van dealer of leverancier zelf kiezen','Eenvoudig link of offerte meesturen','Eén aanspreekpunt voor de aanvraag']}
   />;
 }
