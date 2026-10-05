@@ -282,11 +282,11 @@ export function ChatAssistant() {
   );
 }
 
-export function CategoryPage({ category, icon, title, intro, examples, benefits }) {
+export function CategoryPage({ category, icon, title, intro, examples, benefits, image, imageAlt }) {
   return (
     <main>
       <Header />
-      <section className="vl-category-hero">
+      <section className="vl-category-hero vl-category-hero-pro">
         <div className="vl-shell vl-category-hero-grid">
           <div>
             <span className="vl-kicker">VakLease · {category}</span>
@@ -297,12 +297,18 @@ export function CategoryPage({ category, icon, title, intro, examples, benefits 
               <a className="vl-text-link" href="#mogelijkheden">Bekijk mogelijkheden</a>
             </div>
           </div>
-          <div className="vl-category-visual"><AssetIcon type={icon} /><span>{category}</span></div>
+          <div className="vl-category-visual vl-category-visual-photo">
+            {image ? <img src={image} alt={imageAlt || category} /> : <AssetIcon type={icon} />}
+            <div className="vl-category-visual-overlay">
+              <small>Zakelijke lease</small>
+              <strong>{category}</strong>
+            </div>
+          </div>
         </div>
       </section>
       <section className="vl-section" id="mogelijkheden">
         <div className="vl-shell">
-          <div className="vl-section-head"><span className="vl-kicker">Mogelijkheden</span><h2>Wat wil je financieren?</h2><p>Je hoeft niet uit ons eigen aanbod te kiezen. Heb je ergens een passend object gevonden, stuur de link mee.</p></div>
+          <div className="vl-section-head"><span className="vl-kicker">Mogelijkheden</span><h2>Wat wil je financieren?</h2><p>Je hoeft niet uit een eigen voorraad te kiezen. Heb je ergens een passend object gevonden, stuur de link mee.</p></div>
           <div className="vl-example-grid">
             {examples.map((x,i)=><article key={x[0]}><span>0{i+1}</span><h3>{x[0]}</h3><p>{x[1]}</p></article>)}
           </div>
@@ -310,7 +316,7 @@ export function CategoryPage({ category, icon, title, intro, examples, benefits 
       </section>
       <section className="vl-dark-section">
         <div className="vl-shell vl-benefit-grid">
-          <div><span className="vl-kicker vl-kicker-dark">Waarom VakLease</span><h2>Eén aanvraag. Eén aanspreekpunt.</h2><p>Wij verzamelen de informatie die nodig is en zetten de aanvraag door naar onze leasepartner voor beoordeling.</p></div>
+          <div><span className="vl-kicker vl-kicker-dark">Waarom VakLease</span><h2>Eén aanvraag. Eén aanspreekpunt.</h2><p>Wij verzamelen de informatie die nodig is en begeleiden de aanvraag richting beoordeling door de leasepartner.</p></div>
           <div className="vl-benefit-list">{benefits.map(x=><div key={x}><span>✓</span><p>{x}</p></div>)}</div>
         </div>
       </section>
