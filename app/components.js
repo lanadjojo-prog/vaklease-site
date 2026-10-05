@@ -69,34 +69,50 @@ export function Header() {
 
 export function Footer() {
   return (
-    <footer className="vl-footer">
+    <footer className="vl-footer vl-footer-premium">
       <div className="vl-shell">
+        <div className="vl-footer-cta">
+          <div>
+            <span>Een object op het oog?</span>
+            <h2>Stuur de link. Wij helpen je verder.</h2>
+          </div>
+          <a href="/#quickcheck">Check mijn mogelijkheden <b>→</b></a>
+        </div>
+
         <div className="vl-footer-top">
           <div className="vl-footer-brand">
             <img src={LOGO} alt="VakLease" />
-            <p>Zakelijke financial lease voor ondernemers. Jij kiest het object, VakLease begeleidt de aanvraag.</p>
+            <p>Zakelijke financial lease voor vakbedrijven. Jij kiest het object, VakLease begeleidt de intake en de financierende partij beoordeelt de aanvraag.</p>
+            <div className="vl-footer-trust">
+              <span>Zelf object kiezen</span>
+              <span>Gerichte intake</span>
+              <span>Eén aanspreekpunt</span>
+            </div>
           </div>
-          <div>
+          <div className="vl-footer-column">
             <h4>Lease</h4>
             <a href="/bedrijfswagens/">Bedrijfswagens</a>
             <a href="/machines/">Machines</a>
             <a href="/aanhangers/">Aanhangers</a>
           </div>
-          <div>
+          <div className="vl-footer-column">
             <h4>VakLease</h4>
             <a href="/#werkwijze">Zo werkt het</a>
+            <a href="/#bestickering">Busbestickering</a>
             <a href="/#faq">Veelgestelde vragen</a>
             <a href="/contact/">Contact</a>
           </div>
-          <div>
-            <h4>Aanvragen</h4>
-            <p>Heb je al een object gevonden? Stuur de link, prijs en je contactgegevens mee voor een gerichte intake.</p>
-            <a href="/#quickcheck">Check mijn mogelijkheden →</a>
+          <div className="vl-footer-column vl-footer-start">
+            <h4>Start je aanvraag</h4>
+            <p>Je hoeft nog niet alle documenten klaar te hebben. Begin met het object, de prijs en je contactgegevens.</p>
+            <a className="vl-footer-start-link" href="/#quickcheck">Begin met 4 gegevens <b>→</b></a>
           </div>
         </div>
+
         <div className="vl-footer-bottom">
           <span>© 2026 VakLease</span>
           <span>Zakelijke financial lease voor ondernemers</span>
+          <span>Aanvragen worden altijd beoordeeld door de financierende partij.</span>
         </div>
       </div>
     </footer>
@@ -104,10 +120,15 @@ export function Footer() {
 }
 
 async function submitApplication(payload) {
+  const enriched = {
+    ...payload,
+    page_url: typeof window !== 'undefined' ? window.location.href : '',
+    journey: payload.journey || payload.source || 'website'
+  };
   const response = await fetch(API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(enriched)
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || 'Versturen is niet gelukt.');
@@ -293,7 +314,7 @@ export function MobileSticky() {
 
 export function ChatAssistant() {
   const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState('Bedrijfswagen');
   const [url, setUrl] = useState('');
   const [contact, setContact] = useState('');
   const [consent, setConsent] = useState(false);
@@ -309,7 +330,8 @@ export function ChatAssistant() {
         email: contact.includes('@') ? contact : '',
         phone: contact.includes('@') ? '' : contact,
         consent,
-        source: 'chat-assistant'
+        source: 'website-chat',
+        journey: 'floating-chat'
       });
       setStatus('success');
     } catch {
