@@ -136,17 +136,17 @@ export function Header() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <header className="vl-new-header">
+      <header className="vl-new-header vl-reference-header">
         <div className="vl-shell vl-new-header-inner">
           <a className="vl-new-logo" href="/"><img src={LOGO} alt="VakLease" /></a>
           <nav className="vl-new-nav">
-            <a href="/#werkwijze">Hoe het werkt</a>
-            <a href="/#voordelen">Voordelen</a>
-            <a href="/#voor-wie">Voor wie</a>
-            <a href="/#faq">FAQ</a>
+            <a href="/bedrijfswagens/">Bedrijfswagens</a>
+            <a href="/machines/">Machines</a>
+            <a href="/aanhangers/">Aanhangers</a>
+            <a href="/#voor-wie">Over ons</a>
             <a href="/contact/">Contact</a>
           </nav>
-          <a className="vl-new-header-cta" href="/#quickcheck">Aanvraag starten <span>→</span></a>
+          <a className="vl-new-header-cta vl-reference-header-cta" href="/contact/">Offerte aanvragen <span>→</span></a>
           <button className="vl-menu" onClick={() => setOpen(!open)} aria-label="Menu openen" aria-expanded={open}>
             <span></span><span></span><span></span>
           </button>
@@ -154,12 +154,12 @@ export function Header() {
       </header>
       {open && (
         <div className="vl-new-mobile-nav">
-          <a href="/#werkwijze">Hoe het werkt</a>
-          <a href="/#voordelen">Voordelen</a>
-          <a href="/#voor-wie">Voor wie</a>
-          <a href="/#faq">FAQ</a>
+          <a href="/bedrijfswagens/">Bedrijfswagens</a>
+          <a href="/machines/">Machines</a>
+          <a href="/aanhangers/">Aanhangers</a>
+          <a href="/#voor-wie">Over ons</a>
           <a href="/contact/">Contact</a>
-          <a className="vl-new-header-cta" href="/#quickcheck">Aanvraag starten →</a>
+          <a className="vl-new-header-cta" href="/contact/">Offerte aanvragen →</a>
         </div>
       )}
     </>
@@ -530,9 +530,9 @@ export function CategoryPage({ category, icon, title, intro, examples, benefits,
 
 
 const NEW_HERO_SLIDES = [
-  { key:'van', label:'Bedrijfswagens', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-reference-4k.webp?v=1791294064', position:'center center' },
-  { key:'machine', label:'Machines', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-reference-4k.webp?v=1791294075', position:'center center' },
-  { key:'trailer', label:'Aanhangers', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-reference-4k.webp?v=1791294084', position:'center center' }
+  { key:'van', label:'Bedrijfswagens', href:'/bedrijfswagens/', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-exact-reference-4k.webp?v=1791295100' },
+  { key:'trailer', label:'Aanhangers', href:'/aanhangers/', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-exact-reference-4k.webp?v=1791295132' },
+  { key:'machine', label:'Machines', href:'/machines/', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-exact-reference-4k.webp?v=1791295108' }
 ];
 
 function fileToQuote(file){
@@ -549,128 +549,35 @@ function fileToQuote(file){
 
 export function InstantLeaseHero(){
   const [index,setIndex]=useState(0);
-  const [mode,setMode]=useState('link');
-  const [url,setUrl]=useState('');
-  const [quote,setQuote]=useState(null);
-  const [kvk,setKvk]=useState('');
-  const [term,setTerm]=useState('');
-  const [contact,setContact]=useState('');
-  const [consent,setConsent]=useState(false);
-  const [status,setStatus]=useState('idle');
-  const [message,setMessage]=useState('');
   const touchStart=useRef(null);
-
-  const submit=async e=>{
-    e.preventDefault();
-    setStatus('loading'); setMessage('');
-    try{
-      if(!/^[0-9]{8}$/.test(kvk.trim())) throw new Error('Vul een geldig KVK-nummer van 8 cijfers in.');
-      if(mode==='link' && !url.trim()) throw new Error('Plak de link naar het object.');
-      if(mode==='upload' && !quote) throw new Error('Upload de offerte van het object.');
-      if(!contact.trim()) throw new Error('Vul je e-mail of mobiele nummer in zodat we het aanbod kunnen sturen.');
-      await submitApplication({
-        source:'lease-intake-v3',
-        journey:mode,
-        category:index===0?'Bedrijfswagen':index===1?'Machine':'Aanhanger',
-        product_url:mode==='link'?url.trim():'',
-        quote:mode==='upload'?quote:null,
-        kvk:kvk.trim(),
-        term_months:term?Number(term):null,
-        email:contact.includes('@')?contact.trim():'',
-        phone:contact.includes('@')?'':contact.trim(),
-        consent
-      });
-      setStatus('success');
-      setMessage('Aanvraag ontvangen. We gaan ermee aan de slag en nemen zo snel mogelijk contact op.');
-    }catch(err){
-      setStatus('error'); setMessage(err.message||'Versturen is niet gelukt.');
-    }
-  };
-
-  const go=(delta)=>setIndex(v=>(v+delta+NEW_HERO_SLIDES.length)%NEW_HERO_SLIDES.length);
+  const slides=NEW_HERO_SLIDES;
+  const active=slides[index];
+  const go=(delta)=>setIndex(v=>(v+delta+slides.length)%slides.length);
 
   return (
-    <section className="vl-new-hero vl-new-hero-stacked" id="quickcheck">
-      <div className="vl-new-photo-stage"
-        onTouchStart={e=>{touchStart.current=e.touches?.[0]?.clientX??null}}
-        onTouchEnd={e=>{if(touchStart.current==null)return;const x=e.changedTouches?.[0]?.clientX??touchStart.current;const d=x-touchStart.current;if(Math.abs(d)>45)go(d<0?1:-1);touchStart.current=null;}}>
-        
-        <div className="vl-new-bg-track" style={{transform:`translate3d(-${index*100}%,0,0)`}}>
-          {NEW_HERO_SLIDES.map((s,i)=>(
-            <div key={s.key} className="vl-new-bg-slide" aria-hidden={i!==index}>
-              <img
-                className="vl-new-full-photo"
-                src={s.image}
-                alt={s.label+' met VakLease branding'}
-                draggable="false"
-              />
-            </div>
-          ))}
-        </div>
-
-        <div className="vl-new-stage-shade" />
-
-        <div className="vl-shell vl-new-hero-top">
-          <div className="vl-new-hero-copy-center">
-            <span className="vl-new-kicker">Zakelijk leasen voor ondernemers</span>
-            <h1>Jouw werk, <strong>onze drive.</strong></h1>
-            <p>Snel en eenvoudig je bedrijfswagen, machine of aanhanger zakelijk leasen. Jij kiest het object, wij regelen de aanvraag.</p>
+    <section className="vl-exact-hero" id="quickcheck"
+      onTouchStart={e=>{touchStart.current=e.touches?.[0]?.clientX??null}}
+      onTouchEnd={e=>{if(touchStart.current==null)return;const x=e.changedTouches?.[0]?.clientX??touchStart.current;const d=x-touchStart.current;if(Math.abs(d)>45)go(d<0?1:-1);touchStart.current=null;}}>
+      <div className="vl-exact-track" style={{transform:`translate3d(-${index*100}%,0,0)`}}>
+        {slides.map((s,i)=>(
+          <div className="vl-exact-slide" key={s.key} aria-hidden={i!==index}>
+            <img src={s.image} alt={s.label+' financial lease via VakLease'} draggable="false" />
           </div>
-
-          <div className="vl-new-tabs vl-new-tabs-center" role="tablist" aria-label="Categorie kiezen">
-            {NEW_HERO_SLIDES.map((s,i)=><button key={s.key} type="button" onClick={()=>setIndex(i)} className={i===index?'active':''} role="tab" aria-selected={i===index}>{s.label}</button>)}
-          </div>
-        </div>
-
-        <button className="vl-new-arrow left" type="button" onClick={()=>go(-1)} aria-label="Vorige categorie">‹</button>
-        <button className="vl-new-arrow right" type="button" onClick={()=>go(1)} aria-label="Volgende categorie">›</button>
-        <div className="vl-new-dots">{NEW_HERO_SLIDES.map((s,i)=><button type="button" key={s.key} className={i===index?'active':''} onClick={()=>setIndex(i)} aria-label={s.label}/>)}</div>
+        ))}
       </div>
 
-      <div className="vl-shell vl-new-form-overlap-wrap">
-        <form className="vl-new-form vl-new-form-horizontal" onSubmit={submit}>
-          <div className="vl-new-form-heading">
-            <span className="vl-new-form-badge">● SNELLE INTAKE</span>
-            <div><h2>Doe direct een aanvraag</h2><p>Plak een link of upload de offerte. Wij doen de rest.</p></div>
-          </div>
+      <button className="vl-exact-hit vl-exact-left" type="button" onClick={()=>go(-1)} aria-label="Vorige categorie"></button>
+      <button className="vl-exact-hit vl-exact-right" type="button" onClick={()=>go(1)} aria-label="Volgende categorie"></button>
 
-          <div className="vl-new-form-switch">
-            <button type="button" className={mode==='link'?'active':''} onClick={()=>setMode('link')}>↗ Link plakken</button>
-            <button type="button" className={mode==='upload'?'active':''} onClick={()=>setMode('upload')}>□ Offerte uploaden</button>
-          </div>
+      <div className="vl-exact-tab-hits" aria-label="Lease categorie">
+        {slides.map((s,i)=><button key={s.key} type="button" onClick={()=>setIndex(i)} aria-label={s.label}></button>)}
+      </div>
 
-          <div className="vl-new-form-fields-row">
-            {mode==='link' ? (
-              <label className="vl-new-field-grow"><span>Link naar object</span><input type="url" value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://dealer.nl/object..." /></label>
-            ) : (
-              <label className="vl-new-upload vl-new-field-grow"><span>Offerte van leverancier</span><input type="file" accept=".pdf,image/jpeg,image/png" onChange={async e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>3*1024*1024){setStatus('error');setMessage('Maximaal 3 MB.');return;}setQuote(await fileToQuote(f));}} /><b>{quote?quote.name:'Kies PDF, JPG of PNG'}</b><small>Maximaal 3 MB</small></label>
-            )}
+      <a className="vl-exact-search-hit" href={active.href} aria-label={'Bekijk '+active.label}></a>
+      <a className="vl-exact-branding-hit" href="/#bestickering" aria-label="Bekijk bestickeringsmogelijkheden"></a>
 
-            <label><span>KVK-nummer *</span><input inputMode="numeric" value={kvk} onChange={e=>setKvk(e.target.value.replace(/\D/g,'').slice(0,8))} placeholder="12345678" /></label>
-
-            <label><span>Gewenste looptijd <em>optioneel</em></span>
-              <select value={term} onChange={e=>setTerm(e.target.value)}>
-                <option value="">Nog geen voorkeur</option><option value="24">24 maanden</option><option value="36">36 maanden</option><option value="48">48 maanden</option><option value="60">60 maanden</option><option value="72">72 maanden</option>
-              </select>
-            </label>
-
-            <label><span>Waar mogen we het aanbod sturen? *</span><input value={contact} onChange={e=>setContact(e.target.value)} placeholder="E-mail of mobiel nummer" /></label>
-          </div>
-
-          <div className="vl-new-form-bottom">
-            <label className="vl-new-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} required/><span>VakLease mag contact opnemen over deze aanvraag.</span></label>
-            <button className="vl-new-submit" disabled={status==='loading'}>{status==='loading'?'Versturen…':'Aanvraag indienen →'}</button>
-            <small className="vl-new-form-note">🔒 100% vrijblijvend. Je zit nergens aan vast.</small>
-          </div>
-
-          {message && <p className={status==='success'?'vl-new-success':'vl-new-error'}>{message}</p>}
-        </form>
-
-        <div className="vl-new-proof vl-new-proof-under">
-          <span>⚡ <b>Binnen 4 uur</b><small>bij complete aanvraag</small></span>
-          <span>□ <b>Vrijblijvend</b><small>zonder verplichtingen</small></span>
-          <span>✓ <b>Meerdere partners</b><small>één aanvraag</small></span>
-        </div>
+      <div className="vl-exact-dot-hits">
+        {slides.map((s,i)=><button key={s.key} type="button" className={i===index?'active':''} onClick={()=>setIndex(i)} aria-label={s.label}></button>)}
       </div>
     </section>
   );
