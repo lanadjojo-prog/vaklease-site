@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 
-const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-logo-transparent.png?v=1791274167';
+const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-logo.png?v=1790680810';
 const API = 'https://vaklease-partner-inbox.onrender.com/api/public-applications';
 const BRANDING = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bestickering-studio-2026.png?v=1791188699';
 
@@ -29,88 +29,6 @@ export function AssetIcon({ type }) {
   );
 }
 
-
-const HOME_SLIDES = [
-  {
-    key: 'bus',
-    label: 'Bedrijfswagens',
-    category: 'Bedrijfswagen',
-    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-bus-side.webp?v=1791273862',
-    alt: 'VakLease bedrijfswagen van de zijkant'
-  },
-  {
-    key: 'machine',
-    label: 'Machines',
-    category: 'Machine',
-    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-machine-side.webp?v=1791273868',
-    alt: 'VakLease graafmachine van de zijkant'
-  },
-  {
-    key: 'trailer',
-    label: 'Aanhangers',
-    category: 'Aanhanger',
-    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-trailer-side.webp?v=1791273874',
-    alt: 'Bestickerde VakLease aanhanger van de zijkant'
-  }
-];
-
-export function HomeHeroCarousel() {
-  const [index, setIndex] = useState(0);
-  const touchStart = useRef(null);
-  const slide = HOME_SLIDES[index];
-
-  const go = (next) => setIndex((next + HOME_SLIDES.length) % HOME_SLIDES.length);
-  const onTouchStart = (e) => { touchStart.current = e.touches?.[0]?.clientX ?? null; };
-  const onTouchEnd = (e) => {
-    if (touchStart.current == null) return;
-    const end = e.changedTouches?.[0]?.clientX ?? touchStart.current;
-    const delta = end - touchStart.current;
-    if (Math.abs(delta) > 45) go(index + (delta < 0 ? 1 : -1));
-    touchStart.current = null;
-  };
-
-  return (
-    <section className="vl-market-hero">
-      <div className="vl-shell">
-        <div className="vl-market-hero-copy">
-          <span>Financial lease voor ondernemers</span>
-          <h1>Lease wat je nodig hebt <strong>voor je werk.</strong></h1>
-          <p>Bedrijfswagens, machines en aanhangers. Jij kiest het object en de leverancier; VakLease begeleidt de intake richting beoordeling.</p>
-        </div>
-
-        <div className="vl-market-tabs" role="tablist" aria-label="Leasecategorie">
-          {HOME_SLIDES.map((item, i) => (
-            <button key={item.key} className={i === index ? 'is-active' : ''} onClick={() => setIndex(i)} role="tab" aria-selected={i === index}>
-              {item.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="vl-market-filter">
-          <label><span>Categorie</span><strong>{slide.label}</strong></label>
-          <label><span>Budget</span><strong>Eigen aanschafprijs</strong></label>
-          <label><span>Object</span><strong>Nieuw of gebruikt</strong></label>
-          <a href="#quickcheck"><b>⌕</b> Start intake</a>
-        </div>
-
-        <div className="vl-market-carousel" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-          <button className="vl-market-arrow vl-market-arrow-left" onClick={() => go(index - 1)} aria-label="Vorige categorie">‹</button>
-          <div className="vl-market-stage">
-            <img key={slide.key} src={slide.image} alt={slide.alt} />
-          </div>
-          <button className="vl-market-arrow vl-market-arrow-right" onClick={() => go(index + 1)} aria-label="Volgende categorie">›</button>
-          <div className="vl-market-dots" aria-label="Carousel navigatie">
-            {HOME_SLIDES.map((item, i) => (
-              <button key={item.key} className={i === index ? 'is-active' : ''} onClick={() => setIndex(i)} aria-label={'Ga naar ' + item.label}></button>
-            ))}
-          </div>
-          <div className="vl-market-branding-note">✓ Bestickering als extra optie</div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export function Header() {
   const [open, setOpen] = useState(false);
   return (
@@ -120,12 +38,13 @@ export function Header() {
           <a className="vl-logo" href="/"><img src={LOGO} alt="VakLease" /></a>
           <nav className="vl-nav">
             <a href="/bedrijfswagens/">Bedrijfswagens</a>
-            <a href="/aanhangers/">Aanhangers</a>
             <a href="/machines/">Machines</a>
-            <a href="/#bestickering">Bestickering</a>
-            <a href="/#werkwijze">Over ons</a>
+            <a href="/aanhangers/">Aanhangers</a>
+            <a href="/#bestickering">Busbestickering</a>
+            <a href="/#werkwijze">Zo werkt het</a>
+            <a href="/#faq">Veelgestelde vragen</a>
           </nav>
-          <a className="vl-btn vl-btn-primary vl-header-cta" href="/#quickcheck">Neem contact op <span>→</span></a>
+          <a className="vl-btn vl-btn-primary vl-header-cta" href="/#quickcheck">Check mogelijkheden <span>→</span></a>
           <button className="vl-menu" onClick={() => setOpen(!open)} aria-label="Menu openen" aria-expanded={open}>
             <span></span><span></span><span></span>
           </button>
@@ -135,12 +54,12 @@ export function Header() {
         <div className="vl-mobile-nav">
           <div className="vl-shell">
             <a href="/bedrijfswagens/">Bedrijfswagens</a>
-            <a href="/aanhangers/">Aanhangers</a>
             <a href="/machines/">Machines</a>
-            <a href="/#bestickering">Bestickering</a>
-            <a href="/#werkwijze">Waarom VakLease</a>
+            <a href="/aanhangers/">Aanhangers</a>
+            <a href="/#bestickering">Busbestickering</a>
+            <a href="/#werkwijze">Zo werkt het</a>
             <a href="/#faq">Veelgestelde vragen</a>
-            <a className="vl-btn vl-btn-primary" href="/#quickcheck">Neem contact op →</a>
+            <a className="vl-btn vl-btn-primary" href="/#quickcheck">Check mogelijkheden →</a>
           </div>
         </div>
       )}
