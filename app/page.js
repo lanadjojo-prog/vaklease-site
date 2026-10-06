@@ -1,84 +1,77 @@
-import { Header, Footer, InstantLeaseHero } from './components';
+import { Header, Footer, QuickLead, FAQ } from './components';
 
-const MACHINE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-studio-4k.webp?v=1791284854';
-const TRAILER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-studio-4k.webp?v=1791284862';
+const HERO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-exact-reference-4k.webp?v=1791295100';
 
 export default function Home() {
   return (
     <main className="vl-new-home">
       <Header />
-      <InstantLeaseHero />
+
+      <section className="vl-funnel-hero" id="quickcheck">
+        <div className="vl-funnel-hero-media">
+          <img src={HERO} alt="Bedrijfswagen zakelijk leasen via VakLease" />
+          <div className="vl-funnel-hero-shade" />
+        </div>
+        <div className="vl-shell vl-funnel-hero-copy">
+          <span className="vl-new-kicker">Financial lease voor ondernemers</span>
+          <h1>Zakelijke lease <strong>aanvragen?</strong></h1>
+          <p>Bedrijfswagen, machine of aanhanger gevonden? Stuur de belangrijkste gegevens door. Geen lange aanvraag en geen eigen voorraad waar je uit moet kiezen.</p>
+          <div className="vl-funnel-proof">
+            <span>✓ Vrijblijvend aanvragen</span>
+            <span>✓ Zelf je object kiezen</span>
+            <span>✓ Persoonlijke begeleiding</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="vl-funnel-form-wrap" aria-label="Leaseaanvraag starten">
+        <div className="vl-shell">
+          <div className="vl-funnel-card">
+            <div className="vl-funnel-card-head">
+              <span>Start je aanvraag</span>
+              <h2>Object gevonden? Stuur het direct door.</h2>
+              <p>Kies wat je wilt leasen, plak de objectlink en laat je contactgegevens achter.</p>
+            </div>
+            <QuickLead defaultCategory="Bedrijfswagen" source="homepage-funnel" />
+          </div>
+        </div>
+      </section>
 
       <section className="vl-new-process" id="werkwijze">
         <div className="vl-shell">
           <div className="vl-new-process-head">
-            <div>
-              <span className="vl-new-kicker">Zo werkt het</span>
-              <h2>Van aanvraag<br/>naar <strong>aanbod.</strong></h2>
-            </div>
-            <p>Jij stuurt het object door. Wij maken de aanvraag compleet en leggen hem voor aan passende leasepartners.</p>
+            <div><span className="vl-new-kicker">Zo werkt het</span><h2>Van object naar <strong>leaseaanvraag.</strong></h2></div>
+            <p>Je hoeft niet eerst door een catalogus. Kies zelf je bedrijfswagen, machine of aanhanger en stuur de gegevens naar VakLease.</p>
           </div>
           <div className="vl-new-process-grid">
-            <article><b>01</b><span>↗</span><h3>Aanvraag indienen</h3><p>Plak een objectlink of upload de offerte en vul je KVK-nummer in.</p></article>
-            <article><b>02</b><span>◎</span><h3>Wij vergelijken</h3><p>Wij leggen je aanvraag voor aan passende financierende partijen.</p></article>
-            <article><b>03</b><span>✓</span><h3>Ontvang je aanbod</h3><p>Bij een complete aanvraag streven we naar duidelijkheid binnen 4 uur.</p></article>
+            <article><b>01</b><span>↗</span><h3>Object kiezen</h3><p>Vind zelf een passend object bij een dealer, leverancier of advertentieplatform.</p></article>
+            <article><b>02</b><span>□</span><h3>Gegevens sturen</h3><p>Deel de objectlink, prijs en je contactgegevens. We houden de eerste stap bewust kort.</p></article>
+            <article><b>03</b><span>✓</span><h3>Aanvraag begeleiden</h3><p>Wij maken de intake compleet en zetten de aanvraag gericht door richting financiering.</p></article>
           </div>
         </div>
       </section>
 
-      <section className="vl-new-audience" id="voor-wie">
-        <div className="vl-new-audience-media">
-          <img src={MACHINE} alt="VakLease machine" />
-          <div className="vl-new-audience-overlay">
-            <span>Voor ondernemers</span>
-            <h2>Voor de mensen die bouwen aan morgen.</h2>
+      <section className="vl-funnel-types" id="mogelijkheden">
+        <div className="vl-shell">
+          <div className="vl-section-head">
+            <span className="vl-new-kicker">Wat kun je aanvragen?</span>
+            <h2>Eén aanvraagroute voor je bedrijf.</h2>
+            <p>Dezelfde eenvoudige werkwijze, ongeacht het object dat je nodig hebt.</p>
           </div>
-        </div>
-        <div className="vl-new-audience-copy">
-          <span className="vl-new-kicker">Voor wie</span>
-          <h2>Gemaakt voor ondernemers in de praktijk.</h2>
-          <p>Van bouw en infra tot installatie, groen en logistiek. Jij kiest het object bij je eigen dealer of leverancier. VakLease helpt met de financieringsaanvraag.</p>
-          <div className="vl-new-sector-row">
-            <span>⌂<small>Bouw</small></span>
-            <span>⌁<small>Infra</small></span>
-            <span>◇<small>Installatie</small></span>
-            <span>⌘<small>Groen</small></span>
-            <span>•••<small>Overig</small></span>
+          <div className="vl-funnel-type-grid">
+            <a href="/bedrijfswagens/"><b>Bedrijfswagens</b><span>Bestelbussen en zakelijke voertuigen →</span></a>
+            <a href="/machines/"><b>Machines</b><span>Bouw-, infra- en werkmaterieel →</span></a>
+            <a href="/aanhangers/"><b>Aanhangers</b><span>Open en gesloten aanhangers →</span></a>
           </div>
         </div>
       </section>
 
-      <section className="vl-new-benefits" id="voordelen">
-        <div className="vl-shell vl-new-benefits-grid">
-          <div className="vl-new-benefit-visual">
-            <img src={TRAILER} alt="VakLease aanhanger" />
-            <div className="vl-new-floating-card top"><span>Één aanvraag</span><strong>Meerdere leasepartners</strong></div>
-            <div className="vl-new-floating-card bottom"><span>Nieuw én gebruikt</span><strong>Jij kiest het object</strong></div>
-          </div>
-          <div className="vl-new-benefit-copy">
-            <span className="vl-new-kicker">Waarom VakLease</span>
-            <h2>Meer mogelijkheden.<br/><strong>Minder gedoe.</strong></h2>
-            <div className="vl-new-benefit-list">
-              <article><i>↗</i><div><b>Eén aanvraag</b><p>Wij regelen de rest met meerdere leasepartners.</p></div></article>
-              <article><i>◷</i><div><b>Snel duidelijkheid</b><p>Bij complete aanvragen streven we naar reactie binnen 4 uur.</p></div></article>
-              <article><i>□</i><div><b>Vrijblijvend</b><p>Je zit nergens aan vast voordat je akkoord geeft.</p></div></article>
-              <article><i>♡</i><div><b>Persoonlijke service</b><p>Direct contact als er iets ontbreekt of verduidelijkt moet worden.</p></div></article>
-            </div>
-          </div>
-        </div>
-      </section>
+      <FAQ title="Veelgestelde vragen over zakelijke lease" />
 
       <section className="vl-new-final">
         <div className="vl-shell vl-new-final-inner">
-          <div>
-            <span className="vl-new-kicker">Klaar om te starten?</span>
-            <h2>Vraag vandaag nog<br/>je lease aan.</h2>
-          </div>
-          <div>
-            <p>Plak de link van je object of upload de offerte. Meer is er niet nodig om te starten.</p>
-            <a href="#quickcheck">Aanvraag starten <b>→</b></a>
-            <small>✓ Vrijblijvend en zonder verplichtingen</small>
-          </div>
+          <div><span className="vl-new-kicker">Al iets gevonden?</span><h2>Plak de link.<br/>Wij helpen verder.</h2></div>
+          <div><p>Begin met alleen de belangrijkste gegevens. Daarna bespreken we wat er voor jouw aanvraag nog nodig is.</p><a href="#quickcheck">Aanvraag starten <b>→</b></a><small>✓ Vrijblijvend en zonder verplichtingen</small></div>
         </div>
       </section>
 
