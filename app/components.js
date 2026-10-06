@@ -143,7 +143,7 @@ export function Header() {
             <a href="/bedrijfswagens/">Bedrijfswagens</a>
             <a href="/machines/">Machines</a>
             <a href="/aanhangers/">Aanhangers</a>
-            <a href="/#voor-wie">Over ons</a>
+            <a href="/#werkwijze">Hoe het werkt</a>
             <a href="/contact/">Contact</a>
           </nav>
           <a className="vl-new-header-cta vl-reference-header-cta" href="/contact/">Offerte aanvragen <span>→</span></a>
@@ -157,7 +157,7 @@ export function Header() {
           <a href="/bedrijfswagens/">Bedrijfswagens</a>
           <a href="/machines/">Machines</a>
           <a href="/aanhangers/">Aanhangers</a>
-          <a href="/#voor-wie">Over ons</a>
+          <a href="/#werkwijze">Hoe het werkt</a>
           <a href="/contact/">Contact</a>
           <a className="vl-new-header-cta" href="/contact/">Offerte aanvragen →</a>
         </div>
@@ -174,13 +174,13 @@ export function Footer() {
           <img src={LOGO} alt="VakLease" />
           <p>Zakelijke financial lease voor ondernemers. Snel, eenvoudig en persoonlijk.</p>
         </div>
-        <div><h4>VakLease</h4><a href="/#werkwijze">Hoe het werkt</a><a href="/#voordelen">Voordelen</a><a href="/#voor-wie">Voor wie</a></div>
+        <div><h4>VakLease</h4><a href="/">Home</a><a href="/#werkwijze">Hoe het werkt</a><a href="/#mogelijkheden">Lease mogelijkheden</a></div>
         <div><h4>Hulp</h4><a href="/#faq">Veelgestelde vragen</a><a href="/contact/">Contact</a></div>
         <div><h4>Start</h4><a href="/#quickcheck">Leaseaanvraag indienen →</a><p>Vrijblijvend en zonder verplichtingen.</p></div>
       </div>
       <div className="vl-shell vl-new-footer-bottom">
         <span>© 2026 VakLease</span>
-        <div><a href="/privacy/">Privacy</a><a href="/algemene-voorwaarden/">Algemene voorwaarden</a><a href="/cookiebeleid/">Cookiebeleid</a></div>
+        <div><a href="/bedrijfswagens/">Bedrijfswagens</a><a href="/machines/">Machines</a><a href="/aanhangers/">Aanhangers</a></div>
       </div>
     </footer>
   );
