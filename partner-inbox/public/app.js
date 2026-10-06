@@ -654,6 +654,9 @@ function openLeadDialog(id = '') {
     form.elements.category.value = vr.category || '';
     form.elements.purchase_price.value = vr.purchase_price || '';
     form.elements.product_url.value = vr.product_url || '';
+    form.elements.term_months.value=vr.term_months || '';
+    form.elements.object_description.value=vr.object_description || '';
+    form.elements.intake_notes.value=vr.notes || '';
     form.elements.status.value = a.status || 'new';
     form.elements.assigned_partner_id.value = a.assigned_partner_id || '';
     form.elements.expected_commission.value = a.expected_commission || 0;
@@ -668,6 +671,11 @@ function openLeadDialog(id = '') {
     form.elements.status.value = 'new';
     form.elements.commission_status.value = 'none';
   }
+  const vr=a?.vehicle_request || {};
+  const checks=[['KVK',Boolean(a?.kvk)],['Contactgegevens',Boolean(a?.email && a?.phone)],['Looptijd',Boolean(vr.term_months)],['Object',Boolean(vr.product_url || vr.object_description || vr.quote)],['Offerte',Boolean(vr.quote)]];
+  $('#leaseDossier').innerHTML=a ? `<h3>Dossier ${checks.filter(x=>x[1]).length}/5 compleet</h3><p>${checks.map(([k,v])=>`${v?'✓':'○'} ${k}`).join(' · ')}</p>${vr.quote?`<a href="/api/applications/${a.id}/quote">Offerte downloaden: ${escapeHtml(vr.quote.name)}</a>`:'<p>Offerte van leverancier nog niet ontvangen.</p>'}<label>Offerte toevoegen of vervangen (max. 3 MB)<input type="file" id="adminQuoteUpload" accept=".pdf,.jpg,.jpeg,.png"></label><p><button type="button" id="preparePartnerSend">Dossier naar partner voorbereiden</button></p>` : '';
+  $('#adminQuoteUpload')?.addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(file.size>3*1024*1024)return alert('Maximaal 3 MB.');try{const base64=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=reject;r.readAsDataURL(file);});await api('/api/applications/'+a.id+'/quote',{method:'POST',body:JSON.stringify({quote:{name:file.name,type:file.type,base64}})});await loadApplications();openLeadDialog(a.id);}catch(err){alert(err.message);}});
+  $('#preparePartnerSend')?.addEventListener('click',()=>preparePartnerSend(a));
   $('#leadDialog').showModal();
 }
 
@@ -686,6 +694,8 @@ $('#leadForm')?.addEventListener('submit', async e => {
     category: v.category || '',
     product_url: v.product_url || '',
     purchase_price: v.purchase_price || '',
+    term_months: Number(v.term_months) || null,
+    object_description: v.object_description || '',
     source: v.lead_source || 'manual'
   };
   const common = {
@@ -736,3 +746,19 @@ async function loadQuotes() {
   await Promise.allSettled([loadLeadMachine(), loadProspects(), loadApplications(), loadQuotes()]);
   loadInbox();
 })();
+function preparePartnerSend(a) {
+  const vr=a.vehicle_request || {};
+  const partner=state.partners.find(p=>String(p.id)===String(a.assigned_partner_id));
+  const f=$('#partnerSendForm');f.reset();f.querySelector('[type=submit]').disabled=false;f.elements.id.value=a.id;
+  f.elements.to.value=partner?.email || 'info@tklease.nl';
+  f.elements.subject.value='Leaseaanvraag – '+(a.company_name || a.applicant_name || a.id);
+  f.elements.body.value=`Beste leasepartner,\n\nGraag ontvangen wij een beoordeling van onderstaande aanvraag.\n\nBedrijf: ${a.company_name || ''}\nContactpersoon: ${a.applicant_name || ''}\nKVK-nummer: ${a.kvk || ''}\nE-mailadres: ${a.email || ''}\nTelefoonnummer: ${a.phone || ''}\nCategorie: ${vr.category || ''}\nObject: ${vr.object_description || ''}\nObjectlink: ${vr.product_url || ''}\nAanschafprijs excl. btw: € ${vr.purchase_price || ''}\nGewenste looptijd: ${vr.term_months || ''} maanden\nToelichting: ${vr.notes || ''}\nOfferte: ${vr.quote?'bijgevoegd':'ontbreekt'}\n\nMet vriendelijke groet,\nVakLease`;
+  $('#partnerSendStatus').textContent=vr.quote?'':'De offerte ontbreekt. Het dossier kan pas worden verstuurd als dit compleet is.';
+  $('#partnerSendDialog').showModal();
+}
+$('#cancelPartnerSend')?.addEventListener('click',()=>$('#partnerSendDialog').close());
+$('#partnerSendForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();const f=e.currentTarget; const button=f.querySelector('[type=submit]');button.disabled=true;
+  try {await api('/api/applications/'+f.elements.id.value+'/send-partner',{method:'POST',body:JSON.stringify({to:f.elements.to.value,subject:f.elements.subject.value,body:f.elements.body.value})});$('#partnerSendStatus').textContent='Dossier verstuurd.';await loadApplications();}
+  catch(err){$('#partnerSendStatus').textContent=err.message;button.disabled=false;}
+});

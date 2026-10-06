@@ -261,7 +261,7 @@
         <label>Categorie<input name="category" placeholder="Bus, minigraver, aanhanger…"></label>
         <label>Koopprijs<input name="purchase_price" inputmode="decimal" placeholder="25000"></label>
         <label class="full">Object / advertentie URL<input name="product_url" type="url"></label>
-        <label>Status<select name="status"><option value="new">Nieuw</option><option value="contacted">Contact gelegd</option><option value="qualified">Gekwalificeerd</option><option value="quote_requested">Offerte aangevraagd</option><option value="submitted">Naar partner</option><option value="approved">Goedgekeurd</option><option value="won">Afgesloten</option><option value="lost">Verloren</option></select></label>
+        <label>Looptijd (maanden)<select name="term_months"><option value="">Onbekend</option><option>24</option><option>36</option><option>48</option><option>60</option><option>72</option></select></label><label class="full">Objectomschrijving<textarea name="object_description" rows="2"></textarea></label><label class="full">Toelichting klant<textarea name="intake_notes" rows="2" readonly></textarea></label><label>Status<select name="status"><option value="new">Nieuw</option><option value="contacted">Contact gelegd</option><option value="qualified">Gekwalificeerd</option><option value="quote_requested">Offerte aangevraagd</option><option value="submitted">Naar partner</option><option value="approved">Goedgekeurd</option><option value="won">Afgesloten</option><option value="lost">Verloren</option></select></label>
         <label>Leasepartner<select name="assigned_partner_id" id="leadPartnerSelect"><option value="">Nog niet gekoppeld</option></select></label>
         <label>Verwachte commissie €<input name="expected_commission" inputmode="decimal" value="0"></label>
         <label>Verdiende commissie €<input name="earned_commission" inputmode="decimal" value="0"></label>
@@ -269,7 +269,7 @@
         <label>Volgende opvolging<input name="next_followup_at" type="datetime-local"></label>
         <label class="full">Reden verloren<input name="lost_reason"></label>
       </div>
-      <label>Notities<textarea name="notes" rows="4"></textarea></label>
+      <div id="leaseDossier"></div><label>Notities<textarea name="notes" rows="4"></textarea></label>
       <div class="form-actions"><button class="ghost" value="cancel">Annuleren</button><button class="primary" type="submit" value="save">Opslaan</button></div>
     </form>
   </dialog>
@@ -281,6 +281,7 @@
     </div>
   </dialog>
 
+  <dialog id="partnerSendDialog"><form id="partnerSendForm" class="modal-form"><h2>Dossier naar leasepartner</h2><p>Controleer de ontvanger en het bericht. De offerte wordt als bijlage meegestuurd.</p><input name="id" type="hidden"><label>Aan<input name="to" type="email" required></label><label>Onderwerp<input name="subject" required></label><label>Bericht<textarea name="body" rows="12" required></textarea></label><p id="partnerSendStatus" role="status"></p><div class="form-actions"><button type="button" id="cancelPartnerSend">Sluiten</button><button type="submit" class="primary">Verstuur dossier</button></div></form></dialog>
   <script src="/app.js"></script>
 
 </body>

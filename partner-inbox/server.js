@@ -23,7 +23,8 @@ app.use(helmet({
     }
   }
 }));
-app.use(express.json({ limit: '1mb' }));
+app.use('/api/public-applications', express.json({ limit: '5mb' }));
+app.use((req,res,next)=> /^\/api\/applications\/[0-9]+\/quote$/.test(req.path) ? next() : express.json({limit:'1mb'})(req,res,next));
 app.use('/api', rateLimit({ windowMs: 60 * 1000, max: 180 }));
 
 const publicApplicationLimiter = rateLimit({ windowMs: 60 * 1000, max: 15 });
@@ -47,17 +48,42 @@ app.options('/api/public-applications', (req, res) => {
   res.sendStatus(204);
 });
 
+function validateQuote(input) {
+ let quote=null;
+  if(input) {
+    const q=input;
+    if(typeof q.base64 !== 'string' || q.base64.length > 4194304 || !/^[A-Za-z0-9+/]*={0,2}$/.test(q.base64)) throw Object.assign(new Error('Ongeldig bestand of bestand groter dan 3 MB.'),{status:400});
+    const bytes=Buffer.from(q.base64,'base64');
+    const valid = (q.type === 'application/pdf' && bytes.subarray(0,5).toString() === '%PDF-') || (q.type === 'image/jpeg' && bytes.subarray(0,3).toString('hex') === 'ffd8ff') || (q.type === 'image/png' && bytes.subarray(0,8).toString('hex') === '89504e470d0a1a0a');
+    if(!valid || bytes.length > 3*1024*1024) throw Object.assign(new Error('Upload een geldige PDF, JPG of PNG van maximaal 3 MB.'),{status:400});
+    quote={name:String(q.name || 'offerte').replace(/[^a-zA-Z0-9._-]/g,'_').slice(0,120),type:q.type,base64:bytes.toString('base64'),size:bytes.length};
+  }
+ return quote;
+}
 app.post('/api/public-applications', publicApplicationLimiter, async (req, res, next) => {
   setPublicCors(req, res);
   const a = req.body || {};
   const email = String(a.email || '').trim();
   const phone = String(a.phone || '').trim();
-  const consent = Boolean(a.consent);
+  const consent = a.consent === true;
 
   if (!consent) return res.status(400).json({ error: 'Toestemming is vereist.' });
   if (!email && !phone) return res.status(400).json({ error: 'Vul een e-mailadres of telefoonnummer in.' });
 
+  let quote = null;
+  if (a.source === 'lease-intake-v2') {
+    if (!/^[0-9]{8}$/.test(String(a.kvk || '')) || !String(a.company_name || '').trim() || !String(a.applicant_name || '').trim()) return res.status(400).json({error:'Vul je bedrijfsnaam, contactpersoon en KVK-nummer (8 cijfers) in.'});
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || phone.replace(/[^0-9]/g,'').length < 8) return res.status(400).json({error:'Vul een geldig e-mailadres en telefoonnummer in.'});
+    if (!['Bedrijfswagen','Machine','Aanhanger'].includes(a.category) || ![24,36,48,60,72].includes(Number(a.term_months)) || !(Number(a.purchase_price)>0)) return res.status(400).json({error:'Controleer categorie, aanschafprijs en looptijd.'});
+    if (a.product_url) { try { if (!['https:','http:'].includes(new URL(a.product_url).protocol)) throw Error(); } catch { return res.status(400).json({error:'Vul een geldige objectlink in.'}); } }
+    if(a.journey === 'found' && !a.product_url && !a.quote) return res.status(400).json({error:'Een objectlink of offerte is vereist.'});
+    if(a.journey === 'searching' && !String(a.object_description || '').trim()) return res.status(400).json({error:'Omschrijf wat je zoekt.'});
+  }
+  try { quote=validateQuote(a.quote); } catch(err) {return res.status(400).json({error:err.message});}
   const request = {
+    term_months: Number(a.term_months) || null,
+    quote,
+    notes: String(a.notes || '').slice(0,2000),
     category: String(a.category || '').slice(0, 80),
     product_url: String(a.product_url || '').slice(0, 1000),
     purchase_price: String(a.purchase_price || '').slice(0, 80),
@@ -84,7 +110,7 @@ app.post('/api/public-applications', publicApplicationLimiter, async (req, res, 
           : null
       ]
     );
-    res.status(201).json({ ok: true, application: result.rows[0] });
+    res.status(201).json({ ok: true, application: {id:result.rows[0].id, created_at:result.rows[0].created_at} });
   } catch (err) {
     next(err);
   }
@@ -868,7 +894,7 @@ function smtpTransport() {
   });
 }
 
-async function sendOutboundMail({ to, subject, body }) {
+async function sendOutboundMail({ to, subject, body, attachments = [] }) {
   if (mailConfig.resendApiKey) {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -880,7 +906,8 @@ async function sendOutboundMail({ to, subject, body }) {
         from: `${mailConfig.fromName} <${mailConfig.user}>`,
         to: [String(to).trim()],
         subject: String(subject).trim(),
-        text: String(body)
+        text: String(body),
+        attachments: attachments.map(a=>({filename:a.filename,content:a.content}))
       })
     });
 
@@ -899,7 +926,8 @@ async function sendOutboundMail({ to, subject, body }) {
     from: `"${mailConfig.fromName}" <${mailConfig.user}>`,
     to: String(to).trim(),
     subject: String(subject).trim(),
-    text: String(body)
+    text: String(body),
+    attachments
   });
 
   return { messageId: info.messageId || null, provider: 'smtp' };
@@ -1329,8 +1357,36 @@ app.post('/api/templates', async (req, res, next) => {
 app.get('/api/applications', async (req, res, next) => {
   try {
     const result = await dbQuery('SELECT * FROM lease_applications ORDER BY created_at DESC LIMIT 100');
-    res.json({ applications: result.rows });
+    res.json({ applications: result.rows.map(a => {const vr={...(a.vehicle_request || {})}; if(vr.quote) {const {base64,...meta}=vr.quote; vr.quote=meta;} return {...a,vehicle_request:vr};}) });
   } catch (err) { next(err); }
+});
+
+async function getLeaseApplication(id) {
+  if(!/^[0-9]+$/.test(String(id))) return null;
+  const rows=await supabaseRest('lease_applications?select=*&id=eq.'+encodeURIComponent(id)+'&limit=1');
+  return rows?.[0] || null;
+}
+app.get('/api/applications/:id/quote', async (req,res,next)=>{
+  try { const a=await getLeaseApplication(req.params.id); const q=a?.vehicle_request?.quote;
+    if(!q?.base64) return res.status(404).json({error:'Geen offerte ontvangen.'});
+    res.set('Cache-Control','no-store');res.type(q.type);res.attachment(q.name);res.send(Buffer.from(q.base64,'base64'));
+  }catch(err){next(err);}
+});
+app.post('/api/applications/:id/quote', express.json({limit:'5mb'}), async(req,res,next)=>{
+ try {const a=await getLeaseApplication(req.params.id);if(!a)return res.status(404).json({error:'Aanvraag niet gevonden.'});const quote=validateQuote(req.body.quote);if(!quote)return res.status(400).json({error:'Kies een offerte.'});await restPatch('lease_applications',a.id,{vehicle_request:{...a.vehicle_request,quote}});res.json({ok:true});}catch(err){next(err);}
+});
+app.post('/api/applications/:id/send-partner', async(req,res,next)=>{
+  try {
+    const a=await getLeaseApplication(req.params.id);
+    if(!a) return res.status(404).json({error:'Aanvraag niet gevonden.'});
+    const {to,subject,body}=req.body || {};
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(to || '')) || !subject || !body) return res.status(400).json({error:'Controleer ontvanger, onderwerp en bericht.'});
+    const q=a.vehicle_request?.quote;
+    if(!q?.base64 || !a.kvk || !a.email || !a.phone || !a.vehicle_request?.term_months) return res.status(400).json({error:'Maak eerst het dossier compleet: KVK, e-mail, telefoon, looptijd en offerte.'});
+    const result=await sendOutboundMail({to,subject,body,attachments:[{filename:q.name,content:q.base64,encoding:'base64',contentType:q.type}]});
+    await restPatch('lease_applications',a.id,{status:'submitted',notes:[a.notes,'Dossier verstuurd naar '+to+' op '+new Date().toISOString()].filter(Boolean).join('\n')});
+    res.json({ok:true,...result});
+  } catch(err){next(err);}
 });
 
 app.post('/api/applications', async (req, res, next) => {
@@ -1535,6 +1591,7 @@ app.patch('/api/applications/:id', async (req, res, next) => {
   }
   patch.updated_at = new Date().toISOString();
   try {
+    if(patch.vehicle_request) { const rows=await supabaseRest('lease_applications?select=vehicle_request&id=eq.'+encodeURIComponent(id)+'&limit=1'); patch.vehicle_request.quote=rows?.[0]?.vehicle_request?.quote || null; }
     const application = await restPatch('lease_applications', id, patch);
     if (!application) return res.status(404).json({ error: 'Lead niet gevonden.' });
     res.json({ application });
