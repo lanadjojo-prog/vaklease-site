@@ -559,7 +559,6 @@ export function InstantLeaseHero(){
   const [status,setStatus]=useState('idle');
   const [message,setMessage]=useState('');
   const touchStart=useRef(null);
-  const active=NEW_HERO_SLIDES[index];
 
   const submit=async e=>{
     e.preventDefault();
@@ -588,10 +587,25 @@ export function InstantLeaseHero(){
     }
   };
 
+  const go=(delta)=>setIndex(v=>(v+delta+NEW_HERO_SLIDES.length)%NEW_HERO_SLIDES.length);
+
   return (
-    <section className="vl-new-hero" id="quickcheck"
+    <section className="vl-new-hero vl-new-hero-fullbg" id="quickcheck"
       onTouchStart={e=>{touchStart.current=e.touches?.[0]?.clientX??null}}
-      onTouchEnd={e=>{if(touchStart.current==null)return;const x=e.changedTouches?.[0]?.clientX??touchStart.current;const d=x-touchStart.current;if(Math.abs(d)>45)setIndex(v=>(v+(d<0?1:-1)+3)%3);touchStart.current=null;}}>
+      onTouchEnd={e=>{if(touchStart.current==null)return;const x=e.changedTouches?.[0]?.clientX??touchStart.current;const d=x-touchStart.current;if(Math.abs(d)>45)go(d<0?1:-1);touchStart.current=null;}}>
+      
+      <div className="vl-new-bg-track" style={{transform:`translate3d(-${index*100}%,0,0)`}}>
+        {NEW_HERO_SLIDES.map((s,i)=>(
+          <div
+            key={s.key}
+            className="vl-new-bg-slide"
+            style={{backgroundImage:`url("${s.image}")`}}
+            aria-hidden={i!==index}
+          />
+        ))}
+      </div>
+      <div className="vl-new-bg-overlay" />
+
       <div className="vl-shell vl-new-hero-grid">
         <div className="vl-new-hero-main">
           <div className="vl-new-hero-copy">
@@ -600,14 +614,13 @@ export function InstantLeaseHero(){
             <p>Snel en eenvoudig je bedrijfswagen, machine of aanhanger zakelijk leasen. Jij kiest het object, wij regelen de aanvraag.</p>
           </div>
 
-          <div className="vl-new-visual">
+          <div className="vl-new-visual vl-new-visual-overlay">
             <div className="vl-new-tabs">
-              {NEW_HERO_SLIDES.map((s,i)=><button key={s.key} onClick={()=>setIndex(i)} className={i===index?'active':''}>{s.label}</button>)}
+              {NEW_HERO_SLIDES.map((s,i)=><button key={s.key} type="button" onClick={()=>setIndex(i)} className={i===index?'active':''}>{s.label}</button>)}
             </div>
-            <img src={active.image} alt={active.label+' met VakLease branding'} />
-            <button className="vl-new-arrow left" type="button" onClick={()=>setIndex(v=>(v+2)%3)}>‹</button>
-            <button className="vl-new-arrow right" type="button" onClick={()=>setIndex(v=>(v+1)%3)}>›</button>
-            <div className="vl-new-dots">{NEW_HERO_SLIDES.map((s,i)=><button key={s.key} className={i===index?'active':''} onClick={()=>setIndex(i)} aria-label={s.label}/>)}</div>
+            <button className="vl-new-arrow left" type="button" onClick={()=>go(-1)} aria-label="Vorige categorie">‹</button>
+            <button className="vl-new-arrow right" type="button" onClick={()=>go(1)} aria-label="Volgende categorie">›</button>
+            <div className="vl-new-dots">{NEW_HERO_SLIDES.map((s,i)=><button type="button" key={s.key} className={i===index?'active':''} onClick={()=>setIndex(i)} aria-label={s.label}/>)}</div>
           </div>
 
           <div className="vl-new-proof">
