@@ -6651,3 +6651,148 @@ body:has(.vl-new-hero-stacked) .vl-new-header-inner{
     object-position:center center!important;
   }
 }
+
+
+/* ===== Hero layout matched to supplied reference · centered photographic canvas ===== */
+body:has(.vl-new-hero-stacked) .vl-new-header{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  width:100%!important;
+  background:#fff!important;
+  backdrop-filter:none!important;
+  border-bottom:1px solid #edf1f5!important;
+}
+body:has(.vl-new-hero-stacked) .vl-new-header-inner{
+  height:76px!important;
+}
+
+.vl-new-hero-stacked{
+  padding:0 0 42px!important;
+  background:#f4f7fb!important;
+  overflow:visible!important;
+}
+
+.vl-new-photo-stage{
+  position:relative!important;
+  width:min(1440px,calc(100% - 64px))!important;
+  max-width:1440px!important;
+  min-height:700px!important;
+  height:760px!important;
+  margin:0 auto!important;
+  overflow:hidden!important;
+  background:#e8f0f7!important;
+  isolation:isolate;
+}
+
+.vl-new-photo-stage .vl-new-bg-track{
+  width:100%!important;
+  height:100%!important;
+}
+
+.vl-new-photo-stage .vl-new-bg-slide{
+  width:100%!important;
+  height:100%!important;
+  flex:0 0 100%!important;
+  min-width:100%!important;
+  padding:0!important;
+  background:none!important;
+}
+
+.vl-new-full-photo{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  max-width:none!important;
+}
+
+.vl-new-stage-shade{
+  background:
+    linear-gradient(180deg,rgba(240,247,252,.54) 0%,rgba(240,247,252,.26) 17%,rgba(240,247,252,.06) 34%,transparent 50%)!important;
+}
+
+.vl-new-hero-top{
+  padding-top:42px!important;
+  z-index:4!important;
+}
+
+.vl-new-hero-copy-center{
+  width:min(760px,88%)!important;
+}
+
+.vl-new-hero-copy-center h1{
+  font-size:clamp(44px,3.7vw,64px)!important;
+  line-height:.98!important;
+}
+
+.vl-new-hero-copy-center p{
+  font-size:14px!important;
+  line-height:1.45!important;
+  width:min(690px,92%)!important;
+}
+
+.vl-new-tabs-center{
+  margin-top:20px!important;
+  width:min(420px,88%)!important;
+  justify-content:space-between!important;
+}
+
+.vl-new-tabs-center button{
+  flex:1 1 0!important;
+  min-width:0!important;
+}
+
+.vl-new-photo-stage .vl-new-arrow{
+  top:59%!important;
+  width:52px!important;
+  height:52px!important;
+}
+.vl-new-photo-stage .vl-new-arrow.left{left:28px!important}
+.vl-new-photo-stage .vl-new-arrow.right{right:28px!important}
+
+.vl-new-photo-stage .vl-new-dots{
+  bottom:92px!important;
+}
+
+.vl-new-form-overlap-wrap{
+  margin-top:-86px!important;
+  padding-bottom:20px!important;
+}
+
+.vl-new-form-horizontal{
+  max-width:1180px!important;
+  width:calc(100% - 32px)!important;
+  margin:0 auto!important;
+  border-radius:22px!important;
+  box-shadow:0 24px 60px rgba(15,34,68,.14)!important;
+}
+
+@media(max-width:1100px){
+  .vl-new-photo-stage{
+    width:calc(100% - 40px)!important;
+    min-height:640px!important;
+    height:680px!important;
+  }
+  .vl-new-hero-top{padding-top:34px!important}
+  .vl-new-form-overlap-wrap{margin-top:-72px!important}
+}
+
+@media(max-width:760px){
+  .vl-new-photo-stage{
+    width:calc(100% - 20px)!important;
+    min-height:590px!important;
+    height:620px!important;
+  }
+  .vl-new-hero-top{padding-top:24px!important}
+  .vl-new-hero-copy-center h1{font-size:38px!important}
+  .vl-new-photo-stage .vl-new-arrow{top:62%!important}
+  .vl-new-photo-stage .vl-new-arrow.left{left:10px!important}
+  .vl-new-photo-stage .vl-new-arrow.right{right:10px!important}
+  .vl-new-photo-stage .vl-new-dots{bottom:72px!important}
+  .vl-new-form-overlap-wrap{margin-top:-54px!important}
+}
