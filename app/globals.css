@@ -6286,3 +6286,45 @@ body{
     background-position:center 64%!important;
   }
 }
+
+
+/* ===== Full-bleed hero canvas while preserving vehicle scale · 2026-10-06 ===== */
+.vl-new-photo-stage{
+  width:100vw!important;
+  max-width:none!important;
+  margin-left:calc(50% - 50vw)!important;
+  margin-right:calc(50% - 50vw)!important;
+  background:
+    radial-gradient(circle at 50% 55%,#ffffff 0%,#fbfcfe 48%,#f5f7fa 78%,#f0f3f7 100%)!important;
+}
+.vl-new-photo-stage .vl-new-bg-track{
+  width:100vw!important;
+  max-width:none!important;
+}
+.vl-new-photo-stage .vl-new-bg-slide{
+  /* Keep the exact current vehicle size while the studio itself fills the viewport */
+  background-size:1240px auto!important;
+  background-position:center 67%!important;
+  background-repeat:no-repeat!important;
+  background-color:transparent!important;
+}
+.vl-new-stage-shade{
+  background:linear-gradient(180deg,rgba(247,249,252,.72) 0%,rgba(247,249,252,.22) 17%,transparent 34%)!important;
+}
+@media(min-width:1500px){
+  .vl-new-photo-stage .vl-new-bg-slide{
+    background-size:1240px auto!important;
+  }
+}
+@media(max-width:1100px){
+  .vl-new-photo-stage .vl-new-bg-slide{
+    background-size:min(1080px,118vw) auto!important;
+    background-position:center 65%!important;
+  }
+}
+@media(max-width:760px){
+  .vl-new-photo-stage .vl-new-bg-slide{
+    background-size:115% auto!important;
+    background-position:center 64%!important;
+  }
+}
