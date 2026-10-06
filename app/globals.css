@@ -6796,3 +6796,167 @@ body:has(.vl-new-hero-stacked) .vl-new-header-inner{
   .vl-new-photo-stage .vl-new-dots{bottom:72px!important}
   .vl-new-form-overlap-wrap{margin-top:-54px!important}
 }
+
+
+/* ===== Exact screenshot hero implementation · isolated from legacy hero CSS ===== */
+.vl-reference-header{
+  position:relative!important;
+  top:auto!important;
+  z-index:100!important;
+  width:100%!important;
+  background:#fff!important;
+  backdrop-filter:none!important;
+  border-bottom:1px solid #edf1f5!important;
+}
+.vl-reference-header .vl-new-header-inner{
+  height:82px!important;
+}
+.vl-reference-header .vl-new-logo img{
+  height:54px!important;
+  mix-blend-mode:normal!important;
+}
+.vl-reference-header .vl-new-nav{
+  gap:34px!important;
+}
+.vl-reference-header .vl-new-nav a{
+  color:#071a42!important;
+  opacity:1!important;
+  font-size:14px!important;
+  font-weight:700!important;
+}
+.vl-reference-header-cta{
+  background:#0878f9!important;
+  color:#fff!important;
+  padding:15px 22px!important;
+  border-radius:12px!important;
+  box-shadow:0 10px 24px rgba(8,120,249,.18)!important;
+  font-size:13px!important;
+}
+
+.vl-exact-hero{
+  position:relative;
+  width:100vw;
+  max-width:none;
+  margin:0 calc(50% - 50vw);
+  overflow:hidden;
+  background:#eaf3fb;
+  touch-action:pan-y;
+}
+.vl-exact-track{
+  display:flex;
+  width:100%;
+  transition:transform .68s cubic-bezier(.22,1,.36,1);
+  will-change:transform;
+}
+.vl-exact-slide{
+  position:relative;
+  flex:0 0 100%;
+  min-width:100%;
+}
+.vl-exact-slide img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-width:none;
+  user-select:none;
+  pointer-events:none;
+}
+
+.vl-exact-hit,
+.vl-exact-tab-hits button,
+.vl-exact-dot-hits button{
+  position:absolute;
+  appearance:none;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  padding:0;
+  z-index:7;
+}
+.vl-exact-left{
+  left:3.3%;
+  top:55%;
+  width:7%;
+  height:13%;
+}
+.vl-exact-right{
+  right:3.3%;
+  top:55%;
+  width:7%;
+  height:13%;
+}
+.vl-exact-tab-hits{
+  position:absolute;
+  z-index:7;
+  left:19.4%;
+  top:30.6%;
+  width:33.7%;
+  height:5.8%;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+}
+.vl-exact-tab-hits button{
+  position:relative;
+  width:100%;
+  height:100%;
+}
+.vl-exact-search-hit{
+  position:absolute;
+  z-index:7;
+  left:69%;
+  top:36.1%;
+  width:11.7%;
+  height:7.2%;
+  border-radius:999px;
+}
+.vl-exact-branding-hit{
+  position:absolute;
+  z-index:7;
+  right:4.8%;
+  bottom:5.2%;
+  width:17.5%;
+  height:6.5%;
+  border-radius:999px;
+}
+.vl-exact-dot-hits{
+  position:absolute;
+  z-index:7;
+  left:46.6%;
+  bottom:5.1%;
+  width:6.8%;
+  height:4.7%;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:4px;
+}
+.vl-exact-dot-hits button{
+  position:relative;
+  width:100%;
+  height:100%;
+}
+
+@media(max-width:900px){
+  .vl-reference-header .vl-new-header-inner{
+    height:72px!important;
+  }
+  .vl-reference-header .vl-new-logo img{
+    height:44px!important;
+  }
+  .vl-reference-header .vl-new-nav,
+  .vl-reference-header .vl-reference-header-cta{
+    display:none!important;
+  }
+}
+@media(max-width:600px){
+  .vl-exact-hero{
+    width:100vw;
+    margin:0 calc(50% - 50vw);
+  }
+  .vl-exact-slide img{
+    width:150%;
+    max-width:none;
+    transform:translateX(-16.666%);
+  }
+  .vl-exact-left{left:1%;top:58%}
+  .vl-exact-right{right:1%;top:58%}
+}
