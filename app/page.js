@@ -1,11 +1,13 @@
 import { Header, Footer, QuickLead, FAQ } from './components';
 
-const HERO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-exact-reference-4k.webp?v=1791295100';
+const HERO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-bus-zoomed-4k.webp?v=1791277539';
 
 export default function Home() {
   return (
     <main className="vl-new-home">
       <Header />
+
+      <style>{`\n        @media (max-width: 760px) {\n          .vl-funnel-hero { min-height: 470px; align-items: flex-end; background: #071d3b; }\n          .vl-funnel-hero-media img { object-fit: cover; object-position: 58% center; }\n          .vl-funnel-hero-shade { background: linear-gradient(0deg, rgba(5,23,48,.96) 0%, rgba(5,23,48,.72) 42%, rgba(5,23,48,.16) 78%, rgba(5,23,48,.04) 100%); }\n          .vl-funnel-hero-copy { padding-top: 185px; padding-bottom: 82px; }\n          .vl-funnel-hero-copy .vl-new-kicker { font-size: 9px; letter-spacing: .14em; }\n          .vl-funnel-hero-copy h1 { max-width: 340px; margin: 9px 0 12px; font-size: clamp(34px, 10.5vw, 42px); line-height: 1.02; }\n          .vl-funnel-hero-copy > p { max-width: 355px; margin: 0; font-size: 14px; line-height: 1.48; }\n          .vl-funnel-proof { gap: 7px 13px; margin-top: 16px; font-size: 10.5px; }\n          .vl-funnel-form-wrap { margin-top: -42px; padding-bottom: 48px; }\n          .vl-funnel-card { padding: 19px 15px; border-radius: 18px; box-shadow: 0 18px 45px rgba(8,29,58,.16); }\n          .vl-funnel-card-head { margin-bottom: 16px; }\n          .vl-funnel-card-head h2 { font-size: 25px; line-height: 1.08; }\n          .vl-funnel-card-head p { font-size: 13px; line-height: 1.45; }\n        }\n        @media (max-width: 420px) {\n          .vl-funnel-hero { min-height: 450px; }\n          .vl-funnel-hero-media img { object-position: 60% center; }\n          .vl-funnel-hero-copy { padding-top: 172px; padding-bottom: 76px; }\n          .vl-funnel-proof span { white-space: nowrap; }\n        }\n      `}</style>
 
       <section className="vl-funnel-hero" id="quickcheck">
         <div className="vl-funnel-hero-media">
