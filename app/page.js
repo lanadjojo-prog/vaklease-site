@@ -54,7 +54,12 @@ export default function Home() {
             line-height:1.48;
           }
           .vl-calm-home .vl-funnel-proof {
-            display:none;
+            display:flex;
+            gap:7px 12px;
+            margin-top:14px;
+            font-size:10.5px;
+            line-height:1.35;
+            flex-wrap:wrap;
           }
           .vl-calm-home .vl-funnel-form-wrap {
             margin-top:-28px;
@@ -111,9 +116,9 @@ export default function Home() {
           <h1>Zakelijke lease <strong>aanvragen?</strong></h1>
           <p>Bedrijfswagen, machine of aanhanger gevonden? Stuur de gegevens door. Wij helpen je persoonlijk verder met de aanvraag.</p>
           <div className="vl-funnel-proof">
-            <span>✓ Vrijblijvend aanvragen</span>
-            <span>✓ Zelf je object kiezen</span>
-            <span>✓ Persoonlijke begeleiding</span>
+            <span>✓ Binnen 4 uur een offerte</span>
+            <span>✓ Snel geregeld</span>
+            <span>✓ Geen jaarcijfers nodig</span>
           </div>
         </div>
       </section>
