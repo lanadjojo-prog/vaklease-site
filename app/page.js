@@ -1,4 +1,4 @@
-import { Header, Footer, QuickLead, ChatAssistant, FAQ, MobileSticky } from './components';
+import { Header, Footer, ChatAssistant, FAQ, MobileSticky, VakLeaseHero } from './components';
 
 const HERO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-vrijstaande-bus.png?v=1791198370';
 const HERO_MACHINE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-machines-2026.png?v=1791188682';
@@ -37,39 +37,7 @@ export default function Home() {
     <main>
       <Header />
 
-      <section className="vl-guided-hero">
-        <div className="vl-shell">
-          <div className="vl-guided-copy">
-            <span>Zakelijke lease voor vakbedrijven</span>
-            <h1>Lease wat je nodig hebt <strong>voor je werk.</strong></h1>
-            <p>Bedrijfswagen, machine of aanhanger. Jij kiest het object en de leverancier; VakLease helpt je de aanvraag gericht op weg.</p>
-          </div>
-
-          <div className="vl-guided-stage">
-            <div className="vl-guided-visual">
-              <img src={HERO} alt="Vrijstaande VakLease bedrijfswagen in witte studio" />
-              <div className="vl-guided-callout vl-guided-callout-a"><b>✓</b><span>Zelf dealer of leverancier kiezen</span></div>
-              <div className="vl-guided-callout vl-guided-callout-b"><b>✓</b><span>Nieuw of gebruikt indienen</span></div>
-              <div className="vl-guided-callout vl-guided-callout-c"><b>✓</b><span>Bestickering als extra optie</span></div>
-            </div>
-
-            <aside className="vl-guided-card" id="quickcheck">
-              <div className="vl-guided-card-badge">Vrijblijvende intake</div>
-              <span className="vl-guided-card-kicker">Start hier</span>
-              <h2>Vertel ons wat je wilt leasen.</h2>
-              <p>Heb je al iets gevonden? Plak de link. Nog aan het zoeken? Vertel kort wat je nodig hebt.</p>
-              <QuickLead source="homepage-hero" compact />
-              <div className="vl-guided-card-trust">
-                <span>✓ Eén aanspreekpunt</span>
-                <span>✓ Geen verplichte voorraad</span>
-                <span>✓ Beoordeling door financierende partij</span>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      <section className="vl-vw-models" id="mogelijkheden">
+      <VakLeaseHero />\n\n      <section className="vl-vw-models" id="mogelijkheden">
         <div className="vl-shell">
           <div className="vl-vw-section-title">
             <span>Wat wil je leasen?</span>
