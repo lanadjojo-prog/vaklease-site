@@ -530,9 +530,9 @@ export function CategoryPage({ category, icon, title, intro, examples, benefits,
 
 
 const NEW_HERO_SLIDES = [
-  { key:'van', label:'Bedrijfswagens', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-ultra-centered-4k.webp?v=1791289873', position:'center 66%' },
-  { key:'machine', label:'Machines', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-ultra-centered-4k.webp?v=1791289880', position:'center 66%' },
-  { key:'trailer', label:'Aanhangers', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-ultra-centered-4k.webp?v=1791289888', position:'center 66%' }
+  { key:'van', label:'Bedrijfswagens', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-reference-4k.webp?v=1791294064', position:'center center' },
+  { key:'machine', label:'Machines', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-reference-4k.webp?v=1791294075', position:'center center' },
+  { key:'trailer', label:'Aanhangers', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-reference-4k.webp?v=1791294084', position:'center center' }
 ];
 
 function fileToQuote(file){
@@ -597,9 +597,12 @@ export function InstantLeaseHero(){
         
         <div className="vl-new-bg-track" style={{transform:`translate3d(-${index*100}%,0,0)`}}>
           {NEW_HERO_SLIDES.map((s,i)=>(
-            <div key={s.key} className="vl-new-bg-slide" aria-hidden={i!==index}>
-              <img className="vl-new-vehicle-img" src={s.image} alt={s.label+' met VakLease branding'} />
-            </div>
+            <div
+              key={s.key}
+              className="vl-new-bg-slide"
+              style={{backgroundImage:`url("${s.image}")`,backgroundPosition:s.position}}
+              aria-hidden={i!==index}
+            />
           ))}
         </div>
 
