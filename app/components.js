@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-logo.png?v=1790680810';
 const API = 'https://vaklease-partner-inbox.onrender.com/api/public-applications';
@@ -26,6 +26,109 @@ export function AssetIcon({ type }) {
       <circle cx="18" cy="49" r="6" /><circle cx="44" cy="49" r="6" />
       <path d="M11 29h20" />
     </svg>
+  );
+}
+
+
+const VAKLEASE_HERO_SLIDES = [
+  {
+    key: 'van',
+    label: 'Bedrijfswagens',
+    href: '/bedrijfswagens/',
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-bus-4k.webp?v=1791275839',
+    position: 'center center'
+  },
+  {
+    key: 'machine',
+    label: 'Machines',
+    href: '/machines/',
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-machine-4k.webp?v=1791275846',
+    position: 'center center'
+  },
+  {
+    key: 'trailer',
+    label: 'Aanhangers',
+    href: '/aanhangers/',
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-trailer-4k.webp?v=1791275855',
+    position: 'center center'
+  }
+];
+
+export function VakLeaseHero() {
+  const [index, setIndex] = useState(0);
+  const touchStart = useRef(null);
+  const slides = VAKLEASE_HERO_SLIDES;
+  const active = slides[index];
+
+  const go = (next) => setIndex((next + slides.length) % slides.length);
+  const onTouchStart = (e) => {
+    touchStart.current = e.touches?.[0]?.clientX ?? null;
+  };
+  const onTouchEnd = (e) => {
+    if (touchStart.current == null) return;
+    const end = e.changedTouches?.[0]?.clientX ?? touchStart.current;
+    const delta = end - touchStart.current;
+    if (Math.abs(delta) > 45) go(index + (delta < 0 ? 1 : -1));
+    touchStart.current = null;
+  };
+
+  return (
+    <section className="vl-visual-hero" id="quickcheck" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      <div className="vl-visual-hero-track" style={{ transform: `translate3d(-${index * 100}%,0,0)` }}>
+        {slides.map((slide) => (
+          <div
+            className="vl-visual-hero-slide"
+            key={slide.key}
+            style={{ backgroundImage: `url("${slide.image}")`, backgroundPosition: slide.position }}
+            aria-hidden={slide.key !== active.key}
+          />
+        ))}
+      </div>
+      <div className="vl-visual-hero-shade"></div>
+
+      <div className="vl-shell vl-visual-hero-content">
+        <div className="vl-visual-hero-copy">
+          <span>Financial lease voor ondernemers</span>
+          <h1>Lease wat je nodig hebt <strong>voor je werk.</strong></h1>
+          <p>Bedrijfswagens, aanhangers en machines. Snel, transparant en zonder gedoe geregeld, zodat jij kunt ondernemen.</p>
+        </div>
+
+        <div className="vl-visual-hero-controls">
+          <div className="vl-visual-hero-tabs" role="tablist" aria-label="Lease categorie">
+            {slides.map((slide, i) => (
+              <button
+                type="button"
+                key={slide.key}
+                className={i === index ? 'is-active' : ''}
+                onClick={() => setIndex(i)}
+                role="tab"
+                aria-selected={i === index}
+              >
+                {slide.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="vl-visual-searchbar">
+            <button type="button"><span>Merk</span><strong>Alle merken</strong><b>⌄</b></button>
+            <button type="button"><span>Prijs per maand</span><strong>Elke prijs</strong><b>⌄</b></button>
+            <button type="button"><span>Type</span><strong>Alle types</strong><b>⌄</b></button>
+            <a href={active.href} className="vl-visual-search-submit"><i></i><span>Zoeken</span></a>
+          </div>
+        </div>
+
+        <button type="button" className="vl-visual-arrow vl-visual-arrow-left" onClick={() => go(index - 1)} aria-label="Vorige categorie">‹</button>
+        <button type="button" className="vl-visual-arrow vl-visual-arrow-right" onClick={() => go(index + 1)} aria-label="Volgende categorie">›</button>
+
+        <div className="vl-visual-dots" aria-label="Hero navigatie">
+          {slides.map((slide, i) => (
+            <button type="button" key={slide.key} className={i === index ? 'is-active' : ''} onClick={() => setIndex(i)} aria-label={slide.label}></button>
+          ))}
+        </div>
+
+        <a href="/#bestickering" className="vl-visual-branding-pill"><b>✓</b><span>Ook bestickering mogelijk</span></a>
+      </div>
+    </section>
   );
 }
 
