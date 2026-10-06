@@ -6622,3 +6622,32 @@ body:has(.vl-new-hero-stacked) .vl-new-header-inner{
     margin-top:-70px!important;
   }
 }
+
+
+/* ===== Fix photographic hero layer conflict · 2026-10-06 ===== */
+.vl-new-photo-stage .vl-new-bg-slide{
+  position:relative!important;
+  overflow:hidden!important;
+  background:none!important;
+}
+.vl-new-full-photo{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  max-width:none!important;
+  user-select:none!important;
+  pointer-events:none!important;
+}
+.vl-new-stage-shade{
+  background:
+    linear-gradient(180deg,rgba(236,244,251,.56) 0%,rgba(236,244,251,.30) 16%,rgba(236,244,251,.08) 32%,transparent 48%)!important;
+}
+@media(max-width:760px){
+  .vl-new-full-photo{
+    object-position:center center!important;
+  }
+}
