@@ -5555,7 +5555,7 @@ body{
 .vl-footer-premium .vl-footer-bottom{color:#aab7ca!important}
 .vl-footer-premium .vl-footer-cta>a,
 .vl-footer-premium .vl-footer-start-link{background:#0f6eea!important;color:#fff!important}
-.vl-footer-premium .vl-footer-brand img{background:#fff;border-radius:10px;padding:4px 7px;height:54px!important}
+.vl-footer-premium .vl-footer-brand img{background:transparent!important;border-radius:0!important;padding:0!important;height:58px!important}
 
 @media(max-width:1000px){
   .vl-market-hero-copy h1{font-size:47px}
