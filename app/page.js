@@ -1,130 +1,88 @@
-import { Header, Footer, ChatAssistant, FAQ, MobileSticky, VakLeaseHero } from './components';
+import { Header, Footer, InstantLeaseHero } from './components';
 
-const HERO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-vrijstaande-bus.png?v=1791198370';
-const HERO_MACHINE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-machines-2026.png?v=1791188682';
-const HERO_TRAILER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-aanhanger-2026.png?v=1791188690';
-const BRANDING = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-before-after-bestickering_41b0cc7d-311e-45fa-996e-2c4bc842fb42.png?v=1791198380';
-
-const categories = [
-  {
-    href: '/bedrijfswagens/',
-    label: 'Bedrijfswagens',
-    title: 'De juiste bus voor jouw werk.',
-    text: 'Van compacte bestelbus tot grote bedrijfswagen. Nieuw of gebruikt: jij kiest het object.',
-    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-bedrijfswagen-2026.png?v=1791188673',
-    alt: 'VakLease werkbus op bouwplaats'
-  },
-  {
-    href: '/machines/',
-    label: 'Machines',
-    title: 'Meer capaciteit voor iedere klus.',
-    text: 'Voor onder meer minigravers, shovels, heftrucks, hoogwerkers en andere bedrijfsmachines.',
-    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-machines-2026.png?v=1791188682',
-    alt: 'VakLease machines op industrieterrein'
-  },
-  {
-    href: '/aanhangers/',
-    label: 'Aanhangers',
-    title: 'Meer materieel mee naar je werk.',
-    text: 'Van machinetransporter en kipper tot gesloten aanhanger of autotransporter.',
-    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-aanhanger-2026.png?v=1791188690',
-    alt: 'VakLease aanhanger op industrieterrein'
-  }
-];
+const MACHINE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-studio-4k.webp?v=1791284854';
+const TRAILER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-studio-4k.webp?v=1791284862';
 
 export default function Home() {
   return (
-    <main>
+    <main className="vl-new-home">
       <Header />
+      <InstantLeaseHero />
 
-      <VakLeaseHero />\n\n      <section className="vl-vw-models" id="mogelijkheden">
+      <section className="vl-new-process" id="werkwijze">
         <div className="vl-shell">
-          <div className="vl-vw-section-title">
-            <span>Wat wil je leasen?</span>
-            <h2>Kies de categorie die bij je volgende investering past.</h2>
-            <p className="vl-section-subcopy">Je hoeft niet uit ons aanbod te kiezen. De categoriepagina helpt je vooral om snel de juiste aanvraag te starten.</p>
-          </div>
-
-          <div className="vl-vw-model-grid">
-            {categories.map((item) => (
-              <article className="vl-vw-model-card" key={item.label}>
-                <a className="vl-vw-model-image" href={item.href}>
-                  <img src={item.image} alt={item.alt} loading="lazy" />
-                </a>
-                <div className="vl-vw-model-body">
-                  <h3>{item.label}</h3>
-                  <strong>{item.title}</strong>
-                  <p>{item.text}</p>
-                  <div className="vl-vw-model-actions vl-vw-model-actions-simple">
-                    <a className="vl-vw-btn vl-vw-btn-dark" href={item.href}>Bekijk {item.label.toLowerCase()}</a>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="vl-vw-process" id="werkwijze">
-        <div className="vl-shell">
-          <div className="vl-vw-section-title vl-vw-section-title-left">
-            <span>Zo werkt VakLease</span>
-            <h2>Van objectlink naar beoordeling in drie duidelijke stappen.</h2>
-          </div>
-          <div className="vl-vw-process-grid">
-            <article>
-              <b>01</b>
-              <h3>Stuur je object door</h3>
-              <p>Deel de link, aanschafprijs en je contactgegevens. Heb je nog niets gevonden, vertel dan wat je zoekt.</p>
-            </article>
-            <article>
-              <b>02</b>
-              <h3>We maken de intake compleet</h3>
-              <p>We bespreken welke gegevens nog nodig zijn en zorgen dat de aanvraag logisch en volledig wordt aangeleverd.</p>
-            </article>
-            <article>
-              <b>03</b>
-              <h3>Je krijgt duidelijkheid over het vervolg</h3>
-              <p>De financierende partij beoordeelt het dossier. Daarna weet je welke mogelijkheden en vervolgstappen er zijn.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="vl-vw-feature" id="bestickering">
-        <div className="vl-shell">
-          <div className="vl-vw-feature-panel">
-            <div className="vl-vw-feature-copy">
-              <span className="vl-vw-eyebrow">Extra voor bedrijfswagens</span>
-              <h2>Van standaard bus naar <strong>rijdend visitekaartje.</strong></h2>
-              <p>Bekijk direct het verschil tussen een onbestickerde bus en een professionele VakLease-uitwerking. Naast de lease-intake kun je een vrijblijvend ontwerpvoorstel aanvragen.</p>
-              <div className="vl-vw-feature-actions">
-                <a className="vl-vw-btn vl-vw-btn-light" href="/contact/">Vraag gratis ontwerp aan</a>
-                <a className="vl-vw-btn vl-vw-btn-outline-light" href="/bedrijfswagens/">Bekijk bedrijfswagens</a>
-              </div>
+          <div className="vl-new-process-head">
+            <div>
+              <span className="vl-new-kicker">Zo werkt het</span>
+              <h2>Van aanvraag<br/>naar <strong>aanbod.</strong></h2>
             </div>
-            <div className="vl-vw-feature-image vl-vw-feature-before-after">
-              <img src={BRANDING} alt="Voor en na bestickering van dezelfde bedrijfswagen" loading="lazy" />
+            <p>Jij stuurt het object door. Wij maken de aanvraag compleet en leggen hem voor aan passende leasepartners.</p>
+          </div>
+          <div className="vl-new-process-grid">
+            <article><b>01</b><span>↗</span><h3>Aanvraag indienen</h3><p>Plak een objectlink of upload de offerte en vul je KVK-nummer in.</p></article>
+            <article><b>02</b><span>◎</span><h3>Wij vergelijken</h3><p>Wij leggen je aanvraag voor aan passende financierende partijen.</p></article>
+            <article><b>03</b><span>✓</span><h3>Ontvang je aanbod</h3><p>Bij een complete aanvraag streven we naar duidelijkheid binnen 4 uur.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section className="vl-new-audience" id="voor-wie">
+        <div className="vl-new-audience-media">
+          <img src={MACHINE} alt="VakLease machine" />
+          <div className="vl-new-audience-overlay">
+            <span>Voor ondernemers</span>
+            <h2>Voor de mensen die bouwen aan morgen.</h2>
+          </div>
+        </div>
+        <div className="vl-new-audience-copy">
+          <span className="vl-new-kicker">Voor wie</span>
+          <h2>Gemaakt voor ondernemers in de praktijk.</h2>
+          <p>Van bouw en infra tot installatie, groen en logistiek. Jij kiest het object bij je eigen dealer of leverancier. VakLease helpt met de financieringsaanvraag.</p>
+          <div className="vl-new-sector-row">
+            <span>⌂<small>Bouw</small></span>
+            <span>⌁<small>Infra</small></span>
+            <span>◇<small>Installatie</small></span>
+            <span>⌘<small>Groen</small></span>
+            <span>•••<small>Overig</small></span>
+          </div>
+        </div>
+      </section>
+
+      <section className="vl-new-benefits" id="voordelen">
+        <div className="vl-shell vl-new-benefits-grid">
+          <div className="vl-new-benefit-visual">
+            <img src={TRAILER} alt="VakLease aanhanger" />
+            <div className="vl-new-floating-card top"><span>Één aanvraag</span><strong>Meerdere leasepartners</strong></div>
+            <div className="vl-new-floating-card bottom"><span>Nieuw én gebruikt</span><strong>Jij kiest het object</strong></div>
+          </div>
+          <div className="vl-new-benefit-copy">
+            <span className="vl-new-kicker">Waarom VakLease</span>
+            <h2>Meer mogelijkheden.<br/><strong>Minder gedoe.</strong></h2>
+            <div className="vl-new-benefit-list">
+              <article><i>↗</i><div><b>Eén aanvraag</b><p>Wij regelen de rest met meerdere leasepartners.</p></div></article>
+              <article><i>◷</i><div><b>Snel duidelijkheid</b><p>Bij complete aanvragen streven we naar reactie binnen 4 uur.</p></div></article>
+              <article><i>□</i><div><b>Vrijblijvend</b><p>Je zit nergens aan vast voordat je akkoord geeft.</p></div></article>
+              <article><i>♡</i><div><b>Persoonlijke service</b><p>Direct contact als er iets ontbreekt of verduidelijkt moet worden.</p></div></article>
             </div>
           </div>
         </div>
       </section>
 
-      <FAQ />
-
-      <section className="vl-vw-end vl-final-conversion">
-        <div className="vl-shell vl-vw-end-inner">
+      <section className="vl-new-final">
+        <div className="vl-shell vl-new-final-inner">
           <div>
-            <span>Klaar om te beginnen?</span>
-            <h2>Stuur het object door. Wij pakken het vanaf daar op.</h2>
+            <span className="vl-new-kicker">Klaar om te starten?</span>
+            <h2>Vraag vandaag nog<br/>je lease aan.</h2>
           </div>
-          <a className="vl-vw-btn vl-vw-btn-dark" href="#quickcheck">Check mijn mogelijkheden</a>
+          <div>
+            <p>Plak de link van je object of upload de offerte. Meer is er niet nodig om te starten.</p>
+            <a href="#quickcheck">Aanvraag starten <b>→</b></a>
+            <small>✓ Vrijblijvend en zonder verplichtingen</small>
+          </div>
         </div>
       </section>
 
       <Footer />
-      <ChatAssistant />
-      <MobileSticky />
     </main>
   );
 }
