@@ -71,6 +71,13 @@ app.post('/api/public-applications', publicApplicationLimiter, async (req, res, 
   if (!email && !phone) return res.status(400).json({ error: 'Vul een e-mailadres of telefoonnummer in.' });
 
   let quote = null;
+  if (a.source === 'lease-intake-v3') {
+    if (!/^[0-9]{8}$/.test(String(a.kvk || ''))) return res.status(400).json({error:'Vul een geldig KVK-nummer van 8 cijfers in.'});
+    if (a.product_url) { try { if (!['https:','http:'].includes(new URL(a.product_url).protocol)) throw Error(); } catch { return res.status(400).json({error:'Vul een geldige objectlink in.'}); } }
+    if (a.journey === 'link' && !a.product_url) return res.status(400).json({error:'Plak de link naar het object.'});
+    if (a.journey === 'upload' && !a.quote) return res.status(400).json({error:'Upload de offerte van het object.'});
+    if (a.term_months && ![24,36,48,60,72].includes(Number(a.term_months))) return res.status(400).json({error:'Controleer de gewenste looptijd.'});
+  }
   if (a.source === 'lease-intake-v2') {
     if (!/^[0-9]{8}$/.test(String(a.kvk || '')) || !String(a.company_name || '').trim() || !String(a.applicant_name || '').trim()) return res.status(400).json({error:'Vul je bedrijfsnaam, contactpersoon en KVK-nummer (8 cijfers) in.'});
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || phone.replace(/[^0-9]/g,'').length < 8) return res.status(400).json({error:'Vul een geldig e-mailadres en telefoonnummer in.'});
