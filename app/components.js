@@ -530,9 +530,9 @@ export function CategoryPage({ category, icon, title, intro, examples, benefits,
 
 
 const NEW_HERO_SLIDES = [
-  { key:'van', label:'Bedrijfswagens', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-studio-4k.webp?v=1791284845' },
-  { key:'machine', label:'Machines', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-studio-4k.webp?v=1791284854' },
-  { key:'trailer', label:'Aanhangers', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-studio-4k.webp?v=1791284862' }
+  { key:'van', label:'Bedrijfswagens', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-studio-4k.webp?v=1791284845', position:'58% 64%' },
+  { key:'machine', label:'Machines', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-studio-4k.webp?v=1791284854', position:'60% 66%' },
+  { key:'trailer', label:'Aanhangers', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-studio-4k.webp?v=1791284862', position:'61% 66%' }
 ];
 
 function fileToQuote(file){
@@ -599,7 +599,7 @@ export function InstantLeaseHero(){
           <div
             key={s.key}
             className="vl-new-bg-slide"
-            style={{backgroundImage:`url("${s.image}")`}}
+            style={{backgroundImage:`url("${s.image}")`,backgroundPosition:s.position}}
             aria-hidden={i!==index}
           />
         ))}
@@ -612,12 +612,12 @@ export function InstantLeaseHero(){
             <span className="vl-new-kicker">Zakelijk leasen voor ondernemers</span>
             <h1>Jouw werk,<br/><strong>onze drive.</strong></h1>
             <p>Snel en eenvoudig je bedrijfswagen, machine of aanhanger zakelijk leasen. Jij kiest het object, wij regelen de aanvraag.</p>
+            <div className="vl-new-tabs vl-new-tabs-inline" role="tablist" aria-label="Categorie kiezen">
+              {NEW_HERO_SLIDES.map((s,i)=><button key={s.key} type="button" onClick={()=>setIndex(i)} className={i===index?'active':''} role="tab" aria-selected={i===index}>{s.label}</button>)}
+            </div>
           </div>
 
           <div className="vl-new-visual vl-new-visual-overlay">
-            <div className="vl-new-tabs">
-              {NEW_HERO_SLIDES.map((s,i)=><button key={s.key} type="button" onClick={()=>setIndex(i)} className={i===index?'active':''}>{s.label}</button>)}
-            </div>
             <button className="vl-new-arrow left" type="button" onClick={()=>go(-1)} aria-label="Vorige categorie">‹</button>
             <button className="vl-new-arrow right" type="button" onClick={()=>go(1)} aria-label="Volgende categorie">›</button>
             <div className="vl-new-dots">{NEW_HERO_SLIDES.map((s,i)=><button type="button" key={s.key} className={i===index?'active':''} onClick={()=>setIndex(i)} aria-label={s.label}/>)}</div>
