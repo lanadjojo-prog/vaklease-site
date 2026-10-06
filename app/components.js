@@ -530,9 +530,9 @@ export function CategoryPage({ category, icon, title, intro, examples, benefits,
 
 
 const NEW_HERO_SLIDES = [
-  { key:'van', label:'Bedrijfswagens', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-ultra-hero-4k.webp?v=1791288243', position:'center 66%' },
-  { key:'machine', label:'Machines', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-ultra-hero-4k.webp?v=1791288251', position:'center 67%' },
-  { key:'trailer', label:'Aanhangers', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-ultra-hero-4k.webp?v=1791288260', position:'center 67%' }
+  { key:'van', label:'Bedrijfswagens', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-ultra-centered-4k.webp?v=1791289873', position:'center 66%' },
+  { key:'machine', label:'Machines', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-ultra-centered-4k.webp?v=1791289880', position:'center 66%' },
+  { key:'trailer', label:'Aanhangers', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-ultra-centered-4k.webp?v=1791289888', position:'center 66%' }
 ];
 
 function fileToQuote(file){
