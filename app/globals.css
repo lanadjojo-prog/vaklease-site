@@ -6960,3 +6960,37 @@ body:has(.vl-new-hero-stacked) .vl-new-header-inner{
   .vl-exact-left{left:1%;top:58%}
   .vl-exact-right{right:1%;top:58%}
 }
+
+
+/* Conversion-first homepage funnel */
+.vl-funnel-hero{position:relative;min-height:500px;display:flex;align-items:center;overflow:hidden;background:#071d3b;color:#fff}
+.vl-funnel-hero-media,.vl-funnel-hero-media img,.vl-funnel-hero-shade{position:absolute;inset:0;width:100%;height:100%}
+.vl-funnel-hero-media img{object-fit:cover;object-position:center}
+.vl-funnel-hero-shade{background:linear-gradient(90deg,rgba(5,23,48,.88) 0%,rgba(5,23,48,.58) 48%,rgba(5,23,48,.12) 100%)}
+.vl-funnel-hero-copy{position:relative;z-index:2;padding-top:70px;padding-bottom:125px}
+.vl-funnel-hero-copy h1{max-width:720px;margin:14px 0 18px;font-size:clamp(44px,6vw,78px);line-height:.98;letter-spacing:-.045em}
+.vl-funnel-hero-copy h1 strong{color:#f58220;font-weight:inherit}
+.vl-funnel-hero-copy>p{max-width:650px;font-size:19px;line-height:1.6;color:rgba(255,255,255,.84)}
+.vl-funnel-proof{display:flex;gap:22px;flex-wrap:wrap;margin-top:25px;font-size:14px;font-weight:700}
+.vl-funnel-form-wrap{position:relative;z-index:5;margin-top:-76px;padding-bottom:76px}
+.vl-funnel-card{background:#fff;border-radius:22px;padding:30px;box-shadow:0 22px 70px rgba(8,29,58,.16);border:1px solid rgba(8,29,58,.07)}
+.vl-funnel-card-head{max-width:760px;margin-bottom:22px}
+.vl-funnel-card-head>span{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#f58220;font-weight:800}
+.vl-funnel-card-head h2{font-size:clamp(27px,3vw,40px);margin:7px 0 7px;color:#081d3a;letter-spacing:-.03em}
+.vl-funnel-card-head p{margin:0;color:#667085}
+.vl-funnel-types{padding:80px 0;background:#f6f8fb}
+.vl-funnel-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.vl-funnel-type-grid a{display:flex;min-height:150px;flex-direction:column;justify-content:flex-end;padding:25px;border-radius:18px;background:#fff;border:1px solid #e8edf3;text-decoration:none;color:#081d3a;transition:.2s ease}
+.vl-funnel-type-grid a:hover{transform:translateY(-3px);box-shadow:0 14px 35px rgba(8,29,58,.08)}
+.vl-funnel-type-grid b{font-size:22px;margin-bottom:8px}.vl-funnel-type-grid span{font-size:14px;color:#667085}
+@media(max-width:760px){
+ .vl-funnel-hero{min-height:540px;align-items:flex-end}
+ .vl-funnel-hero-shade{background:linear-gradient(0deg,rgba(5,23,48,.94) 0%,rgba(5,23,48,.52) 65%,rgba(5,23,48,.18) 100%)}
+ .vl-funnel-hero-copy{padding-top:180px;padding-bottom:105px}
+ .vl-funnel-hero-copy h1{font-size:46px}
+ .vl-funnel-hero-copy>p{font-size:16px}
+ .vl-funnel-proof{gap:9px 16px;font-size:12px}
+ .vl-funnel-form-wrap{margin-top:-58px;padding-bottom:55px}
+ .vl-funnel-card{padding:20px 16px;border-radius:18px}
+ .vl-funnel-type-grid{grid-template-columns:1fr}
+}
