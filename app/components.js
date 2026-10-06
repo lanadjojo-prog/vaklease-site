@@ -597,12 +597,14 @@ export function InstantLeaseHero(){
         
         <div className="vl-new-bg-track" style={{transform:`translate3d(-${index*100}%,0,0)`}}>
           {NEW_HERO_SLIDES.map((s,i)=>(
-            <div
-              key={s.key}
-              className="vl-new-bg-slide"
-              style={{backgroundImage:`url("${s.image}")`,backgroundPosition:s.position}}
-              aria-hidden={i!==index}
-            />
+            <div key={s.key} className="vl-new-bg-slide" aria-hidden={i!==index}>
+              <img
+                className="vl-new-full-photo"
+                src={s.image}
+                alt={s.label+' met VakLease branding'}
+                draggable="false"
+              />
+            </div>
           ))}
         </div>
 
