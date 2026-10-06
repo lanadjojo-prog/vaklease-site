@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 
-const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-logo-2026.webp?v=1791273759';
+const LOGO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-logo-transparent.png?v=1791274167';
 const API = 'https://vaklease-partner-inbox.onrender.com/api/public-applications';
 const BRANDING = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bestickering-studio-2026.png?v=1791188699';
 
@@ -135,12 +135,12 @@ export function Header() {
         <div className="vl-mobile-nav">
           <div className="vl-shell">
             <a href="/bedrijfswagens/">Bedrijfswagens</a>
-            <a href="/machines/">Machines</a>
             <a href="/aanhangers/">Aanhangers</a>
-            <a href="/#bestickering">Busbestickering</a>
-            <a href="/#werkwijze">Zo werkt het</a>
+            <a href="/machines/">Machines</a>
+            <a href="/#bestickering">Bestickering</a>
+            <a href="/#werkwijze">Waarom VakLease</a>
             <a href="/#faq">Veelgestelde vragen</a>
-            <a className="vl-btn vl-btn-primary" href="/#quickcheck">Check mogelijkheden →</a>
+            <a className="vl-btn vl-btn-primary" href="/#quickcheck">Neem contact op →</a>
           </div>
         </div>
       )}
