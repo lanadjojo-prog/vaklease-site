@@ -1,103 +1,95 @@
-import { Header, Footer, QuickLead, ChatAssistant, FAQ, MobileSticky, HomeHeroCarousel, AssetIcon } from './components';
+import { Header, Footer, QuickLead, ChatAssistant, FAQ, MobileSticky } from './components';
 
-const BUS = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-bus-side.webp?v=1791273862';
-const MACHINE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-machine-side.webp?v=1791273868';
-const TRAILER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-trailer-side.webp?v=1791273874';
+const HERO = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-vrijstaande-bus.png?v=1791198370';
+const HERO_MACHINE = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-machines-2026.png?v=1791188682';
+const HERO_TRAILER = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-aanhanger-2026.png?v=1791188690';
 const BRANDING = 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-before-after-bestickering_41b0cc7d-311e-45fa-996e-2c4bc842fb42.png?v=1791198380';
 
 const categories = [
-  { href:'/bedrijfswagens/', label:'Bedrijfswagens', text:'Van compacte bestelbus tot bakwagen.', icon:'van' },
-  { href:'/aanhangers/', label:'Aanhangers', text:'Voor elke klus de juiste aanhanger.', icon:'trailer' },
-  { href:'/machines/', label:'Machines', text:'Bouwmachines en grondverzet.', icon:'machine' },
-  { href:'#bestickering', label:'Bestickering', text:'Professionele voertuigbestickering.', icon:'branding' }
-];
-
-const popular = [
-  { title:'Mercedes-Benz Sprinter', meta:'Bedrijfswagen · voorbeeld', image:BUS, href:'/bedrijfswagens/', note:'Eigen dealer of leverancier' },
-  { title:'Volkswagen Transporter', meta:'Bedrijfswagen · voorbeeld', image:BUS, href:'/bedrijfswagens/', note:'Nieuw of gebruikt mogelijk' },
-  { title:'Plateau-aanhanger', meta:'Aanhanger · voorbeeld', image:TRAILER, href:'/aanhangers/', note:'Ook bestickering mogelijk' },
-  { title:'Minigraver', meta:'Machine · voorbeeld', image:MACHINE, href:'/machines/', note:'Vrije objectkeuze' }
+  {
+    href: '/bedrijfswagens/',
+    label: 'Bedrijfswagens',
+    title: 'De juiste bus voor jouw werk.',
+    text: 'Van compacte bestelbus tot grote bedrijfswagen. Nieuw of gebruikt: jij kiest het object.',
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-bedrijfswagen-2026.png?v=1791188673',
+    alt: 'VakLease werkbus op bouwplaats'
+  },
+  {
+    href: '/machines/',
+    label: 'Machines',
+    title: 'Meer capaciteit voor iedere klus.',
+    text: 'Voor onder meer minigravers, shovels, heftrucks, hoogwerkers en andere bedrijfsmachines.',
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-machines-2026.png?v=1791188682',
+    alt: 'VakLease machines op industrieterrein'
+  },
+  {
+    href: '/aanhangers/',
+    label: 'Aanhangers',
+    title: 'Meer materieel mee naar je werk.',
+    text: 'Van machinetransporter en kipper tot gesloten aanhanger of autotransporter.',
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-category-aanhanger-2026.png?v=1791188690',
+    alt: 'VakLease aanhanger op industrieterrein'
+  }
 ];
 
 export default function Home() {
   return (
-    <main className="vl-market-home">
+    <main>
       <Header />
-      <HomeHeroCarousel />
 
-      <section className="vl-market-section" id="mogelijkheden">
+      <section className="vl-guided-hero">
         <div className="vl-shell">
-          <div className="vl-market-title">
-            <span>Ons aanbod</span>
-            <h2>Lease per categorie</h2>
+          <div className="vl-guided-copy">
+            <span>Zakelijke lease voor vakbedrijven</span>
+            <h1>Lease wat je nodig hebt <strong>voor je werk.</strong></h1>
+            <p>Bedrijfswagen, machine of aanhanger. Jij kiest het object en de leverancier; VakLease helpt je de aanvraag gericht op weg.</p>
           </div>
-          <div className="vl-market-category-grid">
+
+          <div className="vl-guided-stage">
+            <div className="vl-guided-visual">
+              <img src={HERO} alt="Vrijstaande VakLease bedrijfswagen in witte studio" />
+              <div className="vl-guided-callout vl-guided-callout-a"><b>✓</b><span>Zelf dealer of leverancier kiezen</span></div>
+              <div className="vl-guided-callout vl-guided-callout-b"><b>✓</b><span>Nieuw of gebruikt indienen</span></div>
+              <div className="vl-guided-callout vl-guided-callout-c"><b>✓</b><span>Bestickering als extra optie</span></div>
+            </div>
+
+            <aside className="vl-guided-card" id="quickcheck">
+              <div className="vl-guided-card-badge">Vrijblijvende intake</div>
+              <span className="vl-guided-card-kicker">Start hier</span>
+              <h2>Vertel ons wat je wilt leasen.</h2>
+              <p>Heb je al iets gevonden? Plak de link. Nog aan het zoeken? Vertel kort wat je nodig hebt.</p>
+              <QuickLead source="homepage-hero" compact />
+              <div className="vl-guided-card-trust">
+                <span>✓ Eén aanspreekpunt</span>
+                <span>✓ Geen verplichte voorraad</span>
+                <span>✓ Beoordeling door financierende partij</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section className="vl-vw-models" id="mogelijkheden">
+        <div className="vl-shell">
+          <div className="vl-vw-section-title">
+            <span>Wat wil je leasen?</span>
+            <h2>Kies de categorie die bij je volgende investering past.</h2>
+            <p className="vl-section-subcopy">Je hoeft niet uit ons aanbod te kiezen. De categoriepagina helpt je vooral om snel de juiste aanvraag te starten.</p>
+          </div>
+
+          <div className="vl-vw-model-grid">
             {categories.map((item) => (
-              <a className="vl-market-category-card" href={item.href} key={item.label}>
-                <div className="vl-market-category-icon">
-                  {item.icon === 'branding' ? <span>▱</span> : <AssetIcon type={item.icon} />}
-                </div>
-                <div><h3>{item.label}</h3><p>{item.text}</p></div>
-                <b>→</b>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="vl-market-duo">
-        <div className="vl-shell vl-market-duo-grid">
-          <article className="vl-market-duo-card vl-market-duo-lease">
-            <div>
-              <span>Direct aan de slag</span>
-              <h2>Financial lease aanvragen</h2>
-              <p>Start met het object, de aanschafprijs en je contactgegevens. Wij helpen de intake logisch compleet te maken.</p>
-              <a href="#quickcheck">Lease aanvragen <b>→</b></a>
-              <ul>
-                <li>Vrijblijvende eerste intake</li>
-                <li>Zelf object en leverancier kiezen</li>
-                <li>Eén aanspreekpunt</li>
-                <li>Beoordeling door financierende partij</li>
-              </ul>
-            </div>
-            <div className="vl-market-duo-symbol">€</div>
-          </article>
-
-          <article className="vl-market-duo-card vl-market-duo-brand" id="bestickering">
-            <div>
-              <span>Laat je opvallen</span>
-              <h2>Bestickering & ontwerpservice</h2>
-              <p>Wil je je bedrijfswagen professioneel laten bestickeren? Ontwerpservice en montage kunnen als aanvullende dienst worden aangevraagd.</p>
-              <a href="/contact/">Ontdek de mogelijkheden <b>→</b></a>
-              <ul>
-                <li>Ontwerpservice op aanvraag</li>
-                <li>Professionele voertuigfolie</li>
-                <li>Geschikt voor verschillende voertuigtypes</li>
-                <li>Los van of naast je leaseaanvraag</li>
-              </ul>
-            </div>
-            <img src={BRANDING} alt="VakLease bedrijfswagen met bestickering" loading="lazy" />
-          </article>
-        </div>
-      </section>
-
-      <section className="vl-market-section vl-market-popular">
-        <div className="vl-shell">
-          <div className="vl-market-title vl-market-title-row">
-            <div><span>Uitgelichte voorbeelden</span><h2>Veelgekozen lease-objecten</h2></div>
-            <a href="#quickcheck">Object doorgeven →</a>
-          </div>
-          <div className="vl-market-product-grid">
-            {popular.map((item) => (
-              <article className="vl-market-product" key={item.title}>
-                <a className="vl-market-product-image" href={item.href}>
-                  <img src={item.image} alt={item.title} loading="lazy" />
+              <article className="vl-vw-model-card" key={item.label}>
+                <a className="vl-vw-model-image" href={item.href}>
+                  <img src={item.image} alt={item.alt} loading="lazy" />
                 </a>
-                <div className="vl-market-product-body">
-                  <span>{item.meta}</span>
-                  <h3>{item.title}</h3>
-                  <p>{item.note}</p>
-                  <div><strong>Prijs via jouw object</strong><a href={item.href}>→</a></div>
+                <div className="vl-vw-model-body">
+                  <h3>{item.label}</h3>
+                  <strong>{item.title}</strong>
+                  <p>{item.text}</p>
+                  <div className="vl-vw-model-actions vl-vw-model-actions-simple">
+                    <a className="vl-vw-btn vl-vw-btn-dark" href={item.href}>Bekijk {item.label.toLowerCase()}</a>
+                  </div>
                 </div>
               </article>
             ))}
@@ -105,43 +97,60 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="vl-market-why" id="werkwijze">
+      <section className="vl-vw-process" id="werkwijze">
         <div className="vl-shell">
-          <div className="vl-market-title">
-            <span>Jouw partner in financial lease</span>
-            <h2>Waarom VakLease?</h2>
+          <div className="vl-vw-section-title vl-vw-section-title-left">
+            <span>Zo werkt VakLease</span>
+            <h2>Van objectlink naar beoordeling in drie duidelijke stappen.</h2>
           </div>
-          <div className="vl-market-why-grid">
-            <article><i>01</i><div><h3>Gerichte intake</h3><p>Start met alleen de informatie die nodig is om de aanvraag goed op weg te helpen.</p></div></article>
-            <article><i>02</i><div><h3>Objectvrij kiezen</h3><p>Jij kiest zelf merk, dealer, leverancier en object. Nieuw of gebruikt.</p></div></article>
-            <article><i>03</i><div><h3>Eén aanspreekpunt</h3><p>VakLease helpt je de aanvraag compleet en overzichtelijk aan te leveren.</p></div></article>
-            <article><i>04</i><div><h3>Duidelijk proces</h3><p>De financierende partij beoordeelt het dossier en bepaalt de mogelijkheden.</p></div></article>
+          <div className="vl-vw-process-grid">
+            <article>
+              <b>01</b>
+              <h3>Stuur je object door</h3>
+              <p>Deel de link, aanschafprijs en je contactgegevens. Heb je nog niets gevonden, vertel dan wat je zoekt.</p>
+            </article>
+            <article>
+              <b>02</b>
+              <h3>We maken de intake compleet</h3>
+              <p>We bespreken welke gegevens nog nodig zijn en zorgen dat de aanvraag logisch en volledig wordt aangeleverd.</p>
+            </article>
+            <article>
+              <b>03</b>
+              <h3>Je krijgt duidelijkheid over het vervolg</h3>
+              <p>De financierende partij beoordeelt het dossier. Daarna weet je welke mogelijkheden en vervolgstappen er zijn.</p>
+            </article>
           </div>
         </div>
       </section>
 
-      <section className="vl-market-intake" id="quickcheck">
-        <div className="vl-shell vl-market-intake-grid">
-          <div className="vl-market-intake-copy">
-            <span>Vrijblijvende intake</span>
-            <h2>Vertel ons wat je wilt leasen.</h2>
-            <p>Heb je al iets gevonden? Plak de link. Nog aan het zoeken? Vertel kort wat je nodig hebt.</p>
-            <div className="vl-market-intake-proof">
-              <b>✓ Bedrijfswagens</b><b>✓ Machines</b><b>✓ Aanhangers</b>
+      <section className="vl-vw-feature" id="bestickering">
+        <div className="vl-shell">
+          <div className="vl-vw-feature-panel">
+            <div className="vl-vw-feature-copy">
+              <span className="vl-vw-eyebrow">Extra voor bedrijfswagens</span>
+              <h2>Van standaard bus naar <strong>rijdend visitekaartje.</strong></h2>
+              <p>Bekijk direct het verschil tussen een onbestickerde bus en een professionele VakLease-uitwerking. Naast de lease-intake kun je een vrijblijvend ontwerpvoorstel aanvragen.</p>
+              <div className="vl-vw-feature-actions">
+                <a className="vl-vw-btn vl-vw-btn-light" href="/contact/">Vraag gratis ontwerp aan</a>
+                <a className="vl-vw-btn vl-vw-btn-outline-light" href="/bedrijfswagens/">Bekijk bedrijfswagens</a>
+              </div>
             </div>
-          </div>
-          <div className="vl-market-intake-card">
-            <QuickLead source="homepage-market" compact />
+            <div className="vl-vw-feature-image vl-vw-feature-before-after">
+              <img src={BRANDING} alt="Voor en na bestickering van dezelfde bedrijfswagen" loading="lazy" />
+            </div>
           </div>
         </div>
       </section>
 
       <FAQ />
 
-      <section className="vl-market-end">
-        <div className="vl-shell vl-market-end-inner">
-          <div><span>Klaar om te leasen?</span><h2>Stuur je object door en start de intake.</h2></div>
-          <a href="#quickcheck">Lease aanvragen →</a>
+      <section className="vl-vw-end vl-final-conversion">
+        <div className="vl-shell vl-vw-end-inner">
+          <div>
+            <span>Klaar om te beginnen?</span>
+            <h2>Stuur het object door. Wij pakken het vanaf daar op.</h2>
+          </div>
+          <a className="vl-vw-btn vl-vw-btn-dark" href="#quickcheck">Check mijn mogelijkheden</a>
         </div>
       </section>
 
