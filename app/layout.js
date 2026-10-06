@@ -6,7 +6,16 @@ export const metadata = {
     template: '%s | VakLease'
   },
   description: 'Zakelijke financial lease voor vakmensen en ondernemers. Vraag lease aan voor bedrijfswagens, machines en aanhangers.',
-  metadataBase: new URL('https://vaklease.nl')
+  metadataBase: new URL('https://vaklease.nl'),
+  alternates: { canonical: '/' },
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: 'website',
+    locale: 'nl_NL',
+    siteName: 'VakLease',
+    title: 'VakLease | Zakelijke financial lease',
+    description: 'Zakelijke financial lease voor bedrijfswagens, machines en aanhangers.'
+  }
 };
 
 export default function RootLayout({ children }) {
