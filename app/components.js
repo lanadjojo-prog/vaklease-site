@@ -530,9 +530,9 @@ export function CategoryPage({ category, icon, title, intro, examples, benefits,
 
 
 const NEW_HERO_SLIDES = [
-  { key:'van', label:'Bedrijfswagens', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-studio-4k.webp?v=1791284845', position:'58% 64%' },
-  { key:'machine', label:'Machines', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-studio-4k.webp?v=1791284854', position:'60% 66%' },
-  { key:'trailer', label:'Aanhangers', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-studio-4k.webp?v=1791284862', position:'61% 66%' }
+  { key:'van', label:'Bedrijfswagens', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-bus-ultra-hero-4k.webp?v=1791288243', position:'center 66%' },
+  { key:'machine', label:'Machines', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-machine-ultra-hero-4k.webp?v=1791288251', position:'center 67%' },
+  { key:'trailer', label:'Aanhangers', image:'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-trailer-ultra-hero-4k.webp?v=1791288260', position:'center 67%' }
 ];
 
 function fileToQuote(file){
@@ -590,77 +590,80 @@ export function InstantLeaseHero(){
   const go=(delta)=>setIndex(v=>(v+delta+NEW_HERO_SLIDES.length)%NEW_HERO_SLIDES.length);
 
   return (
-    <section className="vl-new-hero vl-new-hero-fullbg" id="quickcheck"
-      onTouchStart={e=>{touchStart.current=e.touches?.[0]?.clientX??null}}
-      onTouchEnd={e=>{if(touchStart.current==null)return;const x=e.changedTouches?.[0]?.clientX??touchStart.current;const d=x-touchStart.current;if(Math.abs(d)>45)go(d<0?1:-1);touchStart.current=null;}}>
-      
-      <div className="vl-new-bg-track" style={{transform:`translate3d(-${index*100}%,0,0)`}}>
-        {NEW_HERO_SLIDES.map((s,i)=>(
-          <div
-            key={s.key}
-            className="vl-new-bg-slide"
-            style={{backgroundImage:`url("${s.image}")`,backgroundPosition:s.position}}
-            aria-hidden={i!==index}
-          />
-        ))}
-      </div>
-      <div className="vl-new-bg-overlay" />
+    <section className="vl-new-hero vl-new-hero-stacked" id="quickcheck">
+      <div className="vl-new-photo-stage"
+        onTouchStart={e=>{touchStart.current=e.touches?.[0]?.clientX??null}}
+        onTouchEnd={e=>{if(touchStart.current==null)return;const x=e.changedTouches?.[0]?.clientX??touchStart.current;const d=x-touchStart.current;if(Math.abs(d)>45)go(d<0?1:-1);touchStart.current=null;}}>
+        
+        <div className="vl-new-bg-track" style={{transform:`translate3d(-${index*100}%,0,0)`}}>
+          {NEW_HERO_SLIDES.map((s,i)=>(
+            <div key={s.key} className="vl-new-bg-slide" style={{backgroundImage:`url("${s.image}")`,backgroundPosition:s.position}} aria-hidden={i!==index} />
+          ))}
+        </div>
 
-      <div className="vl-shell vl-new-hero-grid">
-        <div className="vl-new-hero-main">
-          <div className="vl-new-hero-copy">
+        <div className="vl-new-stage-shade" />
+
+        <div className="vl-shell vl-new-hero-top">
+          <div className="vl-new-hero-copy-center">
             <span className="vl-new-kicker">Zakelijk leasen voor ondernemers</span>
-            <h1>Jouw werk,<br/><strong>onze drive.</strong></h1>
+            <h1>Jouw werk, <strong>onze drive.</strong></h1>
             <p>Snel en eenvoudig je bedrijfswagen, machine of aanhanger zakelijk leasen. Jij kiest het object, wij regelen de aanvraag.</p>
-            <div className="vl-new-tabs vl-new-tabs-inline" role="tablist" aria-label="Categorie kiezen">
-              {NEW_HERO_SLIDES.map((s,i)=><button key={s.key} type="button" onClick={()=>setIndex(i)} className={i===index?'active':''} role="tab" aria-selected={i===index}>{s.label}</button>)}
-            </div>
           </div>
 
-          <div className="vl-new-visual vl-new-visual-overlay">
-            <button className="vl-new-arrow left" type="button" onClick={()=>go(-1)} aria-label="Vorige categorie">‹</button>
-            <button className="vl-new-arrow right" type="button" onClick={()=>go(1)} aria-label="Volgende categorie">›</button>
-            <div className="vl-new-dots">{NEW_HERO_SLIDES.map((s,i)=><button type="button" key={s.key} className={i===index?'active':''} onClick={()=>setIndex(i)} aria-label={s.label}/>)}</div>
-          </div>
-
-          <div className="vl-new-proof">
-            <span>⚡ <b>Binnen 4 uur</b><small>bij complete aanvraag</small></span>
-            <span>□ <b>Vrijblijvend</b><small>zonder verplichtingen</small></span>
-            <span>✓ <b>Meerdere partners</b><small>één aanvraag</small></span>
+          <div className="vl-new-tabs vl-new-tabs-center" role="tablist" aria-label="Categorie kiezen">
+            {NEW_HERO_SLIDES.map((s,i)=><button key={s.key} type="button" onClick={()=>setIndex(i)} className={i===index?'active':''} role="tab" aria-selected={i===index}>{s.label}</button>)}
           </div>
         </div>
 
-        <form className="vl-new-form" onSubmit={submit}>
-          <span className="vl-new-form-badge">● SNELLE INTAKE</span>
-          <h2>Doe direct een aanvraag</h2>
-          <p>Plak een link of upload de offerte. Wij doen de rest.</p>
+        <button className="vl-new-arrow left" type="button" onClick={()=>go(-1)} aria-label="Vorige categorie">‹</button>
+        <button className="vl-new-arrow right" type="button" onClick={()=>go(1)} aria-label="Volgende categorie">›</button>
+        <div className="vl-new-dots">{NEW_HERO_SLIDES.map((s,i)=><button type="button" key={s.key} className={i===index?'active':''} onClick={()=>setIndex(i)} aria-label={s.label}/>)}</div>
+      </div>
+
+      <div className="vl-shell vl-new-form-overlap-wrap">
+        <form className="vl-new-form vl-new-form-horizontal" onSubmit={submit}>
+          <div className="vl-new-form-heading">
+            <span className="vl-new-form-badge">● SNELLE INTAKE</span>
+            <div><h2>Doe direct een aanvraag</h2><p>Plak een link of upload de offerte. Wij doen de rest.</p></div>
+          </div>
 
           <div className="vl-new-form-switch">
             <button type="button" className={mode==='link'?'active':''} onClick={()=>setMode('link')}>↗ Link plakken</button>
             <button type="button" className={mode==='upload'?'active':''} onClick={()=>setMode('upload')}>□ Offerte uploaden</button>
           </div>
 
-          {mode==='link' ? (
-            <label><span>Link naar object</span><input type="url" value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://dealer.nl/object..." /></label>
-          ) : (
-            <label className="vl-new-upload"><span>Offerte van leverancier</span><input type="file" accept=".pdf,image/jpeg,image/png" onChange={async e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>3*1024*1024){setStatus('error');setMessage('Maximaal 3 MB.');return;}setQuote(await fileToQuote(f));}} /><b>{quote?quote.name:'Kies PDF, JPG of PNG'}</b><small>Maximaal 3 MB</small></label>
-          )}
+          <div className="vl-new-form-fields-row">
+            {mode==='link' ? (
+              <label className="vl-new-field-grow"><span>Link naar object</span><input type="url" value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://dealer.nl/object..." /></label>
+            ) : (
+              <label className="vl-new-upload vl-new-field-grow"><span>Offerte van leverancier</span><input type="file" accept=".pdf,image/jpeg,image/png" onChange={async e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>3*1024*1024){setStatus('error');setMessage('Maximaal 3 MB.');return;}setQuote(await fileToQuote(f));}} /><b>{quote?quote.name:'Kies PDF, JPG of PNG'}</b><small>Maximaal 3 MB</small></label>
+            )}
 
-          <label><span>KVK-nummer *</span><input inputMode="numeric" value={kvk} onChange={e=>setKvk(e.target.value.replace(/\D/g,'').slice(0,8))} placeholder="12345678" /></label>
+            <label><span>KVK-nummer *</span><input inputMode="numeric" value={kvk} onChange={e=>setKvk(e.target.value.replace(/\D/g,'').slice(0,8))} placeholder="12345678" /></label>
 
-          <label><span>Gewenste looptijd <em>optioneel</em></span>
-            <select value={term} onChange={e=>setTerm(e.target.value)}>
-              <option value="">Nog geen voorkeur</option><option value="24">24 maanden</option><option value="36">36 maanden</option><option value="48">48 maanden</option><option value="60">60 maanden</option><option value="72">72 maanden</option>
-            </select>
-          </label>
+            <label><span>Gewenste looptijd <em>optioneel</em></span>
+              <select value={term} onChange={e=>setTerm(e.target.value)}>
+                <option value="">Nog geen voorkeur</option><option value="24">24 maanden</option><option value="36">36 maanden</option><option value="48">48 maanden</option><option value="60">60 maanden</option><option value="72">72 maanden</option>
+              </select>
+            </label>
 
-          <label><span>Waar mogen we het aanbod sturen? *</span><input value={contact} onChange={e=>setContact(e.target.value)} placeholder="E-mail of mobiel nummer" /></label>
+            <label><span>Waar mogen we het aanbod sturen? *</span><input value={contact} onChange={e=>setContact(e.target.value)} placeholder="E-mail of mobiel nummer" /></label>
+          </div>
 
-          <label className="vl-new-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} required/><span>VakLease mag contact opnemen over deze aanvraag.</span></label>
-          <button className="vl-new-submit" disabled={status==='loading'}>{status==='loading'?'Versturen…':'Aanvraag indienen →'}</button>
-          <small className="vl-new-form-note">🔒 100% vrijblijvend. Je zit nergens aan vast.</small>
+          <div className="vl-new-form-bottom">
+            <label className="vl-new-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} required/><span>VakLease mag contact opnemen over deze aanvraag.</span></label>
+            <button className="vl-new-submit" disabled={status==='loading'}>{status==='loading'?'Versturen…':'Aanvraag indienen →'}</button>
+            <small className="vl-new-form-note">🔒 100% vrijblijvend. Je zit nergens aan vast.</small>
+          </div>
+
           {message && <p className={status==='success'?'vl-new-success':'vl-new-error'}>{message}</p>}
         </form>
+
+        <div className="vl-new-proof vl-new-proof-under">
+          <span>⚡ <b>Binnen 4 uur</b><small>bij complete aanvraag</small></span>
+          <span>□ <b>Vrijblijvend</b><small>zonder verplichtingen</small></span>
+          <span>✓ <b>Meerdere partners</b><small>één aanvraag</small></span>
+        </div>
       </div>
     </section>
   );
