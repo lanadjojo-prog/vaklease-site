@@ -35,21 +35,21 @@ const VAKLEASE_HERO_SLIDES = [
     key: 'van',
     label: 'Bedrijfswagens',
     href: '/bedrijfswagens/',
-    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-bus-4k.webp?v=1791275839',
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-bus-zoomed-4k.webp?v=1791277539',
     position: 'center center'
   },
   {
     key: 'machine',
     label: 'Machines',
     href: '/machines/',
-    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-machine-4k.webp?v=1791275846',
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-machine-zoomed-4k.webp?v=1791277547',
     position: 'center center'
   },
   {
     key: 'trailer',
     label: 'Aanhangers',
     href: '/aanhangers/',
-    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-trailer-4k.webp?v=1791275855',
+    image: 'https://cdn.shopify.com/s/files/1/0998/2568/0716/files/vaklease-hero-trailer-zoomed-4k.webp?v=1791277555',
     position: 'center center'
   }
 ];
