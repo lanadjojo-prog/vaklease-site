@@ -6328,3 +6328,117 @@ body{
     background-position:center 64%!important;
   }
 }
+
+
+/* ===== Exact full-screen reference composition: separate backdrop + vehicle · 2026-10-06 ===== */
+.vl-new-photo-stage{
+  width:100vw!important;
+  max-width:none!important;
+  margin-left:calc(50% - 50vw)!important;
+  margin-right:calc(50% - 50vw)!important;
+  overflow:hidden!important;
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 18% 48%,rgba(255,202,123,.38),transparent 17%),
+    linear-gradient(180deg,#eaf3fb 0%,#eef4f9 34%,#f4f5f4 52%,#e8e7e4 100%)!important;
+}
+.vl-new-photo-stage:before,
+.vl-new-photo-stage:after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  z-index:-1;
+  width:7.5vw;
+  min-width:52px;
+  max-width:118px;
+  background:
+    linear-gradient(90deg,rgba(20,35,53,.92),rgba(49,66,82,.60) 58%,rgba(49,66,82,0));
+  opacity:.9;
+  pointer-events:none;
+}
+.vl-new-photo-stage:before{left:0}
+.vl-new-photo-stage:after{
+  right:0;
+  transform:scaleX(-1);
+}
+.vl-new-bg-track{
+  position:absolute!important;
+  inset:0!important;
+  z-index:0!important;
+  display:flex!important;
+  width:100%!important;
+  height:100%!important;
+}
+.vl-new-bg-slide{
+  position:relative!important;
+  flex:0 0 100%!important;
+  min-width:100%!important;
+  height:100%!important;
+  background:none!important;
+  display:flex!important;
+  justify-content:center!important;
+  align-items:flex-end!important;
+  padding-bottom:84px!important;
+  overflow:hidden!important;
+}
+.vl-new-vehicle-img{
+  display:block;
+  width:1240px;
+  max-width:none;
+  height:auto;
+  object-fit:contain;
+  object-position:center bottom;
+  mix-blend-mode:multiply;
+  filter:drop-shadow(0 22px 20px rgba(18,37,66,.08));
+  transform:translateY(22px);
+  user-select:none;
+  pointer-events:none;
+}
+.vl-new-stage-shade{
+  z-index:1!important;
+  background:
+    linear-gradient(180deg,rgba(240,247,252,.88) 0%,rgba(240,247,252,.48) 18%,rgba(240,247,252,.04) 34%,transparent 50%)!important;
+}
+.vl-new-hero-top{
+  z-index:3!important;
+}
+.vl-new-photo-stage .vl-new-arrow,
+.vl-new-photo-stage .vl-new-dots{
+  z-index:4!important;
+}
+.vl-new-photo-stage .vl-new-arrow{
+  top:57%!important;
+}
+.vl-new-photo-stage .vl-new-dots{
+  bottom:90px!important;
+}
+.vl-new-form-overlap-wrap{
+  margin-top:-72px!important;
+}
+
+@media(max-width:1400px){
+  .vl-new-vehicle-img{width:1120px}
+}
+@media(max-width:1100px){
+  .vl-new-photo-stage:before,
+  .vl-new-photo-stage:after{display:none}
+  .vl-new-vehicle-img{
+    width:min(1080px,118vw);
+    transform:translateY(16px);
+  }
+  .vl-new-bg-slide{padding-bottom:82px!important}
+}
+@media(max-width:760px){
+  .vl-new-photo-stage{
+    background:
+      radial-gradient(circle at 20% 42%,rgba(255,211,147,.24),transparent 20%),
+      linear-gradient(180deg,#edf4fa 0%,#f2f5f8 40%,#ecebe9 100%)!important;
+  }
+  .vl-new-vehicle-img{
+    width:118vw;
+    transform:translateY(8px);
+  }
+  .vl-new-bg-slide{padding-bottom:74px!important}
+  .vl-new-photo-stage .vl-new-dots{bottom:72px!important}
+}
