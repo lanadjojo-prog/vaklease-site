@@ -5976,3 +5976,292 @@ body{
     padding:12px!important;
   }
 }
+
+
+/* ===== Stacked hero with centered copy + overlapping intake · 2026-10-06 ===== */
+.vl-new-hero-stacked{
+  padding:0!important;
+  background:#f6f8fc!important;
+  overflow:visible!important;
+}
+.vl-new-photo-stage{
+  position:relative;
+  min-height:700px;
+  height:min(78vh,820px);
+  overflow:hidden;
+  isolation:isolate;
+  background:#f7f9fc;
+  touch-action:pan-y;
+}
+.vl-new-photo-stage .vl-new-bg-track{
+  z-index:-3;
+}
+.vl-new-photo-stage .vl-new-bg-slide{
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
+}
+.vl-new-stage-shade{
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(247,249,252,.86) 0%,rgba(247,249,252,.42) 19%,rgba(247,249,252,.05) 36%,transparent 53%);
+}
+.vl-new-hero-top{
+  position:relative;
+  z-index:4;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding-top:40px;
+}
+.vl-new-hero-copy-center{
+  width:min(760px,88%);
+  text-align:center;
+}
+.vl-new-hero-copy-center .vl-new-kicker{
+  margin-bottom:10px;
+  font-size:9px;
+  letter-spacing:.20em;
+  color:#5d6c88;
+}
+.vl-new-hero-copy-center h1{
+  margin:0;
+  color:#0a1836;
+  font-size:clamp(38px,3.4vw,58px);
+  line-height:.98;
+  letter-spacing:-.045em;
+  font-weight:720;
+}
+.vl-new-hero-copy-center h1 strong{
+  color:#2b64c7;
+  font-weight:850;
+}
+.vl-new-hero-copy-center p{
+  width:min(650px,92%);
+  margin:13px auto 0;
+  color:#50617d;
+  font-size:14px;
+  line-height:1.5;
+}
+.vl-new-tabs-center{
+  position:relative!important;
+  top:auto!important;
+  right:auto!important;
+  transform:none!important;
+  margin-top:20px;
+  display:inline-flex!important;
+  padding:5px!important;
+  gap:4px!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.9)!important;
+  border:1px solid rgba(18,42,77,.08);
+  box-shadow:0 10px 30px rgba(18,42,77,.08)!important;
+  backdrop-filter:blur(14px);
+}
+.vl-new-tabs-center button{
+  min-width:126px;
+  padding:10px 16px!important;
+  border-bottom:0!important;
+  border-radius:999px;
+  font-size:11px!important;
+  color:#6c7890!important;
+}
+.vl-new-tabs-center button.active{
+  background:#0d214a!important;
+  color:#fff!important;
+  box-shadow:0 7px 18px rgba(13,33,74,.17);
+}
+.vl-new-photo-stage .vl-new-arrow{
+  top:62%!important;
+  transform:translateY(-50%);
+}
+.vl-new-photo-stage .vl-new-arrow.left{left:28px!important}
+.vl-new-photo-stage .vl-new-arrow.right{right:28px!important}
+.vl-new-photo-stage .vl-new-dots{
+  bottom:95px!important;
+}
+
+.vl-new-form-overlap-wrap{
+  position:relative;
+  z-index:10;
+  margin-top:-76px!important;
+  padding-bottom:26px;
+}
+.vl-new-form-horizontal{
+  width:100%;
+  max-width:1180px;
+  margin:0 auto;
+  padding:22px 24px!important;
+  border-radius:24px!important;
+  background:rgba(255,255,255,.97)!important;
+  box-shadow:0 24px 70px rgba(18,40,77,.16)!important;
+  backdrop-filter:blur(18px)!important;
+}
+.vl-new-form-heading{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-bottom:16px;
+}
+.vl-new-form-heading>div{
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.vl-new-form-heading h2{
+  margin:0!important;
+  font-size:23px!important;
+}
+.vl-new-form-heading p{
+  margin:0!important;
+  font-size:11px!important;
+  color:#738098!important;
+}
+.vl-new-form-horizontal .vl-new-form-switch{
+  width:340px;
+  margin:0 0 14px;
+}
+.vl-new-form-fields-row{
+  display:grid;
+  grid-template-columns:minmax(260px,1.4fr) repeat(3,minmax(170px,.8fr));
+  gap:12px;
+  align-items:end;
+}
+.vl-new-form-fields-row label{
+  margin:0!important;
+}
+.vl-new-form-fields-row input,
+.vl-new-form-fields-row select{
+  height:45px!important;
+}
+.vl-new-form-fields-row .vl-new-upload{
+  min-height:74px!important;
+  padding:10px 12px!important;
+}
+.vl-new-form-bottom{
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:16px;
+  align-items:center;
+  margin-top:16px;
+}
+.vl-new-form-bottom .vl-new-consent{
+  margin:0!important;
+}
+.vl-new-form-bottom .vl-new-submit{
+  width:auto!important;
+  min-width:210px;
+  padding:0 24px;
+}
+.vl-new-form-bottom .vl-new-form-note{
+  margin:0!important;
+  white-space:nowrap;
+}
+.vl-new-proof-under{
+  width:max-content;
+  max-width:100%;
+  margin:16px auto 0!important;
+  padding:0!important;
+  border:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  backdrop-filter:none!important;
+}
+.vl-new-proof-under span{
+  color:#30405d!important;
+}
+.vl-new-proof-under small{
+  color:#7e8aa0!important;
+}
+
+@media(max-width:1100px){
+  .vl-new-photo-stage{
+    min-height:640px;
+    height:680px;
+  }
+  .vl-new-form-fields-row{
+    grid-template-columns:1fr 1fr;
+  }
+  .vl-new-form-bottom{
+    grid-template-columns:1fr auto;
+  }
+  .vl-new-form-bottom .vl-new-form-note{
+    grid-column:1/-1;
+    text-align:right;
+  }
+}
+@media(max-width:760px){
+  .vl-new-photo-stage{
+    min-height:560px;
+    height:600px;
+  }
+  .vl-new-hero-top{
+    padding-top:24px;
+  }
+  .vl-new-hero-copy-center h1{
+    font-size:38px;
+  }
+  .vl-new-hero-copy-center p{
+    font-size:12px;
+  }
+  .vl-new-tabs-center{
+    width:94%;
+    margin-top:16px;
+  }
+  .vl-new-tabs-center button{
+    flex:1;
+    min-width:0;
+    padding:9px 7px!important;
+    font-size:9px!important;
+  }
+  .vl-new-photo-stage .vl-new-arrow{
+    top:66%!important;
+    width:40px;
+    height:40px;
+  }
+  .vl-new-photo-stage .vl-new-arrow.left{left:10px!important}
+  .vl-new-photo-stage .vl-new-arrow.right{right:10px!important}
+  .vl-new-photo-stage .vl-new-dots{bottom:76px!important}
+  .vl-new-form-overlap-wrap{
+    margin-top:-52px!important;
+  }
+  .vl-new-form-horizontal{
+    padding:20px!important;
+    border-radius:20px!important;
+  }
+  .vl-new-form-heading{
+    display:block;
+  }
+  .vl-new-form-heading .vl-new-form-badge{
+    margin-bottom:10px;
+  }
+  .vl-new-form-heading>div{
+    display:block;
+  }
+  .vl-new-form-heading p{
+    margin-top:5px!important;
+  }
+  .vl-new-form-horizontal .vl-new-form-switch{
+    width:100%;
+  }
+  .vl-new-form-fields-row{
+    grid-template-columns:1fr;
+  }
+  .vl-new-form-bottom{
+    grid-template-columns:1fr;
+  }
+  .vl-new-form-bottom .vl-new-submit{
+    width:100%!important;
+  }
+  .vl-new-form-bottom .vl-new-form-note{
+    text-align:center;
+  }
+  .vl-new-proof-under{
+    width:100%;
+    justify-content:space-between;
+    gap:10px;
+  }
+}
