@@ -5659,3 +5659,148 @@ body{
   .vl-new-final{padding:70px 0}.vl-new-final h2{font-size:52px}
   .vl-new-footer-grid{grid-template-columns:1fr 1fr;gap:34px}.vl-new-footer-brand{grid-column:1/-1}.vl-new-footer-bottom{flex-direction:column}.vl-new-footer-bottom div{flex-wrap:wrap}
 }
+
+
+/* ===== Full-screen photographic hero background · 2026-10-06 ===== */
+.vl-new-hero-fullbg{
+  min-height:calc(100vh - 76px);
+  height:max(760px,calc(100vh - 76px));
+  padding:0!important;
+  background:#f6f8fc!important;
+  isolation:isolate;
+}
+.vl-new-hero-fullbg:before{display:none!important}
+.vl-new-bg-track{
+  position:absolute;
+  inset:0;
+  z-index:-3;
+  display:flex;
+  width:100%;
+  height:100%;
+  transition:transform .7s cubic-bezier(.22,1,.36,1);
+  will-change:transform;
+}
+.vl-new-bg-slide{
+  flex:0 0 100%;
+  min-width:100%;
+  height:100%;
+  background-size:cover;
+  background-position:center bottom;
+  background-repeat:no-repeat;
+}
+.vl-new-bg-overlay{
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(248,250,253,.96) 0%,rgba(248,250,253,.87) 24%,rgba(248,250,253,.40) 48%,rgba(248,250,253,.10) 68%,rgba(248,250,253,.16) 100%),
+    linear-gradient(180deg,rgba(248,250,253,.42) 0%,rgba(248,250,253,.02) 54%,rgba(248,250,253,.18) 100%);
+}
+.vl-new-hero-fullbg .vl-new-hero-grid{
+  min-height:inherit;
+  height:100%;
+  align-items:center;
+  padding-top:34px;
+  padding-bottom:34px;
+}
+.vl-new-hero-fullbg .vl-new-hero-main{
+  min-height:calc(100vh - 144px);
+  justify-content:space-between;
+}
+.vl-new-hero-fullbg .vl-new-hero-copy{
+  padding-top:48px;
+}
+.vl-new-visual-overlay{
+  flex:1;
+  min-height:330px!important;
+  margin:0!important;
+  position:relative;
+  overflow:visible;
+}
+.vl-new-visual-overlay:before{display:none!important}
+.vl-new-visual-overlay img{display:none!important}
+.vl-new-hero-fullbg .vl-new-tabs{
+  top:16px;
+  right:5%;
+  padding:7px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.62);
+  backdrop-filter:blur(14px);
+  box-shadow:0 8px 28px rgba(25,48,88,.06);
+}
+.vl-new-hero-fullbg .vl-new-arrow{
+  top:59%;
+}
+.vl-new-hero-fullbg .vl-new-arrow.left{left:-8px}
+.vl-new-hero-fullbg .vl-new-arrow.right{right:3%}
+.vl-new-hero-fullbg .vl-new-dots{bottom:14px}
+.vl-new-hero-fullbg .vl-new-proof{
+  margin-top:0;
+  padding-top:17px;
+  background:rgba(248,250,253,.58);
+  backdrop-filter:blur(8px);
+}
+.vl-new-hero-fullbg .vl-new-form{
+  background:rgba(255,255,255,.93);
+  backdrop-filter:blur(22px);
+  box-shadow:0 28px 70px rgba(18,40,77,.15);
+}
+
+@media(max-width:1100px){
+  .vl-new-hero-fullbg{
+    height:auto;
+    min-height:980px;
+  }
+  .vl-new-hero-fullbg .vl-new-hero-grid{
+    min-height:980px;
+    padding-top:28px;
+    padding-bottom:42px;
+  }
+  .vl-new-hero-fullbg .vl-new-hero-main{
+    min-height:590px;
+  }
+  .vl-new-bg-slide{
+    background-position:center bottom;
+  }
+  .vl-new-bg-overlay{
+    background:
+      linear-gradient(180deg,rgba(248,250,253,.96) 0%,rgba(248,250,253,.86) 31%,rgba(248,250,253,.32) 59%,rgba(248,250,253,.18) 100%);
+  }
+  .vl-new-visual-overlay{min-height:300px!important}
+  .vl-new-hero-fullbg .vl-new-form{margin-top:8px}
+}
+@media(max-width:760px){
+  .vl-new-hero-fullbg{
+    min-height:920px;
+  }
+  .vl-new-hero-fullbg .vl-new-hero-grid{
+    min-height:920px;
+    padding-top:18px;
+    padding-bottom:26px;
+  }
+  .vl-new-hero-fullbg .vl-new-hero-main{
+    min-height:500px;
+  }
+  .vl-new-hero-fullbg .vl-new-hero-copy{
+    padding-top:20px;
+  }
+  .vl-new-bg-slide{
+    background-size:cover;
+    background-position:center 58%;
+  }
+  .vl-new-bg-overlay{
+    background:
+      linear-gradient(180deg,rgba(248,250,253,.98) 0%,rgba(248,250,253,.88) 28%,rgba(248,250,253,.35) 55%,rgba(248,250,253,.22) 100%);
+  }
+  .vl-new-visual-overlay{min-height:250px!important}
+  .vl-new-hero-fullbg .vl-new-tabs{
+    right:50%;
+    transform:translateX(50%);
+    top:2px;
+  }
+  .vl-new-hero-fullbg .vl-new-arrow{top:62%}
+  .vl-new-hero-fullbg .vl-new-proof{
+    background:rgba(248,250,253,.70);
+  }
+}
