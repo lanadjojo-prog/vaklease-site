@@ -6265,3 +6265,24 @@ body{
     gap:10px;
   }
 }
+
+
+/* ===== Hero vehicle scale refinement · 2026-10-06 ===== */
+.vl-new-photo-stage .vl-new-bg-slide{
+  background-size:contain!important;
+  background-position:center 67%!important;
+  background-repeat:no-repeat!important;
+  background-color:#f7f9fc;
+}
+@media(max-width:1100px){
+  .vl-new-photo-stage .vl-new-bg-slide{
+    background-size:contain!important;
+    background-position:center 65%!important;
+  }
+}
+@media(max-width:760px){
+  .vl-new-photo-stage .vl-new-bg-slide{
+    background-size:115% auto!important;
+    background-position:center 64%!important;
+  }
+}
